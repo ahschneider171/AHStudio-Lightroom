@@ -46,6 +46,13 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+        .mouse-scroll-x {
+            cursor: grab;
+        }
+        .mouse-scroll-x.dragging-x {
+            cursor: grabbing !important;
+            user-select: none;
+        }
         input[type="range"] {
             -webkit-appearance: none;
             appearance: none;
@@ -303,10 +310,15 @@
                             <span id="statusFlashName" class="text-gray-200">⚡ Off</span>
                         </div>
 
-                        <!-- Bottom-Right Preview Size Toggle -->
-                        <button id="btnTogglePreviewSize" type="button" class="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-black/85 hover:bg-black border border-white/15 text-[10px] font-mono font-bold text-sky-300">
-                            Perkecil Preview
-                        </button>
+                        <!-- Bottom-Right Preview Controls -->
+                        <div class="absolute bottom-2 right-2 flex items-center gap-1">
+                            <button id="btnTogglePreviewSize" type="button" class="px-2 py-0.5 rounded-md bg-black/85 hover:bg-black border border-white/15 text-[10px] font-mono font-bold text-sky-300">
+                                Perkecil Preview
+                            </button>
+                            <button id="btnFullscreenPreview" type="button" title="Layar Penuh Preview (F)" class="px-2 py-0.5 rounded-md bg-black/85 hover:bg-black border border-emerald-400/40 text-[10px] font-mono font-bold text-emerald-300 flex items-center gap-1">
+                                ⛶ Fullscreen
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -316,7 +328,7 @@
                         <svg class="w-3 h-3 text-sky-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                         </svg>
-                        <span class="truncate">FOTO/RAW</span>
+                        <span class="truncate">Upload Foto</span>
                     </label>
 
                     <button id="btnHoldCompare" type="button" class="py-2 px-1 rounded-xl bg-[#151821] hover:bg-[#1e222e] border border-white/10 text-[10px] font-mono font-extrabold text-gray-100 flex items-center justify-center gap-0.5 select-none">
@@ -1052,6 +1064,67 @@
         </div>
     </div>
 
+    <!-- MODAL 5: FULL SCREEN PREVIEW -->
+    <div id="fullscreenModal" class="hidden fixed inset-0 z-50 bg-[#050608] flex flex-col select-none">
+        <!-- Top Bar -->
+        <div class="shrink-0 px-3 py-2 bg-[#0d1017]/95 border-b border-white/10 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+                <span class="text-xs font-extrabold text-emerald-300 shrink-0">⛶ Full Screen Preview</span>
+                <span id="fsStatusLabel" class="text-[11px] font-mono text-gray-400 truncate">ASLI</span>
+            </div>
+            <div class="flex items-center gap-1.5 flex-wrap">
+                <button id="btnFsSplit" type="button" class="px-2.5 py-1 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/40 text-sky-300 text-[11px] font-mono font-bold">
+                    SPLIT: ON
+                </button>
+                <button id="btnFsHoldCompare" type="button" class="px-2.5 py-1 rounded-lg bg-[#151821] hover:bg-[#1e222e] border border-white/15 text-gray-100 text-[11px] font-mono font-bold">
+                    👁️ TAHAN
+                </button>
+                <div class="flex items-center bg-[#151821] border border-white/15 rounded-lg overflow-hidden">
+                    <button id="btnFsZoomOut" type="button" title="Perkecil Zoom" class="px-2 py-1 hover:bg-[#1e222e] text-xs font-mono font-bold text-gray-200">−</button>
+                    <button id="btnFsZoomReset" type="button" title="Reset Zoom (Fit)" class="px-2 py-1 hover:bg-[#1e222e] text-[11px] font-mono font-bold text-sky-300 border-x border-white/10">Fit</button>
+                    <button id="btnFsZoomIn" type="button" title="Perbesar Zoom" class="px-2 py-1 hover:bg-[#1e222e] text-xs font-mono font-bold text-gray-200">+</button>
+                </div>
+                <button id="btnCloseFullscreen" type="button" class="px-2.5 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/35 border border-rose-400/40 text-rose-200 text-[11px] font-extrabold">
+                    ✕ Tutup
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Fullscreen Stage -->
+        <div id="fsStageBg" class="relative flex-1 min-h-0 w-full flex items-center justify-center overflow-hidden p-2 sm:p-4 touch-none">
+            <div id="fsViewport" class="relative inline-flex items-center justify-center bg-[#050608] rounded-xl border border-white/10 overflow-hidden shadow-2xl touch-none">
+                <canvas id="fsCanvas" class="block"></canvas>
+
+                <div id="fsBadgeOriginal" class="hidden absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-md bg-black/80 border border-white/15 text-[11px] font-mono font-bold text-gray-100 pointer-events-none">
+                    ASLI 0%
+                </div>
+                <div id="fsBadgeResult" class="absolute top-2.5 right-2.5 px-2.5 py-0.5 rounded-md bg-sky-500/90 border border-sky-300/40 text-[11px] font-mono font-extrabold text-white pointer-events-none">
+                    HASIL
+                </div>
+
+                <div id="fsSplitLine" class="hidden absolute top-0 bottom-0 w-[2px] bg-white shadow-[0_0_8px_rgba(0,0,0,0.9)] pointer-events-none" style="left: 50%;">
+                    <div class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white text-slate-900 border-2 border-sky-400 shadow flex items-center justify-center pointer-events-auto cursor-ew-resize">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l-3 3 3 3m8-6l3 3-3 3"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Quick Bar -->
+        <div class="shrink-0 px-3 py-2 bg-[#0d1017]/95 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5 flex-1 min-w-[200px] max-w-md">
+                <span class="text-[11px] font-bold text-gray-300 shrink-0">Kepekatan Filter:</span>
+                <input id="fsSliderFilterOpacity" type="range" min="0" max="100" value="0" class="flex-1">
+                <span id="fsFilterOpacityLabel" class="text-[11px] font-mono font-extrabold text-sky-300 w-9 text-right">0%</span>
+            </div>
+            <p class="text-[10px] font-mono text-gray-400 hidden sm:block">
+                Geser garis split untuk Before/After &bull; Scroll mouse untuk Zoom &bull; Esc untuk tutup
+            </p>
+        </div>
+    </div>
+
     <!-- TOAST -->
     <div id="toastBox" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-opacity duration-200">
         <div id="toastMsg" class="px-4 py-2 rounded-full bg-gray-900/95 border border-sky-400/40 text-xs font-bold text-white shadow-xl whitespace-nowrap">
@@ -1114,6 +1187,38 @@
             return HEIC_EXTENSIONS.has(ext) || type.includes('heic') || type.includes('heif');
         }
 
+        // Detects the classic libjpeg-turbo / Android WebView #808080 solid-gray bottom fill
+        // caused by truncated JPEG streams or partially decoded HEIC grid tiles
+        function isCanvasTruncatedGray(canvas) {
+            if (!canvas || canvas.width < 16 || canvas.height < 16) return true;
+            try {
+                const w = canvas.width;
+                const h = canvas.height;
+                const checkRows = Math.max(6, Math.min(32, Math.floor(h * 0.06)));
+                const startY = h - checkRows;
+                const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                const data = ctx.getImageData(0, startY, w, checkRows).data;
+                const stepX = Math.max(1, Math.floor(w / 80));
+                let totalChecked = 0;
+                let gray128Count = 0;
+
+                for (let y = 0; y < checkRows; y++) {
+                    const rowOff = y * w * 4;
+                    for (let x = 0; x < w; x += stepX) {
+                        const i = rowOff + x * 4;
+                        const r = data[i], g = data[i + 1], b = data[i + 2];
+                        totalChecked++;
+                        if (Math.abs(r - 128) <= 2 && Math.abs(g - 128) <= 2 && Math.abs(b - 128) <= 2) {
+                            gray128Count++;
+                        }
+                    }
+                }
+                return totalChecked > 0 && (gray128Count / totalChecked) >= 0.85;
+            } catch (e) {
+                return false;
+            }
+        }
+
         function loadHeic2AnyLibrary() {
             if (typeof window.heic2any === 'function') return Promise.resolve(window.heic2any);
             return new Promise((resolve, reject) => {
@@ -1136,7 +1241,7 @@
         }
 
         async function decodeHeicToCanvas(file) {
-            // 1. Try native ImageBitmap / Image decode first (works if WebView/Chromium natively supports HEVC/HEIC)
+            // 1. Try native ImageBitmap first — verify it did NOT partially decode with #808080 gray bottom tiles!
             try {
                 if (typeof createImageBitmap === 'function') {
                     const bmp = await createImageBitmap(file);
@@ -1146,11 +1251,12 @@
                         c.height = bmp.height;
                         c.getContext('2d').drawImage(bmp, 0, 0);
                         if (typeof bmp.close === 'function') bmp.close();
-                        return c;
+                        if (!isCanvasTruncatedGray(c)) return c;
                     }
                 }
             } catch (eNative1) {}
 
+            // 2. Try native Image element — also verify against #808080 gray bottom truncation
             try {
                 const img = await decodeBlobViaUrlOrData(file);
                 if (img && (img.naturalWidth || img.width) > 0) {
@@ -1158,11 +1264,11 @@
                     c.width = img.naturalWidth || img.width;
                     c.height = img.naturalHeight || img.height;
                     c.getContext('2d').drawImage(img, 0, 0);
-                    return c;
+                    if (!isCanvasTruncatedGray(c)) return c;
                 }
             } catch (eNative2) {}
 
-            // 2. Fallback to full JavaScript HEIC/HEIF decoder (heic2any) — NEVER slice ISO-BMFF binary as JPEG!
+            // 3. Full pure-JS libheif decoder (heic2any) for multi-tile HEIC grid images
             const converter = await loadHeic2AnyLibrary();
             const converted = await converter({
                 blob: file,
@@ -1309,6 +1415,90 @@
             return 1;
         }
 
+        // Exact ITU-T T.81 JPEG Marker & Entropy-Scan Walker!
+        // Jumps cleanly over APP1 EXIF thumbnails (ignoring inner FF D8 / FF D9) and finds the TRUE EOI (FF D9)
+        function parseExactJpegStreamInfo(bytes, start) {
+            const len = bytes.length;
+            if (start < 0 || start + 32 >= len) return null;
+            if (bytes[start] !== 0xFF || bytes[start + 1] !== 0xD8 || bytes[start + 2] !== 0xFF) return null;
+
+            let pos = start + 2;
+            let width = 0;
+            let height = 0;
+            let sawSof = false;
+            let sawSos = false;
+
+            while (pos < len - 1) {
+                if (bytes[pos] !== 0xFF) {
+                    if (!sawSos) return null;
+                    pos++;
+                    continue;
+                }
+                while (pos < len && bytes[pos] === 0xFF) pos++;
+                if (pos >= len) break;
+
+                const marker = bytes[pos++];
+
+                // Stuffed 0xFF00 or standalone RST0..RST7 / TEM
+                if (marker === 0x00 || marker === 0x01 || (marker >= 0xD0 && marker <= 0xD7)) {
+                    continue;
+                }
+                // True End Of Image (EOI)
+                if (marker === 0xD9) {
+                    if (sawSof && sawSos && width > 0 && height > 0) {
+                        return { end: pos, width, height, area: width * height };
+                    }
+                    return null;
+                }
+                // Nested SOI without EOI -> invalid
+                if (marker === 0xD8) {
+                    return null;
+                }
+                // Lossless / Arithmetic / Hierarchical SOF -> not browser-decodable JPEG preview
+                if (marker === 0xC3 || (marker >= 0xC5 && marker <= 0xCF)) {
+                    return null;
+                }
+
+                if (pos + 2 > len) return null;
+                const segLen = (bytes[pos] << 8) | bytes[pos + 1];
+                if (segLen < 2 || pos + segLen > len) return null;
+
+                if (marker === 0xC0 || marker === 0xC1 || marker === 0xC2) {
+                    if (pos + 7 > len) return null;
+                    height = (bytes[pos + 3] << 8) | bytes[pos + 4];
+                    width = (bytes[pos + 5] << 8) | bytes[pos + 6];
+                    if (width <= 0 || height <= 0) return null;
+                    sawSof = true;
+                }
+
+                pos += segLen;
+
+                if (marker === 0xDA) {
+                    if (!sawSof) return null;
+                    sawSos = true;
+                    // Scan entropy-coded segment until next real marker (FF followed by non-00 and non-D0..D7)
+                    while (pos < len - 1) {
+                        if (bytes[pos] !== 0xFF) {
+                            pos++;
+                            continue;
+                        }
+                        let mPos = pos + 1;
+                        while (mPos < len && bytes[mPos] === 0xFF) mPos++;
+                        if (mPos >= len) return null;
+                        const nextMarker = bytes[mPos];
+                        if (nextMarker === 0x00 || (nextMarker >= 0xD0 && nextMarker <= 0xD7)) {
+                            pos = mPos + 1;
+                            continue;
+                        }
+                        // Found next structural marker (e.g., FF D9 EOI, or FF C4/FF DA for progressive JPEG)!
+                        pos = mPos - 1;
+                        break;
+                    }
+                }
+            }
+            return null;
+        }
+
         function parseTiffMetadataAndSlices(bytes) {
             const len = bytes.length;
             const result = { orientation: 1, orientationFound: false, slices: [], rawIfd: null };
@@ -1363,6 +1553,7 @@
                 if (entryCount === 0 || entryCount > 512) continue;
 
                 let width = 0, height = 0, compression = 0, samples = 1, bitsPerSample = 8, photometric = 2;
+                let newSubfileType = 0;
                 let stripOffPos = 0, stripOffCnt = 0, stripOffType = 4;
                 let stripLenPos = 0, stripLenCnt = 0, stripLenType = 4;
                 let tileWidth = 0, tileLength = 0;
@@ -1384,7 +1575,8 @@
                     const cnt = u32(e + 4);
                     const val = type === 3 ? u16(e + 8) : u32(e + 8);
 
-                    if (tag === 0x0100) width = val;
+                    if (tag === 0x00FE) newSubfileType = val;
+                    else if (tag === 0x0100) width = val;
                     else if (tag === 0x0101) height = val;
                     else if (tag === 0x0102) {
                         if (cnt === 1) bitsPerSample = val;
@@ -1466,6 +1658,7 @@
                     if (nextIfd > 0 && nextIfd < len) ifdQueue.push({ off: nextIfd, isRoot: node.isRoot });
                 }
 
+                // Explicit JPEGInterchangeFormat (0x0201 / 0x0202)
                 if (jpegOff > 0 && jpegLen > 2048 && jpegOff + jpegLen <= len) {
                     result.slices.push({
                         start: jpegOff, end: jpegOff + jpegLen, size: jpegLen,
@@ -1474,18 +1667,45 @@
                     });
                 }
 
-                if ((compression === 6 || compression === 7) && stripOffCnt === 1 && stripLenCnt === 1) {
-                    const sOff = stripOffType === 3 ? u16(stripOffPos) : u32(stripOffPos);
-                    const sLen = stripLenType === 3 ? u16(stripLenPos) : u32(stripLenPos);
-                    if (sOff > 0 && sLen > 2048 && sOff + sLen <= len && bytes[sOff] === 0xFF && bytes[sOff + 1] === 0xD8) {
-                        result.slices.push({
-                            start: sOff, end: sOff + sLen, size: sLen,
-                            expectedPixels: width * height,
-                            orientation: ifdOrientation || result.orientation
-                        });
+                // Single-strip or Multi-strip JPEG-compressed preview (compression 6 or 7)
+                if ((compression === 6 || compression === 7) && stripOffCnt >= 1 && stripLenCnt >= 1) {
+                    const sOffs = readTagArray(stripOffPos, stripOffCnt, stripOffType);
+                    const sLens = readTagArray(stripLenPos, stripLenCnt, stripLenType);
+                    if (sOffs.length === 1 && sLens.length === 1) {
+                        const sOff = sOffs[0], sLen = sLens[0];
+                        if (sOff > 0 && sLen > 2048 && sOff + sLen <= len && bytes[sOff] === 0xFF && bytes[sOff + 1] === 0xD8) {
+                            result.slices.push({
+                                start: sOff, end: sOff + sLen, size: sLen,
+                                expectedPixels: width * height,
+                                orientation: ifdOrientation || result.orientation
+                            });
+                        }
+                    } else if (sOffs.length > 1 && sOffs.length === sLens.length) {
+                        // Concatenate multi-strip JPEG stream if first strip starts with JPEG SOI
+                        if (sOffs[0] > 0 && sOffs[0] + 2 <= len && bytes[sOffs[0]] === 0xFF && bytes[sOffs[0] + 1] === 0xD8) {
+                            let totalBytes = 0;
+                            for (let k = 0; k < sLens.length; k++) totalBytes += sLens[k];
+                            if (totalBytes > 2048 && totalBytes < len) {
+                                const merged = new Uint8Array(totalBytes);
+                                let wp = 0;
+                                for (let k = 0; k < sOffs.length; k++) {
+                                    if (sOffs[k] + sLens[k] <= len) {
+                                        merged.set(bytes.subarray(sOffs[k], sOffs[k] + sLens[k]), wp);
+                                        wp += sLens[k];
+                                    }
+                                }
+                                result.slices.push({
+                                    customBytes: merged,
+                                    start: 0, end: wp, size: wp,
+                                    expectedPixels: width * height,
+                                    orientation: ifdOrientation || result.orientation
+                                });
+                            }
+                        }
                     }
                 }
 
+                // Full-resolution Uncompressed TIFF / Linear DNG / Bayer CFA sensor IFD (Strip OR Tile based)
                 if (compression === 1 && width >= 256 && height >= 256 && (stripOffCnt >= 1 || tileOffCnt >= 1)) {
                     const isTiled = tileOffCnt >= 1 && tileWidth > 0 && tileLength > 0;
                     const offsets = isTiled
@@ -1497,9 +1717,12 @@
 
                     if (offsets.length > 0 && offsets[0] > 0 && offsets[0] < len) {
                         const area = width * height;
-                        if (!result.rawIfd || area > result.rawIfd.area) {
+                        const isMainFullRes = (newSubfileType === 0);
+                        const prevIsMain = result.rawIfd ? (result.rawIfd.newSubfileType === 0) : false;
+                        if (!result.rawIfd || (isMainFullRes && !prevIsMain) || (isMainFullRes === prevIsMain && area > result.rawIfd.area)) {
                             result.rawIfd = {
                                 width, height, area, samples, bitsPerSample, photometric,
+                                newSubfileType,
                                 isTiled, tileWidth, tileLength,
                                 rowsPerStrip: rowsPerStrip || height,
                                 offsets, lengths, blackLevel, whiteLevel,
@@ -1514,174 +1737,134 @@
             return result;
         }
 
-        function isBrowserDecodableJpegHeader(bytes, start) {
-            if (start < 0 || start + 32 >= bytes.length) return false;
-            if (bytes[start] !== 0xFF || bytes[start + 1] !== 0xD8 || bytes[start + 2] !== 0xFF) return false;
-
-            let pos = start + 2;
-            const limit = Math.min(bytes.length - 8, start + 65536);
-            while (pos < limit) {
-                if (bytes[pos] !== 0xFF) { pos++; continue; }
-                while (pos < limit && bytes[pos] === 0xFF) pos++;
-                if (pos >= limit) break;
-
-                const marker = bytes[pos++];
-                if (marker === 0x00 || (marker >= 0xD0 && marker <= 0xD9)) continue;
-                if (marker === 0xDA) break;
-
-                if (marker === 0xC0 || marker === 0xC1 || marker === 0xC2) return true;
-                if (marker === 0xC3 || (marker >= 0xC5 && marker <= 0xCF)) return false;
-
-                if (pos + 2 > limit) break;
-                const segLen = (bytes[pos] << 8) | bytes[pos + 1];
-                if (segLen < 2) break;
-                pos += segLen;
-            }
-            return false;
-        }
-
-        function readJpegSofDimensions(bytes, start) {
-            if (!isBrowserDecodableJpegHeader(bytes, start)) return null;
-            let pos = start + 2;
-            const limit = Math.min(bytes.length - 10, start + 65536);
-            while (pos < limit) {
-                if (bytes[pos] !== 0xFF) { pos++; continue; }
-                while (pos < limit && bytes[pos] === 0xFF) pos++;
-                if (pos >= limit) break;
-
-                const marker = bytes[pos++];
-                if (marker === 0x00 || (marker >= 0xD0 && marker <= 0xD9)) continue;
-                if (marker === 0xDA) break;
-
-                if (pos + 2 > limit) break;
-                const segLen = (bytes[pos] << 8) | bytes[pos + 1];
-                if (segLen < 2) break;
-
-                if ((marker === 0xC0 || marker === 0xC1 || marker === 0xC2) && pos + 7 <= bytes.length) {
-                    const h = (bytes[pos + 3] << 8) | bytes[pos + 4];
-                    const w = (bytes[pos + 5] << 8) | bytes[pos + 6];
-                    if (w > 0 && h > 0) return { width: w, height: h, area: w * h };
-                }
-                pos += segLen;
-            }
-            return null;
-        }
-
         async function extractPreviewFromRawBuffer(bytes) {
             const meta = parseTiffMetadataAndSlices(bytes);
             const candidates = [];
 
+            // 1. Add explicit TIFF/DNG IFD JPEG slices (verified with exact JPEG marker walker)
             for (let i = 0; i < meta.slices.length; i++) {
                 const sl = meta.slices[i];
-                const sof = readJpegSofDimensions(bytes, sl.start);
-                if (sof) {
-                    const jpegOri = readJpegExifOrientation(bytes, sl.start);
+                const buf = sl.customBytes || bytes;
+                const info = parseExactJpegStreamInfo(buf, sl.start);
+                if (info) {
+                    const jpegOri = readJpegExifOrientation(buf, sl.start);
                     candidates.push({
+                        buf,
                         start: sl.start,
-                        end: sl.end,
-                        size: sl.size,
-                        sofArea: sof.area,
-                        sofW: sof.width,
-                        sofH: sof.height,
-                        expectedPixels: sl.expectedPixels || sof.area,
+                        end: info.end,
+                        size: info.end - sl.start,
+                        sofArea: info.area,
+                        sofW: info.width,
+                        sofH: info.height,
+                        expectedPixels: sl.expectedPixels || info.area,
                         orientation: jpegOri !== 1 ? jpegOri : (sl.orientation || meta.orientation)
                     });
+                } else if (sl.end > sl.start + 4096) {
+                    candidates.push({
+                        buf,
+                        start: sl.start,
+                        end: sl.end,
+                        size: sl.end - sl.start,
+                        sofArea: sl.expectedPixels || (sl.end - sl.start),
+                        sofW: 0,
+                        sofH: 0,
+                        expectedPixels: sl.expectedPixels || 0,
+                        orientation: sl.orientation || meta.orientation
+                    });
                 }
             }
 
+            // 2. Full binary scan using exact JPEG marker walker (jumps right over EXIF thumbnails so JPEG is NEVER truncated!)
             const len = bytes.length;
-            const validSois = [];
-            const eois = [];
-            for (let i = 0; i < len - 3; i++) {
-                if (bytes[i] === 0xFF && bytes[i + 1] === 0xD8 && bytes[i + 2] === 0xFF) {
-                    if (readJpegSofDimensions(bytes, i)) validSois.push(i);
-                } else if (bytes[i] === 0xFF && bytes[i + 1] === 0xD9) {
-                    eois.push(i + 2);
+            let scanPos = 0;
+            while (scanPos < len - 32) {
+                if (bytes[scanPos] === 0xFF && bytes[scanPos + 1] === 0xD8 && bytes[scanPos + 2] === 0xFF) {
+                    const info = parseExactJpegStreamInfo(bytes, scanPos);
+                    if (info && info.area >= 19200 && info.end > scanPos + 4096) {
+                        const jpegOri = readJpegExifOrientation(bytes, scanPos);
+                        candidates.push({
+                            buf: bytes,
+                            start: scanPos,
+                            end: info.end,
+                            size: info.end - scanPos,
+                            sofArea: info.area,
+                            sofW: info.width,
+                            sofH: info.height,
+                            expectedPixels: info.area,
+                            orientation: jpegOri !== 1 ? jpegOri : meta.orientation
+                        });
+                        // Jump past this complete JPEG stream!
+                        scanPos = info.end;
+                        continue;
+                    }
                 }
+                scanPos++;
             }
 
-            for (let s = 0; s < validSois.length; s++) {
-                const start = validSois[s];
-                const sof = readJpegSofDimensions(bytes, start) || { width: 0, height: 0, area: 0 };
-                const jpegOri = readJpegExifOrientation(bytes, start);
-                const ori = jpegOri !== 1 ? jpegOri : meta.orientation;
-                const nextSoi = s + 1 < validSois.length ? validSois[s + 1] : len;
-                let bestBeforeNext = -1;
-                let bestToEof = -1;
-
-                for (let e = 0; e < eois.length; e++) {
-                    const end = eois[e];
-                    if (end <= start + 4096) continue;
-                    if (end <= nextSoi) bestBeforeNext = end;
-                    bestToEof = end;
-                }
-
-                if (bestBeforeNext > start + 4096) {
-                    candidates.push({
-                        start, end: bestBeforeNext, size: bestBeforeNext - start,
-                        sofArea: sof.area, sofW: sof.width, sofH: sof.height, expectedPixels: sof.area, orientation: ori
-                    });
-                }
-                if (bestToEof > start + 4096 && bestToEof !== bestBeforeNext) {
-                    candidates.push({
-                        start, end: bestToEof, size: bestToEof - start,
-                        sofArea: sof.area, sofW: sof.width, sofH: sof.height, expectedPixels: sof.area, orientation: ori
-                    });
-                }
-            }
-
+            // Deduplicate and strictly prioritize highest-resolution (sofArea / size) complete JPEG streams first
             const seen = new Set();
             const unique = [];
             candidates.sort((a, b) => (b.sofArea - a.sofArea) || (b.size - a.size) || (b.expectedPixels - a.expectedPixels));
             for (let i = 0; i < candidates.length; i++) {
                 const c = candidates[i];
-                const key = `${c.start}_${c.end}`;
+                const key = `${c.customBytes ? 'm' : 'b'}_${c.start}_${c.end}`;
                 if (!seen.has(key)) {
                     seen.add(key);
                     unique.push(c);
                 }
             }
 
-            let bestDecodedImg = null;
+            let bestCanvas = null;
             let bestPixelArea = 0;
-            let bestOrientation = meta.orientation;
 
             const tries = Math.min(unique.length, 20);
             for (let k = 0; k < tries; k++) {
                 const cand = unique[k];
                 try {
-                    const blob = new Blob([bytes.subarray(cand.start, cand.end)], { type: 'image/jpeg' });
+                    const sliceBytes = cand.buf.subarray(cand.start, cand.end);
+                    const blob = new Blob([sliceBytes], { type: 'image/jpeg' });
                     const img = await decodeBlobViaUrlOrData(blob);
                     const w = img.naturalWidth || img.width;
                     const h = img.naturalHeight || img.height;
                     const area = w * h;
                     if (area > bestPixelArea && w >= 160 && h >= 120) {
+                        const testCanvas = document.createElement('canvas');
+                        testCanvas.width = w;
+                        testCanvas.height = h;
+                        testCanvas.getContext('2d').drawImage(img, 0, 0);
+
+                        // Reject any truncated JPEG that exhibits #808080 solid gray bottom rows!
+                        if (isCanvasTruncatedGray(testCanvas)) {
+                            continue;
+                        }
+
                         bestPixelArea = area;
-                        bestDecodedImg = img;
-                        bestOrientation = cand.orientation || meta.orientation;
+                        bestCanvas = applyExifOrientationToCanvas(testCanvas, cand.orientation || meta.orientation);
                         if (area >= 1500000) break;
                     }
                 } catch (err) {}
             }
 
-            if (bestDecodedImg && Math.max(bestDecodedImg.naturalWidth, bestDecodedImg.naturalHeight) >= 800) {
-                return applyExifOrientationToCanvas(bestDecodedImg, bestOrientation);
+            // If we decoded an intact, non-truncated HD preview (>= 800px long edge), return it!
+            if (bestCanvas && Math.max(bestCanvas.width, bestCanvas.height) >= 800) {
+                return bestCanvas;
             }
 
-            if (meta.rawIfd && (!bestDecodedImg || meta.rawIfd.area > bestPixelArea * 2)) {
+            // Otherwise decode the full uncompressed sensor IFD with exact bit-packed row stride & tile/strip assembly
+            if (meta.rawIfd && (!bestCanvas || meta.rawIfd.area > bestPixelArea * 2)) {
                 try {
                     return decodeUncompressedRawIfdHD(bytes, meta.rawIfd, meta.rawIfd.orientation || meta.orientation);
                 } catch (err) {
-                    if (bestDecodedImg) return applyExifOrientationToCanvas(bestDecodedImg, bestOrientation);
+                    if (bestCanvas) return bestCanvas;
                     throw err;
                 }
             }
 
-            if (bestDecodedImg) {
-                return applyExifOrientationToCanvas(bestDecodedImg, bestOrientation);
+            if (bestCanvas) {
+                return bestCanvas;
             }
 
-            throw new Error('Tidak ditemukan data gambar HD yang dapat dibaca pada file RAW ini');
+            throw new Error('Tidak ditemukan data gambar HD yang utuh pada file RAW ini');
         }
 
         function decodeUncompressedRawIfdHD(bytes, info, orientation) {
@@ -1890,10 +2073,8 @@
             let srcCanvas = null;
 
             if (heicFlag) {
-                // Dedicated HEIC / HEIF path — never slice ISO-BMFF container as raw JPEG!
                 srcCanvas = await decodeHeicToCanvas(file);
             } else if (!rawFlag) {
-                // Standard browser image decode (JPG, PNG, WebP, GIF, BMP, AVIF)
                 const img = await decodeBlobViaUrlOrData(file);
                 const c = document.createElement('canvas');
                 c.width = img.naturalWidth || img.width;
@@ -1901,7 +2082,6 @@
                 c.getContext('2d').drawImage(img, 0, 0);
                 srcCanvas = c;
             } else {
-                // True Camera RAW (.DNG, .ARW, .CR2, .CR3, .NEF, .RAF, .ORF, etc.)
                 const buffer = await readFileAsArrayBufferSafe(file);
                 const bytes = new Uint8Array(buffer);
                 srcCanvas = await extractPreviewFromRawBuffer(bytes);
@@ -4282,7 +4462,7 @@
         }
 
         canvasViewport.addEventListener('pointerdown', (e) => {
-            if (e.target.id === 'btnTogglePreviewSize') return;
+            if (e.target.closest && (e.target.closest('#btnTogglePreviewSize') || e.target.closest('#btnFullscreenPreview'))) return;
             if (state.subjectPop.brushMode !== 'none') {
                 isPaintingBrush = true;
                 try { canvasViewport.setPointerCapture(e.pointerId); } catch (err) {}
@@ -5251,10 +5431,11 @@
             }, 900);
         }
 
-        // Hook auto-save into preview renders
+        // Hook auto-save & fullscreen sync into preview renders
         const _origRenderPreview = renderPreview;
         renderPreview = function () {
             _origRenderPreview();
+            if (typeof isFullscreenOpen === 'function' && isFullscreenOpen()) renderFullscreenPreview();
             if (!state.isScrubbing) scheduleProjectAutoSave();
         };
 
@@ -5421,6 +5602,332 @@
 
         window.addEventListener('resize', () => { applyResponsiveLayout(); if (state.splitEnabled) updateSplitLinePosition(); });
         window.addEventListener('orientationchange', () => setTimeout(applyResponsiveLayout, 80));
+
+        // =========================================================================
+        // 15B. FULL SCREEN PREVIEW & MOUSE DRAG-TO-SCROLL FOR TABS (SAMSUNG DEX)
+        // =========================================================================
+        const fullscreenModal = $('fullscreenModal');
+        const fsStageBg = $('fsStageBg');
+        const fsViewport = $('fsViewport');
+        const fsCanvas = $('fsCanvas');
+        const fsCtx = fsCanvas.getContext('2d');
+        const fsSplitLine = $('fsSplitLine');
+        const fsBadgeOriginal = $('fsBadgeOriginal');
+        const fsBadgeResult = $('fsBadgeResult');
+        const fsStatusLabel = $('fsStatusLabel');
+
+        let fsZoom = 1;
+        let fsPanX = 0;
+        let fsPanY = 0;
+        let fsDraggingSplit = false;
+        let fsPanning = false;
+        let fsPanStartX = 0;
+        let fsPanStartY = 0;
+        let fsHoldOriginal = false;
+
+        const fsResultBuf = document.createElement('canvas');
+        const fsResultCtx = fsResultBuf.getContext('2d');
+        const fsOrigBuf = document.createElement('canvas');
+        const fsOrigCtx = fsOrigBuf.getContext('2d');
+
+        function isFullscreenOpen() {
+            return fullscreenModal && !fullscreenModal.classList.contains('hidden');
+        }
+
+        function updateFsTransform() {
+            fsViewport.style.transform = `translate(${fsPanX}px, ${fsPanY}px) scale(${fsZoom})`;
+            fsViewport.style.transformOrigin = 'center center';
+            $('btnFsZoomReset').textContent = fsZoom === 1 ? 'Fit' : `${Math.round(fsZoom * 100)}%`;
+            fsViewport.style.cursor = fsZoom > 1 ? (fsPanning ? 'grabbing' : 'grab') : 'default';
+        }
+
+        function fitFullscreenCanvasDimensions(imgW, imgH) {
+            if (!imgW || !imgH) return;
+            const rect = fsStageBg.getBoundingClientRect();
+            const maxW = Math.max(240, (rect.width || window.innerWidth) - 20);
+            const maxH = Math.max(240, (rect.height || window.innerHeight - 110) - 20);
+            const scale = Math.min(maxW / imgW, maxH / imgH);
+            fsCanvas.style.width = `${Math.max(100, Math.round(imgW * scale))}px`;
+            fsCanvas.style.height = `${Math.max(100, Math.round(imgH * scale))}px`;
+            fsSplitLine.style.left = `${(state.splitRatio * 100).toFixed(3)}%`;
+        }
+
+        function renderFullscreenPreview() {
+            if (!isFullscreenOpen() || !state.sourceCanvas) return;
+            const fsDim = state.isScrubbing ? 720 : 1600;
+            processFullPipeline(state.sourceCanvas, fsResultBuf, fsResultCtx, fsDim);
+            const w = fsResultBuf.width;
+            const h = fsResultBuf.height;
+            fsCanvas.width = w;
+            fsCanvas.height = h;
+            fsCtx.globalCompositeOperation = 'source-over';
+            fsCtx.globalAlpha = 1;
+            fsCtx.clearRect(0, 0, w, h);
+
+            fitFullscreenCanvasDimensions(w, h);
+
+            const filter = state.selectedFilterId === 'none'
+                ? NONE_FILTER
+                : (getAllFilters().find(f => f.id === state.selectedFilterId) || NONE_FILTER);
+            const fName = state.colorMatch.active ? `Match: ${state.colorMatch.refName}` : filter.name;
+            fsStatusLabel.textContent = `${fName} • ${w}×${h}`;
+
+            $('fsSliderFilterOpacity').value = state.filterOpacity;
+            $('fsFilterOpacityLabel').textContent = `${state.filterOpacity}%`;
+            $('btnFsSplit').textContent = state.splitEnabled ? 'SPLIT: ON' : 'SPLIT: OFF';
+            $('btnFsSplit').className = state.splitEnabled
+                ? 'px-2.5 py-1 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/40 text-sky-300 text-[11px] font-mono font-bold'
+                : 'px-2.5 py-1 rounded-lg bg-[#151821] hover:bg-[#1e222e] border border-white/15 text-gray-300 text-[11px] font-mono font-bold';
+
+            if (fsHoldOriginal || state.isHoldingOriginal) {
+                const origGeom = buildTransformedSource(state.sourceCanvas, fsDim);
+                fsCtx.drawImage(origGeom, 0, 0, w, h);
+                fsSplitLine.classList.add('hidden');
+                fsBadgeOriginal.classList.remove('hidden');
+                fsBadgeResult.classList.add('hidden');
+                return;
+            }
+
+            if (state.splitEnabled) {
+                const origGeom = buildTransformedSource(state.sourceCanvas, fsDim);
+                fsOrigBuf.width = w;
+                fsOrigBuf.height = h;
+                fsOrigCtx.fillStyle = '#050608';
+                fsOrigCtx.fillRect(0, 0, w, h);
+                fsOrigCtx.drawImage(origGeom, 0, 0, w, h);
+
+                const splitX = Math.round(w * state.splitRatio);
+                fsCtx.save();
+                fsCtx.beginPath();
+                fsCtx.rect(0, 0, splitX, h);
+                fsCtx.clip();
+                fsCtx.drawImage(fsOrigBuf, 0, 0);
+                fsCtx.restore();
+
+                fsCtx.save();
+                fsCtx.beginPath();
+                fsCtx.rect(splitX, 0, w - splitX, h);
+                fsCtx.clip();
+                fsCtx.drawImage(fsResultBuf, 0, 0);
+                fsCtx.restore();
+
+                fsSplitLine.classList.remove('hidden');
+                fsBadgeOriginal.classList.toggle('hidden', state.splitRatio <= 0.04);
+                fsBadgeResult.classList.toggle('hidden', state.splitRatio >= 0.96);
+                fsSplitLine.style.left = `${(state.splitRatio * 100).toFixed(3)}%`;
+            } else {
+                fsCtx.drawImage(fsResultBuf, 0, 0);
+                fsSplitLine.classList.add('hidden');
+                fsBadgeOriginal.classList.add('hidden');
+                fsBadgeResult.classList.remove('hidden');
+            }
+            fsBadgeResult.textContent = badgeResult.textContent || 'HASIL';
+        }
+
+        function openFullscreenPreview() {
+            if (!state.sourceCanvas) return;
+            fsZoom = 1;
+            fsPanX = 0;
+            fsPanY = 0;
+            fullscreenModal.classList.remove('hidden');
+            updateFsTransform();
+            requestAnimationFrame(renderFullscreenPreview);
+        }
+
+        function closeFullscreenPreview() {
+            fullscreenModal.classList.add('hidden');
+            fsHoldOriginal = false;
+            $('btnFsHoldCompare').classList.remove('hold-active');
+        }
+
+        $('btnFullscreenPreview').addEventListener('click', (e) => {
+            e.stopPropagation();
+            openFullscreenPreview();
+        });
+        $('btnCloseFullscreen').addEventListener('click', closeFullscreenPreview);
+
+        $('btnFsSplit').addEventListener('click', () => {
+            state.splitEnabled = !state.splitEnabled;
+            if (state.splitEnabled && (state.splitRatio <= 0.04 || state.splitRatio >= 0.96)) state.splitRatio = 0.50;
+            $('btnToggleSplit').textContent = state.splitEnabled ? 'SPLIT: ON' : 'SPLIT: OFF';
+            $('btnToggleSplit').className = state.splitEnabled
+                ? 'px-2 py-1.5 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/40 text-sky-300 text-[10px] font-mono font-bold'
+                : 'px-2 py-1.5 rounded-xl bg-[#151821] hover:bg-[#1e222e] border border-white/15 text-gray-300 text-[10px] font-mono font-bold';
+            renderPreview();
+            renderFullscreenPreview();
+        });
+
+        const btnFsHoldCompare = $('btnFsHoldCompare');
+        function startFsHold(e) {
+            if (e && e.cancelable) e.preventDefault();
+            fsHoldOriginal = true;
+            btnFsHoldCompare.classList.add('hold-active');
+            renderFullscreenPreview();
+        }
+        function endFsHold() {
+            if (!fsHoldOriginal) return;
+            fsHoldOriginal = false;
+            btnFsHoldCompare.classList.remove('hold-active');
+            renderFullscreenPreview();
+        }
+        btnFsHoldCompare.addEventListener('pointerdown', startFsHold);
+        ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => btnFsHoldCompare.addEventListener(ev, endFsHold));
+
+        $('btnFsZoomIn').addEventListener('click', () => {
+            fsZoom = Math.min(4, +(fsZoom + 0.5).toFixed(2));
+            updateFsTransform();
+        });
+        $('btnFsZoomOut').addEventListener('click', () => {
+            fsZoom = Math.max(1, +(fsZoom - 0.5).toFixed(2));
+            if (fsZoom === 1) { fsPanX = 0; fsPanY = 0; }
+            updateFsTransform();
+        });
+        $('btnFsZoomReset').addEventListener('click', () => {
+            fsZoom = 1; fsPanX = 0; fsPanY = 0;
+            updateFsTransform();
+        });
+
+        fsStageBg.addEventListener('wheel', (e) => {
+            if (!isFullscreenOpen()) return;
+            e.preventDefault();
+            const delta = e.deltaY < 0 ? 0.25 : -0.25;
+            fsZoom = Math.max(1, Math.min(4, +(fsZoom + delta).toFixed(2)));
+            if (fsZoom === 1) { fsPanX = 0; fsPanY = 0; }
+            updateFsTransform();
+        }, { passive: false });
+
+        fsViewport.addEventListener('pointerdown', (e) => {
+            const onHandle = e.target.closest && e.target.closest('#fsSplitLine');
+            if (state.splitEnabled && (onHandle || fsZoom === 1)) {
+                fsDraggingSplit = true;
+                try { fsViewport.setPointerCapture(e.pointerId); } catch (err) {}
+                const rect = fsCanvas.getBoundingClientRect();
+                if (rect.width) {
+                    state.splitRatio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                    renderFullscreenPreview();
+                    schedulePreviewRender();
+                }
+                return;
+            }
+            if (fsZoom > 1) {
+                fsPanning = true;
+                fsPanStartX = e.clientX - fsPanX;
+                fsPanStartY = e.clientY - fsPanY;
+                try { fsViewport.setPointerCapture(e.pointerId); } catch (err) {}
+                updateFsTransform();
+            }
+        });
+        fsViewport.addEventListener('pointermove', (e) => {
+            if (fsDraggingSplit) {
+                const rect = fsCanvas.getBoundingClientRect();
+                if (rect.width) {
+                    state.splitRatio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                    renderFullscreenPreview();
+                    schedulePreviewRender();
+                }
+            } else if (fsPanning) {
+                fsPanX = e.clientX - fsPanStartX;
+                fsPanY = e.clientY - fsPanStartY;
+                updateFsTransform();
+            }
+        });
+        ['pointerup', 'pointercancel'].forEach(ev => {
+            fsViewport.addEventListener(ev, () => {
+                fsDraggingSplit = false;
+                if (fsPanning) {
+                    fsPanning = false;
+                    updateFsTransform();
+                }
+            });
+        });
+
+        $('fsSliderFilterOpacity').addEventListener('input', (e) => {
+            state.filterOpacity = parseInt(e.target.value, 10);
+            if (state.filterOpacity > 0 && state.selectedFilterId === 'none') {
+                state.selectedFilterId = BUILTIN_FILTERS[0].id;
+                renderFilterGrid();
+            }
+            sliderFilterOpacity.value = state.filterOpacity;
+            $('filterOpacityLabel').textContent = `${state.filterOpacity}%`;
+            $('fsFilterOpacityLabel').textContent = `${state.filterOpacity}%`;
+            schedulePreviewRender();
+            renderFullscreenPreview();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isFullscreenOpen()) {
+                closeFullscreenPreview();
+                return;
+            }
+            if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                const tag = (document.activeElement && document.activeElement.tagName || '').toLowerCase();
+                if (tag === 'input' || tag === 'textarea') return;
+                if (isFullscreenOpen()) closeFullscreenPreview();
+                else openFullscreenPreview();
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (isFullscreenOpen() && fsCanvas.width && fsCanvas.height) {
+                fitFullscreenCanvasDimensions(fsCanvas.width, fsCanvas.height);
+            }
+        });
+
+        // Mouse Drag-to-Scroll & Wheel Horizontal Scroll for Samsung DeX / Desktop
+        function enableMouseHorizontalDragScroll(el) {
+            if (!el || el.dataset.mouseScrollBound === '1') return;
+            el.dataset.mouseScrollBound = '1';
+            el.classList.add('mouse-scroll-x');
+
+            let isDown = false;
+            let hasDragged = false;
+            let startX = 0;
+            let startScrollLeft = 0;
+
+            el.addEventListener('mousedown', (e) => {
+                if (e.button !== 0) return;
+                isDown = true;
+                hasDragged = false;
+                startX = e.pageX;
+                startScrollLeft = el.scrollLeft;
+                el.classList.add('dragging-x');
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                const dx = e.pageX - startX;
+                if (Math.abs(dx) > 5) hasDragged = true;
+                if (hasDragged) {
+                    e.preventDefault();
+                    el.scrollLeft = startScrollLeft - dx;
+                }
+            });
+
+            window.addEventListener('mouseup', () => {
+                if (!isDown) return;
+                isDown = false;
+                el.classList.remove('dragging-x');
+                if (hasDragged) {
+                    const blockClick = (ev) => {
+                        ev.preventDefault();
+                        ev.stopPropagation();
+                    };
+                    el.addEventListener('click', blockClick, { capture: true, once: true });
+                    setTimeout(() => el.removeEventListener('click', blockClick, { capture: true }), 50);
+                }
+            });
+
+            el.addEventListener('wheel', (e) => {
+                if (el.scrollWidth <= el.clientWidth) return;
+                const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+                if (delta !== 0) {
+                    e.preventDefault();
+                    el.scrollLeft += delta;
+                }
+            }, { passive: false });
+        }
+
+        document.querySelectorAll('.overflow-x-auto').forEach(enableMouseHorizontalDragScroll);
 
         // =========================================================================
         // 16. BOOTSTRAP APPLICATION (WITH AUTO-SESSION RESTORE)
