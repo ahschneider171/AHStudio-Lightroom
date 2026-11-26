@@ -1,0 +1,8 @@
+{
+  "appId": "com.ahschneider171.ahstudio",
+  "appName": "AHStudio",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": true
+  }
+}
