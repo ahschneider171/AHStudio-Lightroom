@@ -231,6 +231,9 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-1 shrink-0">
+                    <button id="btnOpenProjectModal" type="button" title="Simpan / Muat Proyek Editan" class="px-2 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/40 text-amber-300 text-[10px] font-mono font-bold">
+                        📂 PROYEK
+                    </button>
                     <button id="btnLayoutMode" type="button" class="px-2 py-1.5 rounded-xl bg-[#151821] hover:bg-[#1e222e] border border-white/15 text-gray-200 text-[10px] font-mono font-bold">
                         🖥️ AUTO
                     </button>
@@ -953,17 +956,24 @@
                     <img id="exportReadyImg" alt="Hasil Foto Siap Disimpan" class="max-h-48 w-auto object-contain select-auto">
                 </div>
 
+                <div id="exportNativePathBanner" class="hidden px-2.5 py-2 rounded-xl bg-emerald-500/15 border border-emerald-400/40 text-[11px] font-mono text-emerald-200 break-all">
+                    📁 Tersimpan di: <strong id="exportNativePathText">Internal Storage/Download/</strong>
+                </div>
+
                 <div class="grid grid-cols-1 gap-1.5">
+                    <button id="btnSaveDirectFolder" type="button" class="w-full py-2.5 px-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-xs font-extrabold flex items-center justify-center gap-1.5">
+                        <span>📁 Simpan Langsung ke Folder Download / File Manager</span>
+                    </button>
                     <button id="btnShareToGallery" type="button" class="w-full py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold flex items-center justify-center gap-1.5">
-                        <span>📤 Bagikan / Simpan ke Galeri</span>
+                        <span>📤 Simpan ke Galeri / Bagikan (Android Native)</span>
                     </button>
                     <a id="btnManualDownloadLink" href="#" download="AHStudio.jpg" class="w-full py-2 px-3 rounded-xl bg-[#1b2030] hover:bg-[#252c40] border border-white/15 text-sky-300 text-xs font-extrabold text-center block">
-                        📥 Unduh Ulang File
+                        📥 Unduh via Browser
                     </a>
                 </div>
 
                 <p class="text-[10px] text-gray-400 leading-snug text-center">
-                    Jika WebView memblokir unduhan otomatis, tekan <strong class="text-emerald-300">Bagikan / Simpan ke Galeri</strong> atau <strong class="text-gray-200">tekan tahan gambar di atas &rarr; Simpan gambar</strong>.
+                    File otomatis disimpan ke <strong class="text-sky-300">Internal Storage/Download</strong> (atau <strong class="text-sky-300">Documents/AHStudio</strong>). Tekan <strong class="text-emerald-300">Simpan ke Galeri</strong> untuk memunculkan menu Galeri / File Manager Android.
                 </p>
             </div>
         </div>
@@ -993,6 +1003,52 @@
             <button id="btnDownloadAllBatch" type="button" class="hidden w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold">
                 ⬇️ Unduh Semua Hasil Batch (<span id="batchCountLabel">0</span> Foto)
             </button>
+        </div>
+    </div>
+
+    <!-- MODAL 4: PROJECT SAVE & LOAD MANAGER (.ahproj + AUTO-SAVE) -->
+    <div id="projectModal" class="hidden fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="w-full max-w-sm max-h-[92dvh] overflow-y-auto rounded-2xl bg-[#141722] border border-white/15 p-4 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-extrabold text-white">📂 Proyek Editan &amp; Auto-Save</h3>
+                    <p class="text-[10px] text-gray-400">Simpan seluruh foto + filter + kurva + masker agar bisa dilanjutkan kapan saja</p>
+                </div>
+                <button id="btnCloseProjectModal" type="button" class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-gray-200 text-xs font-bold">✕</button>
+            </div>
+
+            <!-- Auto-save status box -->
+            <div class="p-3 rounded-xl bg-[#0c0e14] border border-sky-400/30 flex flex-col gap-2">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-xs font-extrabold text-sky-300">⚡ Sesi Terakhir (Auto-Save)</span>
+                    <span id="autoSaveTimeBadge" class="text-[10px] font-mono text-gray-400">Aktif</span>
+                </div>
+                <p id="autoSaveInfoText" class="text-[11px] text-gray-300 leading-snug">
+                    Setiap perubahan filter, adjust, kurva, dan masker otomatis tersimpan di memori aplikasi.
+                </p>
+                <div class="grid grid-cols-2 gap-1.5 pt-1">
+                    <button id="btnRestoreAutoSave" type="button" class="py-2 px-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-[11px] font-extrabold">
+                        🔄 Pulihkan Sesi Terakhir
+                    </button>
+                    <button id="btnSaveAutoSaveNow" type="button" class="py-2 px-2.5 rounded-xl bg-[#1c2130] hover:bg-[#262d42] border border-white/10 text-gray-200 text-[11px] font-bold">
+                        💾 Simpan Sesi Sekarang
+                    </button>
+                </div>
+            </div>
+
+            <!-- Export & Import .ahproj file to Internal Storage / Download -->
+            <div class="p-3 rounded-xl bg-[#0c0e14] border border-amber-400/30 flex flex-col gap-2">
+                <span class="text-xs font-extrabold text-amber-300">📦 File Proyek (.ahproj) di Penyimpanan</span>
+                <input id="inputProjectName" type="text" placeholder="Nama proyek (misal: Edit_Senja_Dermaga)" class="w-full px-3 py-2 rounded-xl bg-[#141722] border border-white/15 focus:border-amber-400 text-xs text-white outline-none">
+                <button id="btnExportProjectFile" type="button" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-extrabold">
+                    💾 Simpan File Proyek (.ahproj) ke Download
+                </button>
+                <label for="projectFileInput" role="button" tabindex="0" class="cursor-pointer w-full py-2.5 rounded-xl bg-[#1c2130] hover:bg-[#262d42] border border-white/15 text-sky-300 text-xs font-extrabold text-center block select-none">
+                    📂 Muat / Buka File Proyek (.ahproj)
+                </label>
+                <input id="projectFileInput" type="file" accept=".ahproj,.json,application/json" class="sr-file-input">
+                <div id="projectSavedPathBanner" class="hidden px-2.5 py-1.5 rounded-lg bg-emerald-500/15 border border-emerald-400/35 text-[10px] font-mono text-emerald-200 break-all"></div>
+            </div>
         </div>
     </div>
 
@@ -4561,8 +4617,105 @@
             updateExportEstimate();
         });
 
-        // Synchronous Full-HD Render & 3-Tier Save on Direct User Gesture
-        $('btnConfirmDownload').addEventListener('click', () => {
+        // =========================================================================
+        // CAPACITOR NATIVE BRIDGE (INTERNAL STORAGE DOWNLOAD / DOCUMENTS + SHARE)
+        // =========================================================================
+        function getCapacitorPlugins() {
+            const cap = window.Capacitor || null;
+            const isNative = !!(cap && typeof cap.isNativePlatform === 'function' && cap.isNativePlatform());
+            const plugins = (cap && cap.Plugins) ? cap.Plugins : {};
+            return {
+                cap,
+                isNative,
+                Filesystem: plugins.Filesystem || null,
+                Share: plugins.Share || null
+            };
+        }
+
+        async function saveBase64ToAndroidStorage(base64Data, filename, isTextUtf8) {
+            const { isNative, Filesystem } = getCapacitorPlugins();
+            if (!isNative || !Filesystem) {
+                return { ok: false, reason: 'not_native' };
+            }
+
+            // Priority 1: Direct write to Internal Storage/Download/<filename>
+            try {
+                const writeOpts = {
+                    path: 'Download/' + filename,
+                    data: base64Data,
+                    directory: 'EXTERNAL_STORAGE',
+                    recursive: true
+                };
+                if (isTextUtf8) writeOpts.encoding = 'utf8';
+                const res = await Filesystem.writeFile(writeOpts);
+                return {
+                    ok: true,
+                    displayPath: 'Internal Storage/Download/' + filename,
+                    uri: res && res.uri ? res.uri : ''
+                };
+            } catch (errExt) {
+                // Priority 2: Scoped-storage safe Documents/AHStudio/<filename> (Android 11-15+)
+                try {
+                    const docOpts = {
+                        path: 'AHStudio/' + filename,
+                        data: base64Data,
+                        directory: 'DOCUMENTS',
+                        recursive: true
+                    };
+                    if (isTextUtf8) docOpts.encoding = 'utf8';
+                    const docRes = await Filesystem.writeFile(docOpts);
+                    return {
+                        ok: true,
+                        displayPath: 'Internal Storage/Documents/AHStudio/' + filename,
+                        uri: docRes && docRes.uri ? docRes.uri : ''
+                    };
+                } catch (errDoc) {
+                    return { ok: false, reason: (errDoc && errDoc.message) || 'write_failed' };
+                }
+            }
+        }
+
+        async function shareImageViaNativeOrWeb(base64Data, filename, blob, mimeType) {
+            const { isNative, Filesystem, Share } = getCapacitorPlugins();
+
+            // Native Capacitor Share (writes to CACHE so FileProvider URI is always shareable to Gallery/Files)
+            if (isNative && Filesystem && Share) {
+                try {
+                    const cacheRes = await Filesystem.writeFile({
+                        path: filename,
+                        data: base64Data,
+                        directory: 'CACHE'
+                    });
+                    await Share.share({
+                        title: 'Simpan Foto AHStudio',
+                        text: 'Foto HD dari AHStudio',
+                        url: cacheRes.uri,
+                        dialogTitle: 'Simpan ke Galeri atau File Manager'
+                    });
+                    return true;
+                } catch (e) {
+                    if (e && String(e.message || e).toLowerCase().includes('cancel')) return true;
+                }
+            }
+
+            // Web Share API fallback
+            try {
+                const fileObj = state.lastExportFile || (blob ? new File([blob], filename, { type: mimeType || 'image/jpeg' }) : null);
+                if (fileObj && navigator.canShare && navigator.canShare({ files: [fileObj] })) {
+                    await navigator.share({
+                        files: [fileObj],
+                        title: 'AHStudio HD Photo'
+                    });
+                    return true;
+                }
+            } catch (err) {
+                if (err && err.name === 'AbortError') return true;
+            }
+            return false;
+        }
+
+        // Synchronous Full-HD Render & Native Android + Web Multi-Tier Save
+        $('btnConfirmDownload').addEventListener('click', async () => {
             if (!state.sourceCanvas) return;
             state.isScrubbing = false;
 
@@ -4577,8 +4730,8 @@
                 const quality = state.exportOpts.quality / 100;
                 const filename = getFormattedTimestampName(ext);
 
-                // Tier 1: Synchronous DataURL + DOM-appended download trigger inside user gesture
                 const dataUrl = outCanvas.toDataURL(fmt, quality);
+                const base64Data = dataUrl.split(',')[1];
                 const blob = dataUrlToBlob(dataUrl);
 
                 if (lastExportBlobUrl) {
@@ -4586,34 +4739,13 @@
                 }
                 lastExportBlobUrl = URL.createObjectURL(blob);
 
-                let tier1Ok = false;
-                try {
-                    triggerDomDownload(dataUrl.length < 2400000 ? dataUrl : lastExportBlobUrl, filename);
-                    tier1Ok = true;
-                } catch (e1) {
-                    tier1Ok = false;
-                }
-
-                // Tier 2: Fallback via canvas.toBlob() + Blob URL if Tier 1 threw or returned empty
-                if (!tier1Ok && typeof outCanvas.toBlob === 'function') {
-                    try {
-                        outCanvas.toBlob((b) => {
-                            if (!b) return;
-                            const bUrl = URL.createObjectURL(b);
-                            triggerDomDownload(bUrl, filename);
-                            setTimeout(() => { try { URL.revokeObjectURL(bUrl); } catch (er) {} }, 2500);
-                        }, fmt, quality);
-                    } catch (e2) {}
-                }
-
-                // Store File object for Android WebView Web Share API ("Bagikan / Simpan ke Galeri")
                 try {
                     state.lastExportFile = new File([blob], filename, { type: fmt });
                 } catch (e) {
                     state.lastExportFile = null;
                 }
+                state.lastExportMeta = { base64Data, filename, blob, fmt, dataUrl };
 
-                // Tier 3: Populate & reveal "Hasil Foto Siap Disimpan" anti-fail card inside Export Modal
                 const sizeKb = Math.max(1, Math.round(blob.size / 1024));
                 const sizeText = sizeKb >= 1024 ? `${(sizeKb / 1024).toFixed(2)} MB` : `${sizeKb} KB`;
                 $('exportActualStats').textContent = `${outCanvas.width}×${outCanvas.height} • ${sizeText}`;
@@ -4624,36 +4756,367 @@
                 manualLink.setAttribute('download', filename);
 
                 $('exportReadyCard').classList.remove('hidden');
-                showToast(`✅ Foto HD (${outCanvas.width}×${outCanvas.height}) siap disimpan!`);
+
+                // Attempt Native Capacitor Direct Save to Internal Storage/Download first
+                const nativeRes = await saveBase64ToAndroidStorage(base64Data, filename, false);
+                const pathBanner = $('exportNativePathBanner');
+                if (nativeRes.ok) {
+                    $('exportNativePathText').textContent = nativeRes.displayPath;
+                    pathBanner.classList.remove('hidden');
+                    showToast(`✅ Tersimpan di ${nativeRes.displayPath}`);
+                } else {
+                    pathBanner.classList.add('hidden');
+                    // Browser DOM download fallback
+                    triggerDomDownload(dataUrl.length < 2400000 ? dataUrl : lastExportBlobUrl, filename);
+                    showToast(`✅ Foto HD (${outCanvas.width}×${outCanvas.height}) siap disimpan!`);
+                }
             } catch (err) {
                 showToast('❌ Gagal memproses foto untuk disimpan');
             }
         });
 
-        // Tier-3 Native Android Share / Save to Gallery Button
-        $('btnShareToGallery').addEventListener('click', async () => {
-            if (!state.lastExportFile) {
-                const manualLink = $('btnManualDownloadLink');
-                if (manualLink && manualLink.href) manualLink.click();
+        // Direct Save to Download / Documents Folder Button
+        $('btnSaveDirectFolder').addEventListener('click', async () => {
+            if (!state.lastExportMeta) {
+                $('btnConfirmDownload').click();
                 return;
             }
-            try {
-                if (navigator.canShare && navigator.canShare({ files: [state.lastExportFile] })) {
-                    await navigator.share({
-                        files: [state.lastExportFile],
-                        title: 'AHStudio HD Photo'
-                    });
-                    showToast('✅ Berhasil dibagikan / disimpan ke Galeri!');
-                    return;
-                }
-            } catch (err) {
-                if (err && err.name === 'AbortError') return;
+            const { base64Data, filename, dataUrl } = state.lastExportMeta;
+            const nativeRes = await saveBase64ToAndroidStorage(base64Data, filename, false);
+            if (nativeRes.ok) {
+                $('exportNativePathText').textContent = nativeRes.displayPath;
+                $('exportNativePathBanner').classList.remove('hidden');
+                showToast(`📁 Berhasil disimpan ke ${nativeRes.displayPath}`);
+            } else {
+                triggerDomDownload(dataUrl.length < 2400000 ? dataUrl : lastExportBlobUrl, filename);
+                showToast(`📥 Mengunduh ke folder Download: ${filename}`);
             }
-            // Fallback to direct download if Web Share API is unavailable on desktop browser
+        });
+
+        // Native Android Share / Save to Gallery Button
+        $('btnShareToGallery').addEventListener('click', async () => {
+            if (!state.lastExportMeta) {
+                $('btnConfirmDownload').click();
+                return;
+            }
+            const { base64Data, filename, blob, fmt } = state.lastExportMeta;
+            const shared = await shareImageViaNativeOrWeb(base64Data, filename, blob, fmt);
+            if (shared) {
+                showToast('✅ Menu Galeri / File Manager dibuka!');
+                return;
+            }
             const manualLink = $('btnManualDownloadLink');
             if (manualLink && manualLink.href) {
                 manualLink.click();
                 showToast('📥 Mengunduh file foto...');
+            }
+        });
+
+        // =========================================================================
+        // PROJECT SAVE, LOAD & AUTO-RESTORE ENGINE (.ahproj + IndexedDB)
+        // =========================================================================
+        const IDB_NAME = 'AHStudioProjectDB';
+        const IDB_STORE = 'autosave';
+
+        function openProjectDb() {
+            return new Promise((resolve, reject) => {
+                if (!window.indexedDB) { reject(new Error('No IDB')); return; }
+                const req = window.indexedDB.open(IDB_NAME, 1);
+                req.onupgradeneeded = () => {
+                    const db = req.result;
+                    if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
+                };
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        async function idbPutProject(key, value) {
+            try {
+                const db = await openProjectDb();
+                return await new Promise((resolve, reject) => {
+                    const tx = db.transaction(IDB_STORE, 'readwrite');
+                    tx.objectStore(IDB_STORE).put(value, key);
+                    tx.oncomplete = () => resolve(true);
+                    tx.onerror = () => reject(tx.error);
+                });
+            } catch (e) {
+                return false;
+            }
+        }
+
+        async function idbGetProject(key) {
+            try {
+                const db = await openProjectDb();
+                return await new Promise((resolve, reject) => {
+                    const tx = db.transaction(IDB_STORE, 'readonly');
+                    const req = tx.objectStore(IDB_STORE).get(key);
+                    req.onsuccess = () => resolve(req.result || null);
+                    req.onerror = () => reject(req.error);
+                });
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function serializeFullProject(includeSourceImage) {
+            let sourceDataUrl = null;
+            if (includeSourceImage && state.sourceCanvas) {
+                // Preserve up to 2048px JPEG 0.94 so project reload stays crisp and fast
+                const maxP = 2048;
+                const sw = state.sourceCanvas.width;
+                const sh = state.sourceCanvas.height;
+                if (sw <= maxP && sh <= maxP) {
+                    sourceDataUrl = state.sourceCanvas.toDataURL('image/jpeg', 0.94);
+                } else {
+                    const r = Math.min(maxP / sw, maxP / sh);
+                    const tmp = document.createElement('canvas');
+                    tmp.width = Math.round(sw * r);
+                    tmp.height = Math.round(sh * r);
+                    tmp.getContext('2d').drawImage(state.sourceCanvas, 0, 0, tmp.width, tmp.height);
+                    sourceDataUrl = tmp.toDataURL('image/jpeg', 0.94);
+                }
+            }
+
+            const sp = state.subjectPop;
+            return {
+                format: 'AHSTUDIO_PROJECT_V1',
+                savedAt: new Date().toISOString(),
+                isRawSource: state.isRawSource,
+                rawExt: state.rawExt,
+                sourceDataUrl,
+                selectedFilterId: state.selectedFilterId,
+                filterOpacity: state.filterOpacity,
+                selectedCategory: state.selectedCategory,
+                adjust: Object.assign({}, state.adjust),
+                curves: JSON.parse(JSON.stringify(state.curves)),
+                hsl: JSON.parse(JSON.stringify(state.hsl)),
+                grading: JSON.parse(JSON.stringify(state.grading)),
+                subjectPop: {
+                    presetId: sp.presetId,
+                    master: sp.master,
+                    fgBright: sp.fgBright,
+                    bgDark: sp.bgDark,
+                    dehaze: sp.dehaze,
+                    twilight: sp.twilight,
+                    warmFg: sp.warmFg,
+                    maskW: sp.maskW,
+                    maskH: sp.maskH,
+                    subjectMask: sp.subjectMask ? Array.from(sp.subjectMask) : null,
+                    detectedType: sp.detectedType
+                },
+                selectedFlashId: state.selectedFlashId,
+                flashIntensity: state.flashIntensity,
+                flashPosition: state.flashPosition,
+                dateStamp: state.dateStamp,
+                transform: Object.assign({}, state.transform),
+                frame: Object.assign({}, state.frame),
+                watermark: Object.assign({}, state.watermark)
+            };
+        }
+
+        function applyDeserializedProject(proj) {
+            return new Promise((resolve) => {
+                if (!proj || proj.format !== 'AHSTUDIO_PROJECT_V1') {
+                    resolve(false);
+                    return;
+                }
+
+                const finishRestore = () => {
+                    state.isRawSource = !!proj.isRawSource;
+                    state.rawExt = proj.rawExt || '';
+                    state.colorMatch.active = false;
+                    state.selectedFilterId = proj.selectedFilterId || 'none';
+                    state.filterOpacity = typeof proj.filterOpacity === 'number' ? proj.filterOpacity : 0;
+                    if (proj.selectedCategory) state.selectedCategory = proj.selectedCategory;
+
+                    $('sliderFilterOpacity').value = state.filterOpacity;
+                    $('filterOpacityLabel').textContent = `${state.filterOpacity}%`;
+
+                    state.adjust = Object.assign(createDefaultAdjust(), proj.adjust || {});
+                    if (proj.curves) state.curves = JSON.parse(JSON.stringify(proj.curves));
+                    if (proj.hsl) state.hsl = JSON.parse(JSON.stringify(proj.hsl));
+                    if (proj.grading) state.grading = JSON.parse(JSON.stringify(proj.grading));
+
+                    if (proj.subjectPop) {
+                        const spIn = proj.subjectPop;
+                        state.subjectPop.presetId = spIn.presetId || 'off';
+                        state.subjectPop.master = spIn.master || 0;
+                        state.subjectPop.fgBright = spIn.fgBright ?? 82;
+                        state.subjectPop.bgDark = spIn.bgDark ?? 88;
+                        state.subjectPop.dehaze = spIn.dehaze ?? 80;
+                        state.subjectPop.twilight = spIn.twilight ?? 72;
+                        state.subjectPop.warmFg = spIn.warmFg ?? 14;
+                        state.subjectPop.detectedType = spIn.detectedType || 'Siluet Subjek';
+                        if (Array.isArray(spIn.subjectMask) && spIn.maskW && spIn.maskH) {
+                            state.subjectPop.maskW = spIn.maskW;
+                            state.subjectPop.maskH = spIn.maskH;
+                            state.subjectPop.subjectMask = new Float32Array(spIn.subjectMask);
+                        } else {
+                            computeSilhouetteSubjectMask(true);
+                        }
+                    }
+
+                    state.selectedFlashId = proj.selectedFlashId || 'off';
+                    state.flashIntensity = proj.flashIntensity || 0;
+                    state.flashPosition = proj.flashPosition || 'auto';
+                    state.dateStamp = proj.dateStamp || 'off';
+                    $('sliderFlashIntensity').value = state.flashIntensity;
+                    $('flashIntensityLabel').textContent = `${state.flashIntensity}%`;
+
+                    if (proj.transform) {
+                        state.transform = Object.assign({ ratio: 'orig', rot90: 0, fineAngle: 0, flipH: false, flipV: false }, proj.transform);
+                        $('sliderFineAngle').value = state.transform.fineAngle;
+                        $('fineAngleVal').textContent = `${state.transform.fineAngle}°`;
+                    }
+                    if (proj.frame) {
+                        state.frame = Object.assign({ style: 'none', thickness: 6, caption: "Memories • AHStudio '26" }, proj.frame);
+                        $('sliderFrameThickness').value = state.frame.thickness;
+                        $('frameThicknessVal').textContent = `${state.frame.thickness}%`;
+                        $('inputPolaroidCaption').value = state.frame.caption;
+                        $('polaroidCaptionBox').classList.toggle('hidden', state.frame.style !== 'polaroid');
+                    }
+                    if (proj.watermark) {
+                        state.watermark = Object.assign({ text: '', font: 'sans', pos: 'bc', size: 100, opacity: 85 }, proj.watermark);
+                        $('inputWatermarkText').value = state.watermark.text;
+                        $('sliderWmSize').value = state.watermark.size;
+                        $('wmSizeVal').textContent = `${state.watermark.size}%`;
+                        $('sliderWmOpacity').value = state.watermark.opacity;
+                        $('wmOpacityVal').textContent = `${state.watermark.opacity}%`;
+                    }
+
+                    renderCategories();
+                    renderFilterGrid();
+                    renderSubjectPopPresets();
+                    syncSubjectPopSlidersUI();
+                    renderHslControls();
+                    renderFlashGrid();
+                    renderAdjustSliders();
+                    renderCurveEditor();
+                    redrawWheelShadows();
+                    redrawWheelMidtones();
+                    redrawWheelHighlights();
+                    renderPreview();
+                    resolve(true);
+                };
+
+                if (proj.sourceDataUrl) {
+                    const img = new Image();
+                    img.onload = () => {
+                        const c = document.createElement('canvas');
+                        c.width = img.naturalWidth || img.width;
+                        c.height = img.naturalHeight || img.height;
+                        c.getContext('2d').drawImage(img, 0, 0);
+                        state.sourceCanvas = c;
+                        finishRestore();
+                    };
+                    img.onerror = () => finishRestore();
+                    img.src = proj.sourceDataUrl;
+                } else {
+                    finishRestore();
+                }
+            });
+        }
+
+        let autoSaveTimer = null;
+        function scheduleProjectAutoSave() {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(async () => {
+                try {
+                    const payload = serializeFullProject(true);
+                    await idbPutProject('latest_session', payload);
+                    const timeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    if ($('autoSaveTimeBadge')) $('autoSaveTimeBadge').textContent = `Tersimpan ${timeStr}`;
+                } catch (e) {}
+            }, 900);
+        }
+
+        // Hook auto-save into preview renders
+        const _origRenderPreview = renderPreview;
+        renderPreview = function () {
+            _origRenderPreview();
+            if (!state.isScrubbing) scheduleProjectAutoSave();
+        };
+
+        // Project Modal UI Wiring
+        const projectModal = $('projectModal');
+        $('btnOpenProjectModal').addEventListener('click', async () => {
+            projectModal.classList.remove('hidden');
+            const latest = await idbGetProject('latest_session');
+            if (latest && latest.savedAt) {
+                const dt = new Date(latest.savedAt).toLocaleString('id-ID');
+                $('autoSaveInfoText').textContent = `Ditemukan sesi tersimpan pada ${dt} (Filter: ${latest.selectedFilterId || 'Asli'}).`;
+            } else {
+                $('autoSaveInfoText').textContent = 'Belum ada sesi tersimpan sebelumnya. Geser pengaturan untuk menyimpan otomatis.';
+            }
+        });
+        $('btnCloseProjectModal').addEventListener('click', () => projectModal.classList.add('hidden'));
+
+        $('btnSaveAutoSaveNow').addEventListener('click', async () => {
+            const payload = serializeFullProject(true);
+            const ok = await idbPutProject('latest_session', payload);
+            if (ok) {
+                const dt = new Date().toLocaleString('id-ID');
+                $('autoSaveTimeBadge').textContent = 'Tersimpan';
+                $('autoSaveInfoText').textContent = `Sesi berhasil disimpan pada ${dt}.`;
+                showToast('💾 Sesi proyek tersimpan di aplikasi!');
+            } else {
+                showToast('⚠️ Gagal menyimpan ke memori internal');
+            }
+        });
+
+        $('btnRestoreAutoSave').addEventListener('click', async () => {
+            const latest = await idbGetProject('latest_session');
+            if (!latest) {
+                showToast('⚠️ Belum ada sesi proyek yang tersimpan');
+                return;
+            }
+            showToast('⏳ Memulihkan proyek & foto...');
+            const ok = await applyDeserializedProject(latest);
+            if (ok) {
+                projectModal.classList.add('hidden');
+                showToast('✅ Proyek editan terakhir berhasil dipulihkan!');
+            } else {
+                showToast('❌ Gagal memulihkan sesi proyek');
+            }
+        });
+
+        $('btnExportProjectFile').addEventListener('click', async () => {
+            showToast('⏳ Menyiapkan file proyek (.ahproj)...');
+            const rawName = ($('inputProjectName').value || '').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
+            const projFilename = (rawName || `AHStudio_Proyek_${Date.now()}`) + '.ahproj';
+            const jsonStr = JSON.stringify(serializeFullProject(true));
+
+            const nativeRes = await saveBase64ToAndroidStorage(jsonStr, projFilename, true);
+            const banner = $('projectSavedPathBanner');
+            if (nativeRes.ok) {
+                banner.textContent = `✅ File proyek tersimpan di: ${nativeRes.displayPath}`;
+                banner.classList.remove('hidden');
+                showToast(`💾 Proyek tersimpan: ${nativeRes.displayPath}`);
+            } else {
+                downloadTextFile(projFilename, jsonStr, 'application/json');
+                banner.textContent = `📥 File proyek diunduh: ${projFilename}`;
+                banner.classList.remove('hidden');
+                showToast(`💾 File proyek diunduh: ${projFilename}`);
+            }
+        });
+
+        $('projectFileInput').addEventListener('change', async (e) => {
+            const file = e.target.files && e.target.files[0];
+            e.target.value = '';
+            if (!file) return;
+            try {
+                const text = await file.text();
+                const parsed = JSON.parse(text);
+                const ok = await applyDeserializedProject(parsed);
+                if (ok) {
+                    projectModal.classList.add('hidden');
+                    showToast(`📂 Proyek "${file.name}" berhasil dimuat!`);
+                } else {
+                    showToast('❌ Format file proyek tidak valid');
+                }
+            } catch (err) {
+                showToast('❌ Gagal membaca file proyek');
             }
         });
 
@@ -4740,7 +5203,7 @@
         window.addEventListener('orientationchange', () => setTimeout(applyResponsiveLayout, 80));
 
         // =========================================================================
-        // 16. BOOTSTRAP APPLICATION
+        // 16. BOOTSTRAP APPLICATION (WITH AUTO-SESSION RESTORE)
         // =========================================================================
         applyResponsiveLayout();
         state.sourceCanvas = generateSampleCanvas('dermaga');
@@ -4754,6 +5217,15 @@
         renderAdjustSliders();
         renderCurveEditor();
         renderPreview();
+
+        // Automatically restore last editing session if user closed the app mid-edit
+        idbGetProject('latest_session').then((savedProj) => {
+            if (savedProj && savedProj.format === 'AHSTUDIO_PROJECT_V1' && savedProj.sourceDataUrl) {
+                applyDeserializedProject(savedProj).then((ok) => {
+                    if (ok) showToast('🔄 Melanjutkan proyek editan terakhir');
+                });
+            }
+        }).catch(() => {});
     })();
     </script>
 </body>
