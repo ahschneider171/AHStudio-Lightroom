@@ -871,10 +871,10 @@
     </div>
 
     <!-- ACCESSIBLE FILE INPUTS (SUPPORTS STANDARD IMAGES + FULL-HD CAMERA RAW FILES) -->
-    <input id="mainPhotoInput" type="file" accept="image/*,.dng,.arw,.cr2,.cr3,.nef,.raf,.orf,.rw2,.srw,.pef" class="sr-file-input">
-    <input id="refPhotoInput" type="file" accept="image/*,.dng,.arw,.cr2,.cr3,.nef,.raf,.orf,.rw2,.srw,.pef" class="sr-file-input">
+    <input id="mainPhotoInput" type="file" accept="image/*,.heic,.heif,.dng,.arw,.cr2,.cr3,.nef,.raf,.orf,.rw2,.srw,.pef" class="sr-file-input">
+    <input id="refPhotoInput" type="file" accept="image/*,.heic,.heif,.dng,.arw,.cr2,.cr3,.nef,.raf,.orf,.rw2,.srw,.pef" class="sr-file-input">
     <input id="presetFileInput" type="file" accept=".xmp,.cube,.lrtemplate,.json,application/xml,text/xml,application/json,text/plain,application/octet-stream" multiple class="sr-file-input">
-    <input id="batchPhotoInput" type="file" accept="image/*,.dng,.arw,.cr2,.cr3,.nef,.raf,.orf,.rw2,.srw,.pef" multiple class="sr-file-input">
+    <input id="batchPhotoInput" type="file" accept="image/*,.heic,.heif,.dng,.arw,.cr2,.cr3,.nef,.raf,.orf,.rw2,.srw,.pef" multiple class="sr-file-input">
 
     <!-- MODAL 1: SAVE / EXPORT PRESET -->
     <div id="presetModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
@@ -1092,17 +1092,90 @@
 
         // =========================================================================
         // 2. TRUE FULL-HD CAMERA RAW LOADER (`.DNG`, `.ARW`, `.CR2`, `.CR3`, `.NEF`, `.RAF`, `.ORF`, `.RW2`, `.SRW`, `.PEF`)
-        //    - Traverses ALL TIFF IFDs, SubIFDs (0x014A), EXIF IFDs (0x8769) & full binary JPEG markers
-        //    - Filters out Lossless JPEG (0xC3) sensor tiles
-        //    - Decodes candidate JPEG streams and selects the LARGEST pixel-area HD/4K preview (never settles for tiny 160px EXIF thumbnails!)
-        //    - Full-sensor 12/14/16-bit Bayer RGGB/BGGR/GRBG/GBRG demosaic + black-level subtraction + auto-WB + sRGB gamma fallback
+        //    - Fixes skewed/diagonal/garbled preview on Android Pro Mode DNG & packed 12-bit/14-bit/16-bit Bayer RAW
+        //    - Reads TIFF RowsPerStrip (0x0116), TileWidth (0x0142), TileLength (0x0143), TileOffsets (0x0144), TileByteCounts (0x0145)
+        //    - Unpacks bit-packed 10/12/14-bit sensor rows (exact row stride = ceil(width * bitsPerSample / 8)) so rows NEVER skew diagonally!
+        //    - Properly extracts EXIF Orientation from both root TIFF IFD and EXIF SubIFD (0x8769)
+        //    - Selects highest-resolution embedded HD/4K JPEG preview when available, or clean Bayer demosaic fallback
         // =========================================================================
         const RAW_EXTENSIONS = new Set(['dng', 'arw', 'cr2', 'cr3', 'nef', 'raf', 'orf', 'rw2', 'srw', 'pef', 'raw', 'sr2', 'kdc', 'dcr']);
+        const HEIC_EXTENSIONS = new Set(['heic', 'heif', 'hif']);
 
         function isRawFile(file) {
             if (!file || !file.name) return false;
             const ext = (file.name.split('.').pop() || '').toLowerCase();
             return RAW_EXTENSIONS.has(ext);
+        }
+
+        function isHeicFile(file) {
+            if (!file) return false;
+            const ext = ((file.name || '').split('.').pop() || '').toLowerCase();
+            const type = (file.type || '').toLowerCase();
+            return HEIC_EXTENSIONS.has(ext) || type.includes('heic') || type.includes('heif');
+        }
+
+        function loadHeic2AnyLibrary() {
+            if (typeof window.heic2any === 'function') return Promise.resolve(window.heic2any);
+            return new Promise((resolve, reject) => {
+                const existing = document.getElementById('heic2any-cdn-script');
+                if (existing) {
+                    existing.addEventListener('load', () => resolve(window.heic2any));
+                    existing.addEventListener('error', () => reject(new Error('Gagal memuat dekoder HEIC')));
+                    return;
+                }
+                const s = document.createElement('script');
+                s.id = 'heic2any-cdn-script';
+                s.src = 'https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js';
+                s.onload = () => {
+                    if (typeof window.heic2any === 'function') resolve(window.heic2any);
+                    else reject(new Error('heic2any tidak tersedia'));
+                };
+                s.onerror = () => reject(new Error('Gagal mengunduh pustaka dekoder HEIC'));
+                document.head.appendChild(s);
+            });
+        }
+
+        async function decodeHeicToCanvas(file) {
+            // 1. Try native ImageBitmap / Image decode first (works if WebView/Chromium natively supports HEVC/HEIC)
+            try {
+                if (typeof createImageBitmap === 'function') {
+                    const bmp = await createImageBitmap(file);
+                    if (bmp && bmp.width > 0 && bmp.height > 0) {
+                        const c = document.createElement('canvas');
+                        c.width = bmp.width;
+                        c.height = bmp.height;
+                        c.getContext('2d').drawImage(bmp, 0, 0);
+                        if (typeof bmp.close === 'function') bmp.close();
+                        return c;
+                    }
+                }
+            } catch (eNative1) {}
+
+            try {
+                const img = await decodeBlobViaUrlOrData(file);
+                if (img && (img.naturalWidth || img.width) > 0) {
+                    const c = document.createElement('canvas');
+                    c.width = img.naturalWidth || img.width;
+                    c.height = img.naturalHeight || img.height;
+                    c.getContext('2d').drawImage(img, 0, 0);
+                    return c;
+                }
+            } catch (eNative2) {}
+
+            // 2. Fallback to full JavaScript HEIC/HEIF decoder (heic2any) — NEVER slice ISO-BMFF binary as JPEG!
+            const converter = await loadHeic2AnyLibrary();
+            const converted = await converter({
+                blob: file,
+                toType: 'image/jpeg',
+                quality: 0.96
+            });
+            const outBlob = Array.isArray(converted) ? converted[0] : converted;
+            const decodedImg = await decodeBlobViaUrlOrData(outBlob);
+            const c = document.createElement('canvas');
+            c.width = decodedImg.naturalWidth || decodedImg.width;
+            c.height = decodedImg.naturalHeight || decodedImg.height;
+            c.getContext('2d').drawImage(decodedImg, 0, 0);
+            return c;
         }
 
         function readFileAsArrayBufferSafe(file) {
@@ -1117,40 +1190,65 @@
             });
         }
 
-        function decodeBlobViaDataUrl(blob) {
+        function decodeBlobViaUrlOrData(blob) {
             return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    const dataUrl = reader.result;
-                    if (!dataUrl || typeof dataUrl !== 'string') {
-                        reject(new Error('Empty DataURL'));
-                        return;
-                    }
+                let objUrl = null;
+                try {
+                    objUrl = URL.createObjectURL(blob);
+                } catch (e) {}
+
+                if (objUrl) {
                     const img = new Image();
                     img.onload = () => {
+                        try { URL.revokeObjectURL(objUrl); } catch (e) {}
                         const w = img.naturalWidth || img.width;
                         const h = img.naturalHeight || img.height;
                         if (w > 0 && h > 0) resolve(img);
                         else reject(new Error('Zero dimension image'));
                     };
-                    img.onerror = () => reject(new Error('Image decode failed'));
-                    img.src = dataUrl;
-                };
-                reader.onerror = () => reject(new Error('FileReader DataURL error'));
-                reader.readAsDataURL(blob);
+                    img.onerror = () => {
+                        try { URL.revokeObjectURL(objUrl); } catch (e) {}
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            const img2 = new Image();
+                            img2.onload = () => {
+                                const w = img2.naturalWidth || img2.width;
+                                const h = img2.naturalHeight || img2.height;
+                                if (w > 0 && h > 0) resolve(img2);
+                                else reject(new Error('Zero dimension image'));
+                            };
+                            img2.onerror = () => reject(new Error('Image decode failed'));
+                            img2.src = reader.result;
+                        };
+                        reader.onerror = () => reject(new Error('FileReader error'));
+                        reader.readAsDataURL(blob);
+                    };
+                    img.src = objUrl;
+                } else {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        const img = new Image();
+                        img.onload = () => resolve(img);
+                        img.onerror = () => reject(new Error('Image decode failed'));
+                        img.src = reader.result;
+                    };
+                    reader.onerror = () => reject(new Error('FileReader error'));
+                    reader.readAsDataURL(blob);
+                }
             });
         }
 
         function applyExifOrientationToCanvas(imgOrCanvas, orientation) {
             const w = imgOrCanvas.naturalWidth || imgOrCanvas.width;
             const h = imgOrCanvas.naturalHeight || imgOrCanvas.height;
-            const swap = orientation >= 5 && orientation <= 8;
+            const ori = (orientation >= 1 && orientation <= 8) ? orientation : 1;
+            const swap = ori >= 5 && ori <= 8;
             const c = document.createElement('canvas');
             c.width = swap ? h : w;
             c.height = swap ? w : h;
             const ctx = c.getContext('2d');
             ctx.save();
-            switch (orientation) {
+            switch (ori) {
                 case 2: ctx.translate(w, 0); ctx.scale(-1, 1); break;
                 case 3: ctx.translate(w, h); ctx.rotate(Math.PI); break;
                 case 4: ctx.translate(0, h); ctx.scale(1, -1); break;
@@ -1165,9 +1263,55 @@
             return c;
         }
 
+        function readJpegExifOrientation(bytes, start) {
+            if (start < 0 || start + 16 >= bytes.length) return 1;
+            if (bytes[start] !== 0xFF || bytes[start + 1] !== 0xD8) return 1;
+            let pos = start + 2;
+            const limit = Math.min(bytes.length - 12, start + 65536);
+            while (pos < limit) {
+                if (bytes[pos] !== 0xFF) { pos++; continue; }
+                while (pos < limit && bytes[pos] === 0xFF) pos++;
+                if (pos >= limit) break;
+                const marker = bytes[pos++];
+                if (marker === 0x00 || (marker >= 0xD0 && marker <= 0xD9)) continue;
+                if (marker === 0xDA || marker === 0xC0 || marker === 0xC2) break;
+                if (pos + 2 > limit) break;
+                const segLen = (bytes[pos] << 8) | bytes[pos + 1];
+                if (segLen < 2) break;
+                if (marker === 0xE1 && pos + 10 < limit) {
+                    if (bytes[pos + 2] === 0x45 && bytes[pos + 3] === 0x78 && bytes[pos + 4] === 0x69 &&
+                        bytes[pos + 5] === 0x66 && bytes[pos + 6] === 0x00 && bytes[pos + 7] === 0x00) {
+                        const tiffBase = pos + 8;
+                        const le = bytes[tiffBase] === 0x49 && bytes[tiffBase + 1] === 0x49;
+                        const be = bytes[tiffBase] === 0x4D && bytes[tiffBase + 1] === 0x4D;
+                        if (le || be) {
+                            const u16 = (o) => le ? (bytes[o] | (bytes[o + 1] << 8)) : ((bytes[o] << 8) | bytes[o + 1]);
+                            const u32 = (o) => le
+                                ? ((bytes[o] | (bytes[o + 1] << 8) | (bytes[o + 2] << 16) | (bytes[o + 3] << 24)) >>> 0)
+                                : (((bytes[o] << 24) | (bytes[o + 1] << 16) | (bytes[o + 2] << 8) | bytes[o + 3]) >>> 0);
+                            const ifd0 = tiffBase + u32(tiffBase + 4);
+                            if (ifd0 + 2 < limit) {
+                                const cnt = u16(ifd0);
+                                for (let i = 0; i < Math.min(cnt, 128); i++) {
+                                    const e = ifd0 + 2 + i * 12;
+                                    if (e + 12 > limit) break;
+                                    if (u16(e) === 0x0112) {
+                                        const ori = u16(e + 8);
+                                        if (ori >= 1 && ori <= 8) return ori;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                pos += segLen;
+            }
+            return 1;
+        }
+
         function parseTiffMetadataAndSlices(bytes) {
             const len = bytes.length;
-            const result = { orientation: 1, slices: [], rawIfd: null };
+            const result = { orientation: 1, orientationFound: false, slices: [], rawIfd: null };
             if (len < 16) return result;
 
             const le = bytes[0] === 0x49 && bytes[1] === 0x49;
@@ -1184,6 +1328,22 @@
                     ? ((bytes[off] | (bytes[off + 1] << 8) | (bytes[off + 2] << 16) | (bytes[off + 3] << 24)) >>> 0)
                     : (((bytes[off] << 24) | (bytes[off + 1] << 16) | (bytes[off + 2] << 8) | bytes[off + 3]) >>> 0);
             };
+            const readTagArray = (offPos, cnt, type) => {
+                const out = [];
+                if (cnt === 0) return out;
+                if (cnt === 1) {
+                    out.push(type === 3 ? u16(offPos) : u32(offPos));
+                    return out;
+                }
+                const elemSize = type === 3 ? 2 : 4;
+                const totalBytes = cnt * elemSize;
+                const ptr = totalBytes <= 4 ? offPos : u32(offPos);
+                if (ptr <= 0 || ptr + totalBytes > len) return out;
+                for (let s = 0; s < cnt; s++) {
+                    out.push(type === 3 ? u16(ptr + s * 2) : u32(ptr + s * 4));
+                }
+                return out;
+            };
 
             const magic = u16(2);
             if (magic !== 42 && magic !== 0x4F52 && magic !== 0x5352) return result;
@@ -1191,22 +1351,30 @@
             const visitedIfds = new Set();
             const ifdQueue = [];
             const firstIfd = u32(4);
-            if (firstIfd > 0 && firstIfd < len) ifdQueue.push(firstIfd);
+            if (firstIfd > 0 && firstIfd < len) ifdQueue.push({ off: firstIfd, isRoot: true });
 
-            while (ifdQueue.length > 0 && visitedIfds.size < 48) {
-                const ifdOff = ifdQueue.shift();
+            while (ifdQueue.length > 0 && visitedIfds.size < 64) {
+                const node = ifdQueue.shift();
+                const ifdOff = node.off;
                 if (!ifdOff || ifdOff + 2 >= len || visitedIfds.has(ifdOff)) continue;
                 visitedIfds.add(ifdOff);
 
                 const entryCount = u16(ifdOff);
                 if (entryCount === 0 || entryCount > 512) continue;
 
-                let width = 0, height = 0, compression = 0, samples = 3, bitsPerSample = 8, photometric = 2;
+                let width = 0, height = 0, compression = 0, samples = 1, bitsPerSample = 8, photometric = 2;
                 let stripOffPos = 0, stripOffCnt = 0, stripOffType = 4;
                 let stripLenPos = 0, stripLenCnt = 0, stripLenType = 4;
+                let tileWidth = 0, tileLength = 0;
+                let tileOffPos = 0, tileOffCnt = 0, tileOffType = 4;
+                let tileLenPos = 0, tileLenCnt = 0, tileLenType = 4;
+                let rowsPerStrip = 0;
                 let jpegOff = 0, jpegLen = 0;
                 let blackLevel = 0;
-                let cfaPattern = [0, 1, 1, 2]; // RGGB default
+                let whiteLevel = 0;
+                let cfaPattern = [0, 1, 1, 2];
+                let cfaRepeatRows = 2, cfaRepeatCols = 2;
+                let ifdOrientation = 0;
 
                 for (let i = 0; i < entryCount; i++) {
                     const e = ifdOff + 2 + i * 12;
@@ -1228,34 +1396,65 @@
                     else if (tag === 0x0103) compression = val;
                     else if (tag === 0x0106) photometric = val;
                     else if (tag === 0x0111) { stripOffPos = e + 8; stripOffCnt = cnt; stripOffType = type; }
-                    else if (tag === 0x0112 && val >= 1 && val <= 8) result.orientation = val;
+                    else if (tag === 0x0112 && val >= 1 && val <= 8) {
+                        ifdOrientation = val;
+                        if (node.isRoot || !result.orientationFound) {
+                            result.orientation = val;
+                            result.orientationFound = true;
+                        }
+                    }
                     else if (tag === 0x0115) samples = val;
+                    else if (tag === 0x0116) rowsPerStrip = val;
                     else if (tag === 0x0117) { stripLenPos = e + 8; stripLenCnt = cnt; stripLenType = type; }
+                    else if (tag === 0x0142) tileWidth = val;
+                    else if (tag === 0x0143) tileLength = val;
+                    else if (tag === 0x0144) { tileOffPos = e + 8; tileOffCnt = cnt; tileOffType = type; }
+                    else if (tag === 0x0145) { tileLenPos = e + 8; tileLenCnt = cnt; tileLenType = type; }
                     else if (tag === 0x0201) jpegOff = val;
                     else if (tag === 0x0202) jpegLen = val;
+                    else if (tag === 0x828D && cnt >= 2) {
+                        const rPtr = cnt <= 2 ? (e + 8) : u32(e + 8);
+                        if (rPtr + 4 <= len) {
+                            cfaRepeatRows = u16(rPtr) || 2;
+                            cfaRepeatCols = u16(rPtr + 2) || 2;
+                        }
+                    }
                     else if (tag === 0x828E && cnt >= 4) {
-                        // CFAPattern (0=R, 1=G, 2=B)
                         const pOff = cnt <= 4 ? (e + 8) : u32(e + 8);
                         if (pOff + 4 <= len) {
                             cfaPattern = [bytes[pOff], bytes[pOff + 1], bytes[pOff + 2], bytes[pOff + 3]];
                         }
                     }
                     else if (tag === 0xC61A) {
-                        // DNG BlackLevel
-                        if (cnt === 1 && (type === 3 || type === 4)) blackLevel = val;
-                        else if (cnt >= 1 && (type === 3 || type === 4)) {
+                        if (type === 3 || type === 4) {
+                            if (cnt === 1) blackLevel = val;
+                            else {
+                                const blPtr = u32(e + 8);
+                                blackLevel = type === 3 ? u16(blPtr) : u32(blPtr);
+                            }
+                        } else if (type === 5) {
                             const blPtr = u32(e + 8);
-                            blackLevel = type === 3 ? u16(blPtr) : u32(blPtr);
+                            if (blPtr + 8 <= len) {
+                                const num = u32(blPtr), den = u32(blPtr + 4) || 1;
+                                blackLevel = Math.round(num / den);
+                            }
                         }
                     }
-                    else if ((tag === 0x014A || tag === 0x8769) && cnt > 0) {
+                    else if (tag === 0xC61D && (type === 3 || type === 4)) {
+                        if (cnt === 1) whiteLevel = val;
+                        else {
+                            const wlPtr = u32(e + 8);
+                            whiteLevel = type === 3 ? u16(wlPtr) : u32(wlPtr);
+                        }
+                    }
+                    else if ((tag === 0x014A || tag === 0x8769 || tag === 0x0190) && cnt > 0) {
                         if (cnt === 1) {
-                            if (val > 0 && val < len) ifdQueue.push(val);
+                            if (val > 0 && val < len) ifdQueue.push({ off: val, isRoot: false });
                         } else {
                             const arrPtr = u32(e + 8);
                             for (let s = 0; s < Math.min(cnt, 24); s++) {
                                 const sub = u32(arrPtr + s * 4);
-                                if (sub > 0 && sub < len) ifdQueue.push(sub);
+                                if (sub > 0 && sub < len) ifdQueue.push({ off: sub, isRoot: false });
                             }
                         }
                     }
@@ -1264,50 +1463,48 @@
                 const nextIfdPtr = ifdOff + 2 + entryCount * 12;
                 if (nextIfdPtr + 4 <= len) {
                     const nextIfd = u32(nextIfdPtr);
-                    if (nextIfd > 0 && nextIfd < len) ifdQueue.push(nextIfd);
+                    if (nextIfd > 0 && nextIfd < len) ifdQueue.push({ off: nextIfd, isRoot: node.isRoot });
                 }
 
-                // Explicit JPEGInterchangeFormat (0x0201 / 0x0202)
                 if (jpegOff > 0 && jpegLen > 2048 && jpegOff + jpegLen <= len) {
-                    result.slices.push({ start: jpegOff, end: jpegOff + jpegLen, size: jpegLen, expectedPixels: width * height });
+                    result.slices.push({
+                        start: jpegOff, end: jpegOff + jpegLen, size: jpegLen,
+                        expectedPixels: width * height,
+                        orientation: ifdOrientation || result.orientation
+                    });
                 }
 
-                // Single-strip JPEG-compressed preview (compression 6 or 7)
                 if ((compression === 6 || compression === 7) && stripOffCnt === 1 && stripLenCnt === 1) {
                     const sOff = stripOffType === 3 ? u16(stripOffPos) : u32(stripOffPos);
                     const sLen = stripLenType === 3 ? u16(stripLenPos) : u32(stripLenPos);
                     if (sOff > 0 && sLen > 2048 && sOff + sLen <= len && bytes[sOff] === 0xFF && bytes[sOff + 1] === 0xD8) {
-                        result.slices.push({ start: sOff, end: sOff + sLen, size: sLen, expectedPixels: width * height });
+                        result.slices.push({
+                            start: sOff, end: sOff + sLen, size: sLen,
+                            expectedPixels: width * height,
+                            orientation: ifdOrientation || result.orientation
+                        });
                     }
                 }
 
-                // Full-resolution Uncompressed TIFF / Linear DNG / Bayer CFA sensor IFD
-                if (compression === 1 && width >= 256 && height >= 256 && stripOffCnt >= 1) {
-                    const offsets = [];
-                    const lengths = [];
-                    if (stripOffCnt === 1) {
-                        offsets.push(stripOffType === 3 ? u16(stripOffPos) : u32(stripOffPos));
-                    } else {
-                        const ptr = u32(stripOffPos);
-                        for (let s = 0; s < stripOffCnt; s++) {
-                            offsets.push(stripOffType === 3 ? u16(ptr + s * 2) : u32(ptr + s * 4));
-                        }
-                    }
-                    if (stripLenCnt === 1) {
-                        lengths.push(stripLenType === 3 ? u16(stripLenPos) : u32(stripLenPos));
-                    } else if (stripLenCnt > 1) {
-                        const ptr = u32(stripLenPos);
-                        for (let s = 0; s < stripLenCnt; s++) {
-                            lengths.push(stripLenType === 3 ? u16(ptr + s * 2) : u32(ptr + s * 4));
-                        }
-                    }
+                if (compression === 1 && width >= 256 && height >= 256 && (stripOffCnt >= 1 || tileOffCnt >= 1)) {
+                    const isTiled = tileOffCnt >= 1 && tileWidth > 0 && tileLength > 0;
+                    const offsets = isTiled
+                        ? readTagArray(tileOffPos, tileOffCnt, tileOffType)
+                        : readTagArray(stripOffPos, stripOffCnt, stripOffType);
+                    const lengths = isTiled
+                        ? readTagArray(tileLenPos, tileLenCnt, tileLenType)
+                        : readTagArray(stripLenPos, stripLenCnt, stripLenType);
 
-                    if (offsets[0] > 0 && offsets[0] < len) {
+                    if (offsets.length > 0 && offsets[0] > 0 && offsets[0] < len) {
                         const area = width * height;
                         if (!result.rawIfd || area > result.rawIfd.area) {
                             result.rawIfd = {
                                 width, height, area, samples, bitsPerSample, photometric,
-                                offsets, lengths, blackLevel, cfaPattern, le
+                                isTiled, tileWidth, tileLength,
+                                rowsPerStrip: rowsPerStrip || height,
+                                offsets, lengths, blackLevel, whiteLevel,
+                                cfaPattern, cfaRepeatRows, cfaRepeatCols, le,
+                                orientation: ifdOrientation || result.orientation
                             };
                         }
                     }
@@ -1332,9 +1529,7 @@
                 if (marker === 0x00 || (marker >= 0xD0 && marker <= 0xD9)) continue;
                 if (marker === 0xDA) break;
 
-                // Baseline DCT (0xC0), Extended Sequential (0xC1), or Progressive DCT (0xC2) -> Browser decodable!
                 if (marker === 0xC0 || marker === 0xC1 || marker === 0xC2) return true;
-                // Lossless / Arithmetic / Hierarchical SOF (0xC3, 0xC5..0xCF) -> Sensor RAW tile!
                 if (marker === 0xC3 || (marker >= 0xC5 && marker <= 0xCF)) return false;
 
                 if (pos + 2 > limit) break;
@@ -1380,6 +1575,7 @@
                 const sl = meta.slices[i];
                 const sof = readJpegSofDimensions(bytes, sl.start);
                 if (sof) {
+                    const jpegOri = readJpegExifOrientation(bytes, sl.start);
                     candidates.push({
                         start: sl.start,
                         end: sl.end,
@@ -1387,12 +1583,12 @@
                         sofArea: sof.area,
                         sofW: sof.width,
                         sofH: sof.height,
-                        expectedPixels: sl.expectedPixels || sof.area
+                        expectedPixels: sl.expectedPixels || sof.area,
+                        orientation: jpegOri !== 1 ? jpegOri : (sl.orientation || meta.orientation)
                     });
                 }
             }
 
-            // Full binary scan for all SOF0/SOF1/SOF2 JPEG streams across the entire file
             const len = bytes.length;
             const validSois = [];
             const eois = [];
@@ -1407,6 +1603,8 @@
             for (let s = 0; s < validSois.length; s++) {
                 const start = validSois[s];
                 const sof = readJpegSofDimensions(bytes, start) || { width: 0, height: 0, area: 0 };
+                const jpegOri = readJpegExifOrientation(bytes, start);
+                const ori = jpegOri !== 1 ? jpegOri : meta.orientation;
                 const nextSoi = s + 1 < validSois.length ? validSois[s + 1] : len;
                 let bestBeforeNext = -1;
                 let bestToEof = -1;
@@ -1421,18 +1619,17 @@
                 if (bestBeforeNext > start + 4096) {
                     candidates.push({
                         start, end: bestBeforeNext, size: bestBeforeNext - start,
-                        sofArea: sof.area, sofW: sof.width, sofH: sof.height, expectedPixels: sof.area
+                        sofArea: sof.area, sofW: sof.width, sofH: sof.height, expectedPixels: sof.area, orientation: ori
                     });
                 }
                 if (bestToEof > start + 4096 && bestToEof !== bestBeforeNext) {
                     candidates.push({
                         start, end: bestToEof, size: bestToEof - start,
-                        sofArea: sof.area, sofW: sof.width, sofH: sof.height, expectedPixels: sof.area
+                        sofArea: sof.area, sofW: sof.width, sofH: sof.height, expectedPixels: sof.area, orientation: ori
                     });
                 }
             }
 
-            // Deduplicate and strictly prioritize highest-resolution (sofArea / size) JPEG streams first
             const seen = new Set();
             const unique = [];
             candidates.sort((a, b) => (b.sofArea - a.sofArea) || (b.size - a.size) || (b.expectedPixels - a.expectedPixels));
@@ -1445,81 +1642,131 @@
                 }
             }
 
-            // Evaluate candidates sorted from highest resolution to lowest so the largest HD/4K preview always wins
             let bestDecodedImg = null;
             let bestPixelArea = 0;
+            let bestOrientation = meta.orientation;
 
             const tries = Math.min(unique.length, 20);
             for (let k = 0; k < tries; k++) {
                 const cand = unique[k];
                 try {
                     const blob = new Blob([bytes.subarray(cand.start, cand.end)], { type: 'image/jpeg' });
-                    const img = await decodeBlobViaDataUrl(blob);
+                    const img = await decodeBlobViaUrlOrData(blob);
                     const w = img.naturalWidth || img.width;
                     const h = img.naturalHeight || img.height;
                     const area = w * h;
                     if (area > bestPixelArea && w >= 160 && h >= 120) {
                         bestPixelArea = area;
                         bestDecodedImg = img;
-                        // Since unique is sorted by largest SOF resolution first, stop once we decode a genuine HD/Full-HD preview (>= 1.5MP)
+                        bestOrientation = cand.orientation || meta.orientation;
                         if (area >= 1500000) break;
                     }
                 } catch (err) {}
             }
 
-            // If we found a true HD embedded preview (>= 800px long edge), return it at full resolution!
             if (bestDecodedImg && Math.max(bestDecodedImg.naturalWidth, bestDecodedImg.naturalHeight) >= 800) {
-                return applyExifOrientationToCanvas(bestDecodedImg, meta.orientation);
+                return applyExifOrientationToCanvas(bestDecodedImg, bestOrientation);
             }
 
-            // If there is a full-resolution uncompressed sensor IFD (e.g., Android Pro Mode DNG without large JPEG preview) and its resolution is higher than a tiny thumbnail, decode the full sensor!
             if (meta.rawIfd && (!bestDecodedImg || meta.rawIfd.area > bestPixelArea * 2)) {
                 try {
-                    return decodeUncompressedRawIfdHD(bytes, meta.rawIfd, meta.orientation);
+                    return decodeUncompressedRawIfdHD(bytes, meta.rawIfd, meta.rawIfd.orientation || meta.orientation);
                 } catch (err) {
-                    if (bestDecodedImg) return applyExifOrientationToCanvas(bestDecodedImg, meta.orientation);
+                    if (bestDecodedImg) return applyExifOrientationToCanvas(bestDecodedImg, bestOrientation);
                     throw err;
                 }
             }
 
             if (bestDecodedImg) {
-                return applyExifOrientationToCanvas(bestDecodedImg, meta.orientation);
+                return applyExifOrientationToCanvas(bestDecodedImg, bestOrientation);
             }
 
             throw new Error('Tidak ditemukan data gambar HD yang dapat dibaca pada file RAW ini');
         }
 
-        // True Full-HD 12/14/16-bit Sensor Bayer CFA & Linear RGB Decoder with Black-Level Subtraction, Auto-WB & sRGB Gamma
         function decodeUncompressedRawIfdHD(bytes, info, orientation) {
-            const { width, height, samples, bitsPerSample, photometric, offsets, lengths, blackLevel, cfaPattern, le } = info;
-            const u16 = (off) => le ? (bytes[off] | (bytes[off + 1] << 8)) : ((bytes[off] << 8) | bytes[off + 1]);
-            const bytesPerSample = bitsPerSample > 8 ? 2 : 1;
-            const maxRawVal = Math.max(1, (1 << Math.min(16, bitsPerSample)) - 1);
+            const {
+                width, height, samples, bitsPerSample, photometric,
+                isTiled, tileWidth, tileLength, rowsPerStrip,
+                offsets, lengths, blackLevel, whiteLevel,
+                cfaPattern, cfaRepeatRows, cfaRepeatCols, le
+            } = info;
+
+            const maxRawVal = whiteLevel > blackLevel
+                ? whiteLevel
+                : Math.max(1, (1 << Math.min(16, bitsPerSample)) - 1);
             const effectiveRange = Math.max(1, maxRawVal - blackLevel);
 
-            // Build contiguous sensor buffer across all TIFF strips
-            const totalSamples = width * height * samples;
-            const totalBytesNeeded = totalSamples * bytesPerSample;
-            let sensorBytes = bytes;
-            let baseOffset = offsets[0];
+            const rowBytes = Math.ceil((width * samples * bitsPerSample) / 8);
+            const fullRaster = new Uint8Array(rowBytes * height);
 
-            if (offsets.length > 1) {
-                sensorBytes = new Uint8Array(totalBytesNeeded);
-                let writePos = 0;
-                for (let s = 0; s < offsets.length; s++) {
-                    const sOff = offsets[s];
-                    const sLen = lengths[s] || Math.min(bytes.length - sOff, totalBytesNeeded - writePos);
-                    if (sOff > 0 && sOff + sLen <= bytes.length && writePos + sLen <= totalBytesNeeded) {
-                        sensorBytes.set(bytes.subarray(sOff, sOff + sLen), writePos);
-                        writePos += sLen;
+            if (isTiled) {
+                const tilesAcross = Math.ceil(width / tileWidth);
+                const tilesDown = Math.ceil(height / tileLength);
+                const tileRowBytes = Math.ceil((tileWidth * samples * bitsPerSample) / 8);
+                let tileIdx = 0;
+                for (let ty = 0; ty < tilesDown; ty++) {
+                    for (let tx = 0; tx < tilesAcross; tx++) {
+                        if (tileIdx >= offsets.length) break;
+                        const tOff = offsets[tileIdx];
+                        tileIdx++;
+                        if (tOff <= 0 || tOff >= bytes.length) continue;
+                        const yBase = ty * tileLength;
+                        const xByteBase = Math.floor((tx * tileWidth * samples * bitsPerSample) / 8);
+                        const copyBytesPerRow = Math.min(tileRowBytes, rowBytes - xByteBase);
+                        for (let r = 0; r < tileLength && (yBase + r) < height; r++) {
+                            const srcStart = tOff + r * tileRowBytes;
+                            const dstStart = (yBase + r) * rowBytes + xByteBase;
+                            if (srcStart + copyBytesPerRow <= bytes.length && dstStart + copyBytesPerRow <= fullRaster.length) {
+                                fullRaster.set(bytes.subarray(srcStart, srcStart + copyBytesPerRow), dstStart);
+                            }
+                        }
                     }
                 }
-                baseOffset = 0;
+            } else {
+                let dstRow = 0;
+                for (let s = 0; s < offsets.length && dstRow < height; s++) {
+                    const sOff = offsets[s];
+                    if (sOff <= 0 || sOff >= bytes.length) continue;
+                    const rowsInThisStrip = Math.min(rowsPerStrip, height - dstRow);
+                    const expectedStripBytes = rowsInThisStrip * rowBytes;
+                    const sLen = lengths[s] ? Math.min(lengths[s], expectedStripBytes) : Math.min(bytes.length - sOff, expectedStripBytes);
+                    const dstPos = dstRow * rowBytes;
+                    if (sOff + sLen <= bytes.length && dstPos + sLen <= fullRaster.length) {
+                        fullRaster.set(bytes.subarray(sOff, sOff + sLen), dstPos);
+                    }
+                    dstRow += rowsInThisStrip;
+                }
             }
 
-            // Downsample stride only if sensor exceeds MAX_SENSOR_DIM (4096px) to preserve full HD clarity while keeping memory safe
+            const readSampleRaw = (x, y, ch) => {
+                const cx = x < 0 ? 0 : (x >= width ? width - 1 : x);
+                const cy = y < 0 ? 0 : (y >= height ? height - 1 : y);
+                const sampleIdxInRow = cx * samples + ch;
+                const rowStart = cy * rowBytes;
+
+                if (bitsPerSample === 8) {
+                    return fullRaster[rowStart + sampleIdxInRow] || 0;
+                }
+                if (bitsPerSample === 16) {
+                    const off = rowStart + sampleIdxInRow * 2;
+                    return le
+                        ? (fullRaster[off] | (fullRaster[off + 1] << 8))
+                        : ((fullRaster[off] << 8) | fullRaster[off + 1]);
+                }
+                const bitOffset = sampleIdxInRow * bitsPerSample;
+                const byteIdx = rowStart + (bitOffset >> 3);
+                const bitShift = bitOffset & 7;
+                const b0 = fullRaster[byteIdx] || 0;
+                const b1 = fullRaster[byteIdx + 1] || 0;
+                const b2 = fullRaster[byteIdx + 2] || 0;
+                const word24 = (b0 << 16) | (b1 << 8) | b2;
+                const shiftRight = 24 - bitShift - bitsPerSample;
+                const mask = (1 << bitsPerSample) - 1;
+                return (word24 >> shiftRight) & mask;
+            };
+
             const step = Math.max(1, Math.ceil(Math.max(width, height) / MAX_SENSOR_DIM));
-            // Keep step even for Bayer CFA so 2x2 color filter phase stays aligned!
             const cfaStep = (photometric === 32803 && step > 1 && (step % 2 === 1)) ? (step + 1) : step;
             const outW = Math.floor(width / cfaStep);
             const outH = Math.floor(height / cfaStep);
@@ -1531,7 +1778,6 @@
             const imgData = ctx.createImageData(outW, outH);
             const out = imgData.data;
 
-            // Precompute sRGB gamma LUT (4096 entries) for ultra-fast full-sensor decoding
             const gammaLut = new Uint8Array(4097);
             for (let i = 0; i <= 4096; i++) {
                 const lin = i / 4096;
@@ -1540,28 +1786,17 @@
             }
 
             if (samples >= 3) {
-                const stride = samples * bytesPerSample;
                 for (let oy = 0; oy < outH; oy++) {
                     const sy = oy * cfaStep;
                     for (let ox = 0; ox < outW; ox++) {
                         const sx = ox * cfaStep;
-                        const off = baseOffset + (sy * width + sx) * stride;
-                        const dst = (oy * outW + ox) * 4;
-                        if (off + stride > sensorBytes.length) { out[dst + 3] = 255; continue; }
-
-                        let rRaw, gRaw, bRaw;
-                        if (bytesPerSample === 1) {
-                            rRaw = sensorBytes[off];
-                            gRaw = sensorBytes[off + 1];
-                            bRaw = sensorBytes[off + 2];
-                        } else {
-                            rRaw = le ? (sensorBytes[off] | (sensorBytes[off + 1] << 8)) : ((sensorBytes[off] << 8) | sensorBytes[off + 1]);
-                            gRaw = le ? (sensorBytes[off + 2] | (sensorBytes[off + 3] << 8)) : ((sensorBytes[off + 2] << 8) | sensorBytes[off + 3]);
-                            bRaw = le ? (sensorBytes[off + 4] | (sensorBytes[off + 5] << 8)) : ((sensorBytes[off + 4] << 8) | sensorBytes[off + 5]);
-                        }
+                        const rRaw = readSampleRaw(sx, sy, 0);
+                        const gRaw = readSampleRaw(sx, sy, 1);
+                        const bRaw = readSampleRaw(sx, sy, 2);
                         const rIdx = Math.max(0, Math.min(4096, Math.round(((rRaw - blackLevel) / effectiveRange) * 4096)));
                         const gIdx = Math.max(0, Math.min(4096, Math.round(((gRaw - blackLevel) / effectiveRange) * 4096)));
                         const bIdx = Math.max(0, Math.min(4096, Math.round(((bRaw - blackLevel) / effectiveRange) * 4096)));
+                        const dst = (oy * outW + ox) * 4;
                         out[dst] = gammaLut[rIdx];
                         out[dst + 1] = gammaLut[gIdx];
                         out[dst + 2] = gammaLut[bIdx];
@@ -1569,27 +1804,19 @@
                     }
                 }
             } else {
-                // Single-channel CFA Bayer (photometric 32803) or Monochrome RAW
-                const readRawNorm = (x, y) => {
-                    const cx = x < 0 ? 0 : (x >= width ? width - 1 : x);
-                    const cy = y < 0 ? 0 : (y >= height ? height - 1 : y);
-                    const off = baseOffset + (cy * width + cx) * bytesPerSample;
-                    if (off + bytesPerSample > sensorBytes.length) return 0;
-                    const raw = bytesPerSample === 1
-                        ? sensorBytes[off]
-                        : (le ? (sensorBytes[off] | (sensorBytes[off + 1] << 8)) : ((sensorBytes[off] << 8) | sensorBytes[off + 1]));
-                    return Math.max(0, (raw - blackLevel) / effectiveRange);
-                };
+                const readRawNorm = (x, y) => Math.max(0, (readSampleRaw(x, y, 0) - blackLevel) / effectiveRange);
+                const rRows = cfaRepeatRows || 2;
+                const rCols = cfaRepeatCols || 2;
+                const getCfaCode = (x, y) => cfaPattern[(y % rRows) * rCols + (x % rCols)];
 
                 if (photometric === 32803) {
-                    // Quick Gray-World Auto White Balance estimation across sparse sensor grid
                     let sumR = 0.001, sumG = 0.001, sumB = 0.001;
                     const sampleStep = Math.max(4, Math.floor(Math.min(width, height) / 96) * 2);
                     for (let y = 0; y < height - 1; y += sampleStep) {
                         for (let x = 0; x < width - 1; x += sampleStep) {
                             for (let dy = 0; dy < 2; dy++) {
                                 for (let dx = 0; dx < 2; dx++) {
-                                    const code = cfaPattern[dy * 2 + dx];
+                                    const code = getCfaCode(x + dx, y + dy);
                                     const v = readRawNorm(x + dx, y + dy);
                                     if (code === 0) sumR += v;
                                     else if (code === 2) sumB += v;
@@ -1601,29 +1828,23 @@
                     const gainR = Math.max(0.7, Math.min(2.6, sumG / sumR));
                     const gainB = Math.max(0.7, Math.min(2.6, sumG / sumB));
 
-                    // Full-resolution bilinear Bayer CFA demosaicing
                     for (let oy = 0; oy < outH; oy++) {
                         const y = oy * cfaStep;
-                        const py = y & 1;
                         for (let ox = 0; ox < outW; ox++) {
                             const x = ox * cfaStep;
-                            const px = x & 1;
-                            const code = cfaPattern[py * 2 + px];
+                            const code = getCfaCode(x, y);
                             let rLin = 0, gLin = 0, bLin = 0;
 
                             if (code === 0) {
-                                // Red pixel
                                 rLin = readRawNorm(x, y);
                                 gLin = (readRawNorm(x - 1, y) + readRawNorm(x + 1, y) + readRawNorm(x, y - 1) + readRawNorm(x, y + 1)) * 0.25;
                                 bLin = (readRawNorm(x - 1, y - 1) + readRawNorm(x + 1, y - 1) + readRawNorm(x - 1, y + 1) + readRawNorm(x + 1, y + 1)) * 0.25;
                             } else if (code === 2) {
-                                // Blue pixel
                                 rLin = (readRawNorm(x - 1, y - 1) + readRawNorm(x + 1, y - 1) + readRawNorm(x - 1, y + 1) + readRawNorm(x + 1, y + 1)) * 0.25;
                                 gLin = (readRawNorm(x - 1, y) + readRawNorm(x + 1, y) + readRawNorm(x, y - 1) + readRawNorm(x, y + 1)) * 0.25;
                                 bLin = readRawNorm(x, y);
                             } else {
-                                // Green pixel (check horizontal neighbor color)
-                                const horizCode = cfaPattern[py * 2 + ((px + 1) & 1)];
+                                const horizCode = getCfaCode(x + 1, y);
                                 gLin = readRawNorm(x, y);
                                 if (horizCode === 0) {
                                     rLin = (readRawNorm(x - 1, y) + readRawNorm(x + 1, y)) * 0.5;
@@ -1664,23 +1885,23 @@
 
         async function loadAnyPhotoFile(file, maxDim) {
             const rawFlag = isRawFile(file);
-            const rawExt = rawFlag ? (file.name.split('.').pop() || 'RAW').toUpperCase() : '';
+            const heicFlag = isHeicFile(file);
+            const rawExt = rawFlag ? (file.name.split('.').pop() || 'RAW').toUpperCase() : (heicFlag ? 'HEIC' : '');
             let srcCanvas = null;
 
-            // Stage 1: Standard browser image decode via FileReader DataURL
-            if (!rawFlag) {
-                try {
-                    const img = await decodeBlobViaDataUrl(file);
-                    const c = document.createElement('canvas');
-                    c.width = img.naturalWidth || img.width;
-                    c.height = img.naturalHeight || img.height;
-                    c.getContext('2d').drawImage(img, 0, 0);
-                    srcCanvas = c;
-                } catch (e1) {}
-            }
-
-            // Stage 2 & 3: Full-HD Camera RAW binary & sensor extractor
-            if (!srcCanvas) {
+            if (heicFlag) {
+                // Dedicated HEIC / HEIF path — never slice ISO-BMFF container as raw JPEG!
+                srcCanvas = await decodeHeicToCanvas(file);
+            } else if (!rawFlag) {
+                // Standard browser image decode (JPG, PNG, WebP, GIF, BMP, AVIF)
+                const img = await decodeBlobViaUrlOrData(file);
+                const c = document.createElement('canvas');
+                c.width = img.naturalWidth || img.width;
+                c.height = img.naturalHeight || img.height;
+                c.getContext('2d').drawImage(img, 0, 0);
+                srcCanvas = c;
+            } else {
+                // True Camera RAW (.DNG, .ARW, .CR2, .CR3, .NEF, .RAF, .ORF, etc.)
                 const buffer = await readFileAsArrayBufferSafe(file);
                 const bytes = new Uint8Array(buffer);
                 srcCanvas = await extractPreviewFromRawBuffer(bytes);
@@ -1698,10 +1919,9 @@
                 srcCanvas = scaled;
             }
 
-            return { canvas: srcCanvas, isRaw: rawFlag, rawExt, origW, origH };
+            return { canvas: srcCanvas, isRaw: rawFlag || heicFlag, rawExt, origW, origH };
         }
 
-        // =========================================================================
         // 3. '🚫 Tanpa Filter (Asli)' DEFAULT + 114 BUILT-IN FILTERS + CUSTOM PRESETS
         // =========================================================================
         const FILTER_CATEGORIES = [
@@ -3982,7 +4202,7 @@
             const file = e.target.files && e.target.files[0];
             mainPhotoInput.value = '';
             if (!file) return;
-            if (isRawFile(file)) showToast(`⏳ Mendekode Full-HD RAW (${file.name.split('.').pop().toUpperCase()})...`);
+            if (isRawFile(file) || isHeicFile(file)) showToast(`⏳ Mendekode ${file.name.split('.').pop().toUpperCase()} HD...`);
             try {
                 const res = await loadAnyPhotoFile(file, MAX_WORK_DIM);
                 state.sourceCanvas = res.canvas;
