@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AHStudio — Photo Editor Pro, Full-HD Camera RAW &amp; FNATIX Subject Pop</title>
+    <title>AHStudio — Photo Editor Pro, Full-HD Camera RAW &amp; AHS Pro Light</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -218,6 +218,144 @@
                 grid-template-columns: repeat(4, minmax(0, 1fr));
             }
         }
+
+        /* =========================================================
+           THEME MODES: DARK (default), AMOLED (#000000), LIGHT
+           ========================================================= */
+        body.theme-amoled,
+        body.theme-amoled #appRoot,
+        body.theme-amoled #stickyStage,
+        body.theme-amoled #leftWorkspace,
+        body.theme-amoled #rightControls,
+        body.theme-amoled #modeTabsBar,
+        body.theme-amoled #canvasViewport,
+        body.theme-amoled #fullscreenModal {
+            background-color: #000000 !important;
+        }
+        body.theme-amoled [class*="bg-[#13161f]"],
+        body.theme-amoled [class*="bg-[#141722]"],
+        body.theme-amoled [class*="bg-[#141824]"],
+        body.theme-amoled [class*="bg-[#151821]"],
+        body.theme-amoled [class*="bg-[#0c0e14]"],
+        body.theme-amoled [class*="bg-[#0d1017]"],
+        body.theme-amoled [class*="bg-[#0a0c10]"] {
+            background-color: #000000 !important;
+            border-color: rgba(255, 255, 255, 0.14) !important;
+        }
+        body.theme-amoled [class*="bg-[#1c2130]"],
+        body.theme-amoled [class*="bg-[#1b1f2b]"],
+        body.theme-amoled [class*="bg-[#1d212e]"] {
+            background-color: #090a0f !important;
+        }
+
+        /* LIGHT MODE */
+        body.theme-light {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+        }
+        body.theme-light #appRoot,
+        body.theme-light #rightControls,
+        body.theme-light #stickyStage,
+        body.theme-light #modeTabsBar {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+        }
+        body.theme-light #stickyStage {
+            border-bottom-color: rgba(15, 23, 42, 0.12) !important;
+            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08) !important;
+        }
+        body.theme-light.mode-landscape #leftWorkspace {
+            background-color: #e2e8f0 !important;
+            border-right-color: rgba(15, 23, 42, 0.12) !important;
+        }
+        body.theme-light #canvasViewport {
+            background-color: #cbd5e1 !important;
+            border-color: rgba(15, 23, 42, 0.18) !important;
+        }
+        body.theme-light [class*="bg-[#13161f]"],
+        body.theme-light [class*="bg-[#141722]"],
+        body.theme-light [class*="bg-[#141824]"],
+        body.theme-light [class*="bg-[#151821]"],
+        body.theme-light [class*="bg-[#131926]"] {
+            background-color: #ffffff !important;
+            border-color: rgba(15, 23, 42, 0.12) !important;
+            color: #0f172a !important;
+        }
+        body.theme-light [class*="bg-[#0c0e14]"],
+        body.theme-light [class*="bg-[#0d1017]"],
+        body.theme-light [class*="bg-[#0a0c10]"],
+        body.theme-light [class*="bg-[#090a0d]"],
+        body.theme-light [class*="bg-[#1c2130]"],
+        body.theme-light [class*="bg-[#1b1f2b]"],
+        body.theme-light [class*="bg-[#1d212e]"],
+        body.theme-light [class*="bg-[#1d2230]"],
+        body.theme-light [class*="bg-[#181c28]"] {
+            background-color: #f8fafc !important;
+            border-color: rgba(15, 23, 42, 0.12) !important;
+        }
+        body.theme-light #fullscreenModal {
+            background-color: #f1f5f9 !important;
+        }
+        body.theme-light #fullscreenModal #fsStageBg,
+        body.theme-light #fullscreenModal #fsViewport {
+            background-color: #e2e8f0 !important;
+        }
+        body.theme-light .text-white:not(.bg-sky-500):not(.bg-indigo-600):not(.bg-rose-500):not(.bg-emerald-500):not(.bg-amber-500):not(#badgeResult):not(#fsBadgeResult),
+        body.theme-light .text-gray-100,
+        body.theme-light .text-gray-200,
+        body.theme-light .text-gray-300 {
+            color: #1e293b !important;
+        }
+        body.theme-light #rightControls h1,
+        body.theme-light #leftWorkspace h1,
+        body.theme-light #rightControls h2,
+        body.theme-light #presetModal h3,
+        body.theme-light #exportModal h3,
+        body.theme-light #batchModal h3,
+        body.theme-light #projectModal h3 {
+            color: #0f172a !important;
+        }
+        body.theme-light .bg-sky-500,
+        body.theme-light .bg-sky-500 *,
+        body.theme-light .bg-indigo-600,
+        body.theme-light .bg-indigo-600 *,
+        body.theme-light .bg-rose-500,
+        body.theme-light .bg-rose-500 * {
+            color: #ffffff !important;
+        }
+        body.theme-light .text-gray-400,
+        body.theme-light .text-gray-500 {
+            color: #64748b !important;
+        }
+        body.theme-light .text-sky-300,
+        body.theme-light .text-sky-400 {
+            color: #0284c7 !important;
+        }
+        body.theme-light .text-amber-300,
+        body.theme-light .text-amber-400 {
+            color: #b45309 !important;
+        }
+        body.theme-light .text-emerald-300,
+        body.theme-light .text-emerald-400 {
+            color: #047857 !important;
+        }
+        body.theme-light #canvasViewport .text-sky-300,
+        body.theme-light #canvasViewport .text-sky-400,
+        body.theme-light #canvasViewport .text-emerald-300,
+        body.theme-light #canvasViewport .text-gray-100,
+        body.theme-light #canvasViewport .text-gray-200,
+        body.theme-light #canvasViewport .text-white,
+        body.theme-light #fullscreenModal .bg-black\/80,
+        body.theme-light #fullscreenModal .bg-black\/80 *,
+        body.theme-light #fullscreenModal #fsBadgeResult {
+            color: #f8fafc !important;
+        }
+        body.theme-light input[type="range"] {
+            background: #cbd5e1 !important;
+        }
+        body.theme-light input[type="text"] {
+            color: #0f172a !important;
+        }
     </style>
 </head>
 <body>
@@ -227,17 +365,20 @@
         <div id="leftWorkspace">
 
             <!-- HEADER -->
-            <header class="flex items-center justify-between gap-1.5">
+            <header class="flex flex-wrap items-center justify-between gap-1.5">
                 <div class="flex items-center gap-2 min-w-0">
                     <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center font-extrabold text-xs text-white shrink-0">
                         AH
                     </div>
                     <div class="min-w-0">
                         <h1 class="text-sm font-extrabold tracking-tight text-white leading-none truncate">AHStudio</h1>
-                        <p class="text-[10px] font-mono text-gray-400 tracking-wide mt-0.5 truncate">FULL-HD RAW &bull; 114+ FILTERS &bull; FNATIX POP</p>
+                        <p class="text-[10px] font-mono text-gray-400 tracking-wide mt-0.5 truncate">FULL-HD RAW &bull; 114+ FILTERS &bull; AHS PRO LIGHT</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-1 shrink-0">
+                    <button id="btnThemeMode" type="button" title="Ganti Tema (Dark / AMOLED / Light)" class="px-2 py-1.5 rounded-xl bg-[#151821] hover:bg-[#1e222e] border border-white/15 text-gray-200 text-[10px] font-mono font-bold">
+                        🌙 DARK
+                    </button>
                     <button id="btnOpenProjectModal" type="button" title="Simpan / Muat Proyek Editan" class="px-2 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/40 text-amber-300 text-[10px] font-mono font-bold">
                         📂 PROYEK
                     </button>
@@ -310,6 +451,13 @@
                             <span id="statusFlashName" class="text-gray-200">⚡ Off</span>
                         </div>
 
+                        <!-- AHSPro Render Overlay -->
+                        <div id="ahsRenderOverlay" class="hidden absolute inset-0 z-20 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center">
+                            <div class="w-8 h-8 rounded-full border-2 border-sky-400 border-t-transparent animate-spin mb-2.5"></div>
+                            <div class="text-xs font-extrabold text-white">Merender Pencahayaan Studio 100%...</div>
+                            <div class="text-[10px] text-gray-300 mt-1">Mengunci posisi objek, wajah &amp; aspect ratio asli</div>
+                        </div>
+
                         <!-- Bottom-Right Preview Controls -->
                         <div class="absolute bottom-2 right-2 flex items-center gap-1">
                             <button id="btnTogglePreviewSize" type="button" class="px-2 py-0.5 rounded-md bg-black/85 hover:bg-black border border-white/15 text-[10px] font-mono font-bold text-sky-300">
@@ -363,7 +511,7 @@
                         🎨 Filter (<span id="totalFilterCount">114</span>)
                     </button>
                     <button type="button" data-tab="subjectpop" class="main-tab-btn shrink-0 py-2 px-3 rounded-xl bg-[#1c2130] text-amber-300 hover:text-white text-xs font-extrabold">
-                        💡 Subject Pop
+                        💡 AHS Pro Light
                     </button>
                     <button type="button" data-tab="match" class="main-tab-btn shrink-0 py-2 px-3 rounded-xl bg-[#1c2130] text-gray-200 hover:text-white text-xs font-bold">
                         🎭 AI Referensi
@@ -425,7 +573,7 @@
                         <svg class="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                             <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/>
                         </svg>
-                        <input id="inputSearchFilter" type="text" placeholder="Cari preset (Tanpa Filter, FNATIX LIGHT, Fuji...)" class="w-full pl-8 pr-7 py-1.5 rounded-xl bg-[#13161f] border border-white/10 focus:border-sky-400 text-xs text-white placeholder-gray-500 outline-none">
+                        <input id="inputSearchFilter" type="text" placeholder="Cari preset (Tanpa Filter, AHS Pro LIGHT, Fuji...)" class="w-full pl-8 pr-7 py-1.5 rounded-xl bg-[#13161f] border border-white/10 focus:border-sky-400 text-xs text-white placeholder-gray-500 outline-none">
                         <button id="btnClearSearch" type="button" class="hidden absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs font-bold">✕</button>
                     </div>
                     <label for="presetFileInput" role="button" tabindex="0" class="cursor-pointer shrink-0 px-2.5 py-1.5 rounded-xl bg-emerald-600/25 hover:bg-emerald-600/35 border border-emerald-400/40 text-emerald-300 text-xs font-extrabold select-none">
@@ -440,20 +588,80 @@
                 <div id="filterGrid" class="grid grid-cols-3 gap-2"></div>
             </main>
 
-            <!-- TAB 2: SUBJECT POP (SILHOUETTE AI + DIRECT FLASH) -->
+            <!-- TAB 2: AHS PRO LIGHT (STUDIO LIGHTING & FLASH) -->
             <section id="panelSubjectPop" class="hidden flex-col gap-2">
-                <div class="px-3 py-2.5 rounded-2xl bg-[#13161f] border border-amber-400/30 flex flex-col gap-2.5">
+                <div class="px-3 py-2.5 rounded-2xl bg-[#13161f] border border-sky-400/25 flex flex-col gap-3">
+                    <!-- Header -->
                     <div class="flex items-center justify-between gap-2">
                         <div>
-                            <h2 class="text-xs font-extrabold text-amber-300">💡 Subject Pop &amp; FNATIX Direct Flash</h2>
-                            <p class="text-[10px] text-gray-400">Segmentasi siluet subjek + flash depan + langit/latar senja gelap</p>
+                            <h2 class="text-xs font-extrabold text-sky-300">💡 AHS Pro Light &amp; Studio Flash</h2>
+                            <p class="text-[10px] text-gray-400">Pilih kategori, preset, bayangan flash &amp; latar belakang</p>
                         </div>
                         <button id="btnResetSubjectPop" type="button" class="shrink-0 px-2 py-1 rounded-lg bg-[#1d212e] hover:bg-[#282e40] border border-white/10 text-[10px] font-bold text-gray-200">
                             ↺ Reset
                         </button>
                     </div>
 
-                    <div class="p-2.5 rounded-xl bg-[#0c0e14] border border-emerald-400/30 flex flex-col gap-2">
+                    <!-- 01 / KATEGORI PENCAHAYAAN -->
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-[10px] font-mono font-extrabold text-gray-400 tracking-wider uppercase">01 / KATEGORI PENCAHAYAAN</span>
+                            <span id="ahsCatBadge" class="text-[10px] font-mono font-bold text-sky-300">Outdoor &amp; CCD</span>
+                        </div>
+                        <div id="ahsCategoryGrid" class="grid grid-cols-4 gap-1.5"></div>
+                    </div>
+
+                    <!-- 02 / PILIH PRESET -->
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-[10px] font-mono font-extrabold text-gray-400 tracking-wider uppercase">02 / PILIH PRESET</span>
+                            <span class="text-[10px] text-gray-500">Render 100% &bull; Atur pekat setelah hasil</span>
+                        </div>
+                        <div id="subjectPopPresetsGrid" class="flex flex-col gap-1.5"></div>
+                    </div>
+
+                    <!-- 03 / BAYANGAN FLASH -->
+                    <div class="flex flex-col gap-1.5">
+                        <span class="text-[10px] font-mono font-extrabold text-gray-400 tracking-wider uppercase">03 / BAYANGAN FLASH</span>
+                        <div id="ahsShadowGrid" class="grid grid-cols-3 gap-1.5"></div>
+                    </div>
+
+                    <!-- 04 / LATAR BELAKANG -->
+                    <div class="flex flex-col gap-1.5">
+                        <span class="text-[10px] font-mono font-extrabold text-gray-400 tracking-wider uppercase">04 / LATAR BELAKANG</span>
+                        <div id="ahsBgGrid" class="grid grid-cols-3 gap-1.5"></div>
+                    </div>
+
+                    <!-- APPLY BUTTON -->
+                    <button id="btnApplyAhsProLight" type="button" class="w-full py-2.5 px-3 rounded-xl bg-sky-500 hover:bg-sky-400 active:scale-[0.99] transition text-white text-xs font-extrabold shadow-lg shadow-sky-500/20">
+                        Terapkan - CCD Digicam 2005
+                    </button>
+
+                    <!-- KEPEKATAN EFEK -->
+                    <div class="p-2.5 rounded-xl bg-[#0c0e14] border border-white/10 flex flex-col gap-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-sky-400 shrink-0"></span>
+                                <span class="text-xs font-extrabold text-white">Kepekatan Efek</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span id="spMasterVal" class="px-1.5 py-0.5 rounded bg-sky-500/20 text-xs font-mono font-extrabold text-sky-300">0%</span>
+                                <button id="btnAhsReset100" type="button" class="px-2 py-0.5 rounded-lg bg-[#1d212e] hover:bg-[#282e40] border border-white/10 text-[10px] font-bold text-gray-200">
+                                    Reset 100%
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <input id="sliderSpMaster" type="range" min="0" max="100" value="0">
+                            <div class="flex justify-between text-[10px] font-mono text-gray-500 mt-1">
+                                <span>0%</span>
+                                <span>100%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COMPACT AI SILUET & KUAS MASKER -->
+                    <div class="p-2.5 rounded-xl bg-[#0c0e14] border border-emerald-400/25 flex flex-col gap-2">
                         <div class="flex items-center justify-between gap-1.5">
                             <div class="flex items-center gap-1.5 min-w-0">
                                 <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
@@ -461,8 +669,8 @@
                                     🤖 AI Siluet Siap
                                 </span>
                             </div>
-                            <button id="btnRunAiSubject" type="button" class="shrink-0 px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-[10px] font-extrabold text-emerald-300">
-                                🤖 Scan Ulang Siluet
+                            <button id="btnRunAiSubject" type="button" class="shrink-0 px-2 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-[10px] font-extrabold text-emerald-300">
+                                🤖 Scan Ulang
                             </button>
                         </div>
 
@@ -484,47 +692,6 @@
                             <button id="btnDoneBrush" type="button" class="shrink-0 px-2 py-1 rounded-lg bg-emerald-500 text-slate-950 text-[10px] font-extrabold">
                                 Selesai
                             </button>
-                        </div>
-                    </div>
-
-                    <div id="subjectPopPresetsGrid" class="grid grid-cols-2 gap-1.5"></div>
-
-                    <div class="pt-1 border-t border-white/10">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="text-xs font-extrabold text-white">⚡ Kepekatan FNATIX Light</span>
-                            <span id="spMasterVal" class="px-1.5 py-0.5 rounded bg-amber-500/20 text-xs font-mono font-extrabold text-amber-300">0%</span>
-                        </div>
-                        <input id="sliderSpMaster" type="range" min="0" max="100" value="0">
-                    </div>
-
-                    <div class="grid grid-cols-1 gap-2">
-                        <div>
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="font-bold text-gray-200">📸 Direct Flash Subjek (Terang + Kulit Hangat)</span>
-                                <span id="spFgBrightVal" class="font-mono font-extrabold text-sky-400">82%</span>
-                            </div>
-                            <input id="sliderSpFgBright" type="range" min="0" max="100" value="82">
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="font-bold text-gray-200">🌃 Gelap Langit &amp; Latar (Day-to-Twilight)</span>
-                                <span id="spBgDarkVal" class="font-mono font-extrabold text-sky-400">88%</span>
-                            </div>
-                            <input id="sliderSpBgDark" type="range" min="0" max="100" value="88">
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="font-bold text-gray-200">🌫️ Anti-Butek / Deep Dehaze</span>
-                                <span id="spDehazeVal" class="font-mono font-extrabold text-sky-400">80%</span>
-                            </div>
-                            <input id="sliderSpDehaze" type="range" min="0" max="100" value="80">
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="font-bold text-gray-200">🌊 Nuansa Biru Malam Latar (Twilight Navy)</span>
-                                <span id="spTwilightVal" class="font-mono font-extrabold text-sky-400">72%</span>
-                            </div>
-                            <input id="sliderSpTwilight" type="range" min="0" max="100" value="72">
                         </div>
                     </div>
                 </div>
@@ -2106,7 +2273,7 @@
         // =========================================================================
         const FILTER_CATEGORIES = [
             { id: 'custom', label: '📁 Preset Saya' },
-            { id: 'fnatix', label: '✨ FNATIX & Clean' },
+            { id: 'fnatix', label: '✨ AHS Pro & Clean' },
             { id: 'japanese', label: '🇯🇵 Japanese & Fuji' },
             { id: 'daylight', label: '☀️ Siang & Cerah' },
             { id: 'y2k', label: '📼 Y2K & Digicam' },
@@ -2130,8 +2297,8 @@
 
         const BUILTIN_FILTERS = [
             // 1. FNATIX & CLEAN TONE (12)
-            mkFilter('fnatix_light', 'FNATIX LIGHT', 'fnatix', '#6b8ba4', '#f3e5dc', { exp: 7, con: 8, sat: -5, temp: -4, shB: 15, shG: 7, hiR: 7, hiG: 4, skinLift: 26, skyTeal: 24 }),
-            mkFilter('fnatix_pier', 'FNATIX Pier Sunset', 'fnatix', '#3d5a6c', '#e8b48a', { exp: 4, con: 14, sat: 4, temp: 6, shB: 18, shG: 8, hiR: 12, hiG: 6, skinLift: 28, skyTeal: 26 }),
+            mkFilter('fnatix_light', 'AHS Pro LIGHT', 'fnatix', '#6b8ba4', '#f3e5dc', { exp: 7, con: 8, sat: -5, temp: -4, shB: 15, shG: 7, hiR: 7, hiG: 4, skinLift: 26, skyTeal: 24 }),
+            mkFilter('fnatix_pier', 'AHS Pro Pier Sunset', 'fnatix', '#3d5a6c', '#e8b48a', { exp: 4, con: 14, sat: 4, temp: 6, shB: 18, shG: 8, hiR: 12, hiG: 6, skinLift: 28, skyTeal: 26 }),
             mkFilter('porcelain_skin', 'Porcelain Skin Lift', 'fnatix', '#f5dcd6', '#d8e2eb', { exp: 10, con: 4, sat: -10, temp: -3, tint: 4, fade: 8, skinLift: 32 }),
             mkFilter('cafe_mirror', 'Cafe Mirror Clean', 'fnatix', '#dcd5cc', '#8b96a0', { exp: 5, con: 10, sat: -12, temp: -6, shB: 10, shG: 5, skinLift: 18 }),
             mkFilter('kyoto_garden', 'Kyoto Garden Crisp', 'fnatix', '#3b6e5c', '#e8ece9', { exp: 4, con: 12, sat: 2, temp: -4, shG: 12, shB: 10, greenMoss: 22, skinLift: 16 }),
@@ -2303,13 +2470,69 @@
             { id: 'tunnel_vignette', name: 'Tunnel Vignette', desc: 'Bingkai tepi gelap sinematik', color: [255, 255, 255], radius: 0.55, vignette: 0.84, mode: 'soft-light' }
         ];
 
+        const AHSPRO_CATEGORIES = [
+            { id: 'flash', label: '⚡ Flash' },
+            { id: 'outdoor_ccd', label: 'Outdoor & CCD' },
+            { id: 'clean_glow', label: 'Clean & Glow' },
+            { id: 'sunset', label: 'Sunset' },
+            { id: 'studio', label: 'Studio' },
+            { id: 'retro_analog', label: 'Retro & Analog' },
+            { id: 'neon_malam', label: 'Neon & Malam' },
+            { id: 'film_editorial', label: 'Film & Editorial' }
+        ];
+
+        const AHSPRO_SHADOW_MODES = [
+            { id: 'auto', name: 'Otomatis', sub: 'Seimbang', fgMod: 0, dehazeMod: 0 },
+            { id: 'soft', name: 'Lembut', sub: 'Diffused', fgMod: -8, dehazeMod: -22 },
+            { id: 'hard', name: 'Tegas', sub: 'Crisp Hard', fgMod: 12, dehazeMod: 18 }
+        ];
+
+        const AHSPRO_BG_MODES = [
+            { id: 'auto', name: 'Otomatis', sub: 'Bawaan', bgDark: 28 },
+            { id: 'dim', name: 'Agak Gelap', sub: '-1.5 EV', bgDark: 62 },
+            { id: 'dark', name: 'Lebih Gelap', sub: '-3.0 EV', bgDark: 92 }
+        ];
+
         const SUBJECT_POP_PRESETS = [
-            { id: 'fnatix_viral', name: '⚡ FNATIX Light (Viral)', desc: 'Siluet subjek flash cerah + latar malam', master: 100, fgBright: 82, bgDark: 88, dehaze: 80, twilight: 72, warmFg: 14 },
-            { id: 'night_flash_pop', name: '🌃 Night Flash Pop', desc: 'Subjek tajam + latar hitam pekat', master: 96, fgBright: 85, bgDark: 94, dehaze: 82, twilight: 45, warmFg: 10 },
-            { id: 'sunset_flash_glow', name: '🌅 Sunset Flash Glow', desc: 'Kulit keemasan + langit dusk dalam', master: 92, fgBright: 76, bgDark: 82, dehaze: 74, twilight: 58, warmFg: 22 },
-            { id: 'digicam_y2k_flash', name: '📸 Digicam Y2K Flash', desc: 'Flash kamera saku kontras tinggi', master: 90, fgBright: 84, bgDark: 86, dehaze: 78, twilight: 64, warmFg: 8 },
-            { id: 'editorial_spot', name: '🎬 Editorial Spotlight', desc: 'Cahaya subjek halus + latar gelap', master: 78, fgBright: 62, bgDark: 68, dehaze: 58, twilight: 35, warmFg: 10 },
-            { id: 'off', name: '🚫 Off (Matikan)', desc: 'Nonaktifkan Subject Pop', master: 0, fgBright: 82, bgDark: 88, dehaze: 80, twilight: 72, warmFg: 14 }
+            // Flash
+            { id: 'direct_flash_pro', cat: 'flash', name: 'Direct On-Camera Flash', desc: 'Kilatan keras langsung ke wajah & objek utama', fgBright: 86, bgDark: 84, dehaze: 82, twilight: 45, warmFg: 10 },
+            { id: 'paparazzi_pop', cat: 'flash', name: 'Paparazzi Night Pop', desc: 'Subjek super tajam dengan latar belakang gelap', fgBright: 90, bgDark: 94, dehaze: 86, twilight: 35, warmFg: 8 },
+            { id: 'soft_fill_flash', cat: 'flash', name: 'Soft Fill Flash', desc: 'Cahaya pengisi lembut tanpa bayangan kasar', fgBright: 72, bgDark: 55, dehaze: 54, twilight: 30, warmFg: 14 },
+
+            // Outdoor & CCD (matches video)
+            { id: 'ccd_digicam_2005', cat: 'outdoor_ccd', name: 'CCD Digicam 2005', desc: 'Warna cerah khas sensor CCD & flash ringan', fgBright: 80, bgDark: 88, dehaze: 80, twilight: 58, warmFg: -2 },
+            { id: 'outdoor_daylight', cat: 'outdoor_ccd', name: 'Outdoor Daylight', desc: 'Cahaya siang bersih, warna kulit segar', fgBright: 76, bgDark: 64, dehaze: 68, twilight: 44, warmFg: 4 },
+            { id: 'night_street_flash', cat: 'outdoor_ccd', name: 'Night Street Flash', desc: 'Flash malam kota, struktur wajah & objek 100% tetap', fgBright: 84, bgDark: 92, dehaze: 84, twilight: 54, warmFg: 0 },
+
+            // Clean & Glow
+            { id: 'porcelain_glow', cat: 'clean_glow', name: 'Porcelain Skin Glow', desc: 'Kulit cerah bersih dengan kilau lembut', fgBright: 78, bgDark: 58, dehaze: 52, twilight: 36, warmFg: 14 },
+            { id: 'ahspro_signature', cat: 'clean_glow', name: 'AHS Pro Light Signature', desc: 'Subjek terang natural & latar senja kontras', fgBright: 82, bgDark: 88, dehaze: 80, twilight: 72, warmFg: 14 },
+            { id: 'airy_editorial', cat: 'clean_glow', name: 'Airy Editorial Pop', desc: 'Cahaya merata jernih khas majalah fashion', fgBright: 74, bgDark: 48, dehaze: 58, twilight: 28, warmFg: 10 },
+
+            // Sunset
+            { id: 'golden_hour_rim', cat: 'sunset', name: 'Golden Hour Rim', desc: 'Sinar keemasan hangat di kulit & rambut', fgBright: 78, bgDark: 72, dehaze: 68, twilight: 40, warmFg: 26 },
+            { id: 'twilight_dusk_flash', cat: 'sunset', name: 'Twilight Dusk Flash', desc: 'Flash depan hangat dengan langit biru senja', fgBright: 82, bgDark: 86, dehaze: 78, twilight: 78, warmFg: 18 },
+            { id: 'amber_pier_sunset', cat: 'sunset', name: 'Amber Pier Sunset', desc: 'Nuansa senja dermaga hangat & kontras dalam', fgBright: 76, bgDark: 82, dehaze: 74, twilight: 58, warmFg: 22 },
+
+            // Studio
+            { id: 'key_light_studio', cat: 'studio', name: 'Key Light 45° Studio', desc: 'Pencahayaan studio terarah yang tegas & rapi', fgBright: 80, bgDark: 84, dehaze: 76, twilight: 24, warmFg: 12 },
+            { id: 'ring_light_beauty', cat: 'studio', name: 'Ring Light Beauty', desc: 'Cahaya depan merata untuk detail wajah', fgBright: 84, bgDark: 68, dehaze: 60, twilight: 20, warmFg: 12 },
+            { id: 'dramatic_chiaroscuro', cat: 'studio', name: 'Dramatic Chiaroscuro', desc: 'Kontras studio gelap dengan sorotan subjek', fgBright: 78, bgDark: 94, dehaze: 86, twilight: 18, warmFg: 10 },
+
+            // Retro & Analog
+            { id: 'disposable_35mm_pop', cat: 'retro_analog', name: 'Disposable 35mm Flash', desc: 'Kilatan kamera sekali pakai & kontras klasik', fgBright: 84, bgDark: 84, dehaze: 76, twilight: 42, warmFg: 16 },
+            { id: 'portra_warm_pop', cat: 'retro_analog', name: 'Portra Warm Flash', desc: 'Warna kulit hangat ala film Kodak Portra', fgBright: 74, bgDark: 64, dehaze: 58, twilight: 32, warmFg: 22 },
+            { id: 'y2k_party_cam', cat: 'retro_analog', name: 'Y2K Party Cam', desc: 'Flash pesta era 2000-an yang kontras & hidup', fgBright: 88, bgDark: 90, dehaze: 82, twilight: 54, warmFg: 12 },
+
+            // Neon & Malam
+            { id: 'tokyo_neon_rain', cat: 'neon_malam', name: 'Tokyo Neon Rain', desc: 'Sorotan subjek tajam dengan nuansa biru-cyan', fgBright: 82, bgDark: 90, dehaze: 82, twilight: 82, warmFg: 8 },
+            { id: 'cyber_club_strobe', cat: 'neon_malam', name: 'Cyber Club Strobe', desc: 'Cahaya malam kontras tinggi dengan aksen neon', fgBright: 86, bgDark: 92, dehaze: 84, twilight: 74, warmFg: 6 },
+            { id: 'midnight_blue_hour', cat: 'neon_malam', name: 'Midnight Blue Hour', desc: 'Latar biru malam pekat dengan subjek cerah', fgBright: 80, bgDark: 94, dehaze: 78, twilight: 88, warmFg: 12 },
+
+            // Film & Editorial
+            { id: 'cinema_eterna_pop', cat: 'film_editorial', name: 'Cinema Eterna Pop', desc: 'Tone sinematik lembut dengan pemisahan subjek', fgBright: 70, bgDark: 72, dehaze: 64, twilight: 52, warmFg: 12 },
+            { id: 'monochrome_spotlight', cat: 'film_editorial', name: 'High-Contrast Spotlight', desc: 'Sorotan dramatis pada subjek & latar dalam', fgBright: 80, bgDark: 92, dehaze: 86, twilight: 30, warmFg: 8 },
+            { id: 'editorial_magazine', cat: 'film_editorial', name: 'Editorial Magazine', desc: 'Ketajaman & kontras bersih ala editorial', fgBright: 76, bgDark: 66, dehaze: 72, twilight: 38, warmFg: 12 }
         ];
 
         const ADJUST_DEFS = [
@@ -2379,6 +2602,7 @@
             isScrubbing: false,
 
             layoutMode: 'auto',
+            themeMode: 'dark',
             previewCompact: false,
             splitEnabled: true,
             splitRatio: 0.50,
@@ -2392,13 +2616,16 @@
             filterOpacity: 0,
 
             subjectPop: {
-                presetId: 'off',
+                categoryId: 'outdoor_ccd',
+                presetId: 'ccd_digicam_2005',
+                shadowMode: 'hard',
+                bgMode: 'dark',
                 master: 0,
                 fgBright: 82,
-                bgDark: 88,
-                dehaze: 80,
-                twilight: 72,
-                warmFg: 14,
+                bgDark: 92,
+                dehaze: 88,
+                twilight: 64,
+                warmFg: 10,
                 brushMode: 'none',
                 brushRadius: 44,
                 showMaskOverlay: false,
@@ -2540,30 +2767,22 @@
                     }
 
                     const darkHairBoost = (lum < 0.28 && ny > 0.12 && nx > 0.16 && nx < 0.84) ? (0.28 - lum) * 2.2 : 0;
-                    rawFgProb[pIdx] = Math.min(1.0, bgDiffProb * 0.72 + (isSkin ? 0.55 : 0) + edgeStr * 0.25 + darkHairBoost);
+                    rawFgProb[pIdx] = Math.min(1.0, bgDiffProb * 0.78 + (isSkin ? 0.58 : 0) + darkHairBoost);
                 }
             }
 
-            const anchorX = skinWeightSum > 0.5 ? (skinSumX / skinWeightSum) : 0.50;
-            const anchorY = skinWeightSum > 0.5 ? (skinSumY / skinWeightSum) : 0.45;
-            const hasHumanSkin = skinWeightSum > 1.0;
-
+            const hasHumanSkin = skinWeightSum > 0.8;
             const fgScore = new Float32Array(total);
             for (let y = 0; y < h; y++) {
                 const ny = y / h;
                 for (let x = 0; x < w; x++) {
                     const nx = x / w;
                     const pIdx = y * w + x;
-                    const headDist = Math.hypot((nx - anchorX) / 0.24, (ny - anchorY) / 0.26);
-                    const torsoY = Math.max(0, ny - anchorY);
-                    const torsoWidth = 0.22 + torsoY * 0.34;
-                    const torsoDist = ny >= anchorY * 0.85 ? Math.abs(nx - anchorX) / torsoWidth : 2.0;
-
-                    const geoPrior = Math.max(
-                        Math.exp(-headDist * headDist * 1.15),
-                        ny >= anchorY * 0.85 ? Math.exp(-torsoDist * torsoDist * 1.35) * 0.92 : 0
-                    );
-                    fgScore[pIdx] = Math.min(1.0, rawFgProb[pIdx] * 0.68 + geoPrior * 0.42 + (skinMap[pIdx] * 0.35));
+                    // Multi-subject friendly prior: lower-center & mid-frame subjects (supports 1 or 2+ people side-by-side)
+                    const horizCenter = 1 - Math.min(1, Math.abs(nx - 0.5) / 0.55);
+                    const vertBody = ny > 0.16 ? Math.min(1, (ny - 0.16) / 0.45) : 0;
+                    const broadPrior = horizCenter * 0.45 + vertBody * 0.45;
+                    fgScore[pIdx] = Math.min(1.0, rawFgProb[pIdx] * 0.68 + broadPrior * 0.30 + (skinMap[pIdx] * 0.45));
                 }
             }
 
@@ -2616,7 +2835,7 @@
 
             let srcM = coarseMask;
             let dstM = new Float32Array(total);
-            const rad = 2;
+            const rad = 4;
             for (let y = 0; y < h; y++) {
                 for (let x = 0; x < w; x++) {
                     const cIdx = y * w + x;
@@ -2637,11 +2856,43 @@
                             valSum += srcM[nIdx] * wt;
                         }
                     }
-                    const v = ((wSum > 0 ? valSum / wSum : srcM[cIdx]) - 0.18) / 0.64;
+                    const v = ((wSum > 0 ? valSum / wSum : srcM[cIdx]) - 0.26) / 0.56;
                     dstM[cIdx] = v < 0 ? 0 : (v > 1 ? 1 : v);
                 }
             }
 
+            const smoothM = new Float32Array(total);
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    let s = 0, cnt = 0;
+                    for (let dy = -1; dy <= 1; dy++) {
+                        const yy = y + dy;
+                        if (yy < 0 || yy >= h) continue;
+                        for (let dx = -1; dx <= 1; dx++) {
+                            const xx = x + dx;
+                            if (xx < 0 || xx >= w) continue;
+                            s += dstM[yy * w + xx];
+                            cnt++;
+                        }
+                    }
+                    smoothM[y * w + x] = s / cnt;
+                }
+            }
+            dstM = smoothM;
+
+            let cxSum = 0, cySum = 0, cW = 0;
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    const mVal = dstM[y * w + x];
+                    if (mVal > 0.35) {
+                        cxSum += (x / w) * mVal;
+                        cySum += (y / h) * mVal;
+                        cW += mVal;
+                    }
+                }
+            }
+            state.subjectPop.centerX = cW > 1 ? (cxSum / cW) : 0.5;
+            state.subjectPop.centerY = cW > 1 ? (cySum / cW) : 0.45;
             state.subjectPop.maskW = w;
             state.subjectPop.maskH = h;
             state.subjectPop.subjectMask = dstM;
@@ -3174,11 +3425,20 @@
             const sp = state.subjectPop;
             const spMix = sp.master / 100;
             const hasSubjectPop = spMix > 0.005 || sp.showMaskOverlay;
-            const spFgAmt = (sp.fgBright / 100) * spMix;
-            const spBgAmt = (sp.bgDark / 100) * spMix;
-            const spDhAmt = (sp.dehaze / 100) * spMix;
-            const spTwAmt = (sp.twilight / 100) * spMix;
-            const spWarmFg = (sp.warmFg || 14) * spFgAmt;
+            const spShadowMode = sp.shadowMode || 'auto';
+            const spBgMode = sp.bgMode || 'auto';
+            const spCx = sp.centerX ?? 0.5;
+            const spCy = sp.centerY ?? 0.45;
+
+            // Clean photographic flash + monotonic EV background (zero muddy gray sky, zero blown highlights)
+            const fgLiftAmt = ((sp.fgBright - 40) / 60) * 0.22 * spMix; // +0% to +22% shadow/midtone fill
+            const fgCon = (spShadowMode === 'hard' ? 1.11 : (spShadowMode === 'soft' ? 1.02 : 1.06));
+            const fgWarm = (sp.warmFg || 0) * 0.22 * spMix;
+
+            // True monotonic EV darkening on background: auto (-0.35 EV), dim (-1.20 EV), dark (-2.25 EV)
+            const bgEvTarget = spBgMode === 'dark' ? 2.25 : (spBgMode === 'dim' ? 1.20 : 0.35);
+            const bgEvMul = Math.pow(2, -bgEvTarget * spMix);
+            const bgTwilightMix = ((sp.twilight || 0) / 100) * (spBgMode === 'auto' ? 0.12 : (spBgMode === 'dim' ? 0.38 : 0.62)) * spMix;
 
             const invW = 1 / w;
             const invH = 1 / h;
@@ -3188,71 +3448,76 @@
                 let g = data[i + 1];
                 let b = data[i + 2];
 
-                // Silhouette FNATIX Subject Pop
+                // AHS Pro Light (Clean Filmic Flash + Monotonic Background EV)
                 if (hasSubjectPop) {
                     const pxIdx = i >> 2;
                     const nx = (pxIdx % w) * invW;
                     const ny = ((pxIdx / w) | 0) * invH;
-                    const fgMask = sampleSubjectMaskBilinear(nx, ny);
+                    const rawMask = sampleSubjectMaskBilinear(nx, ny);
+                    const distC = Math.hypot(nx - spCx, (ny - spCy) * 0.85);
+                    const radialFlash = Math.exp(-distC * distC * 1.55);
+
+                    // Blend 70% AI mask + 30% smooth studio radial falloff for seamless transition
+                    const fgMask = Math.max(0, Math.min(1, rawMask * 0.72 + radialFlash * 0.28));
                     const bgMask = 1 - fgMask;
 
                     if (spMix > 0.005) {
                         const lumPre = (0.299 * r + 0.587 * g + 0.114 * b) * 0.00392157;
 
-                        if (spDhAmt > 0) {
-                            const dhCon = 1 + spDhAmt * 0.42;
-                            const blackCrush = spDhAmt * 28 * (1 - lumPre);
-                            r = (r - 128) * dhCon + 128 - blackCrush;
-                            g = (g - 128) * dhCon + 128 - blackCrush;
-                            b = (b - 128) * dhCon + 128 - blackCrush;
+                        // Foreground / Subject: gentle shadow-midtone fill + highlight protection (never blows out skin/white)
+                        let fr = r, fg = g, fb = b;
+                        if (fgMask > 0.01) {
+                            const midProtect = Math.pow(1 - lumPre, 1.35);
+                            const fillGain = 1 + fgLiftAmt * midProtect * (0.7 + 0.3 * radialFlash);
+                            const softLift = (spShadowMode === 'soft' ? 10 : (spShadowMode === 'hard' ? 3 : 6)) * midProtect * spMix;
+
+                            fr = fr * fillGain + softLift + fgWarm * 0.8 * midProtect;
+                            fg = fg * fillGain + softLift + fgWarm * 0.4 * midProtect;
+                            fb = fb * fillGain + softLift - fgWarm * 0.2 * midProtect;
+
+                            const cMix = 1 + (fgCon - 1) * spMix;
+                            fr = (fr - 128) * cMix + 128;
+                            fg = (fg - 128) * cMix + 128;
+                            fb = (fb - 128) * cMix + 128;
+
+                            const fGray = 0.299 * fr + 0.587 * fg + 0.114 * fb;
+                            const fSat = 1 + 0.06 * spMix;
+                            fr = fGray + (fr - fGray) * fSat;
+                            fg = fGray + (fg - fGray) * fSat;
+                            fb = fGray + (fb - fGray) * fSat;
                         }
 
-                        if (fgMask > 0.01 && spFgAmt > 0) {
-                            const isSkinTone = (r > g && g >= b * 0.80 && lumPre > 0.14 && lumPre < 0.88);
-                            const skinBoost = isSkinTone ? 1.24 : 1.0;
-                            const hiDiff = lumPre > 0.58 ? (lumPre - 0.58) * 2.38095 : 0;
-                            const hiProtect = 1 - hiDiff * hiDiff * 0.62;
-                            const flashGain = 1 + spFgAmt * 0.58 * fgMask * skinBoost * hiProtect;
-                            const flashMidLift = spFgAmt * 18 * fgMask * (1 - lumPre * 0.65);
+                        // Background: strictly monotonic EV darkening (bright sky stays brighter than buildings!)
+                        let br = r, bg = g, bb = b;
+                        if (bgMask > 0.01) {
+                            const edgeFalloff = 1 - Math.min(0.18, distC * 0.16) * spMix;
+                            const totalMul = bgEvMul * edgeFalloff;
+                            br *= totalMul;
+                            bg *= totalMul;
+                            bb *= totalMul;
 
-                            r = r * flashGain + flashMidLift + spWarmFg * fgMask * 0.95;
-                            g = g * flashGain + flashMidLift + spWarmFg * fgMask * 0.42;
-                            b = b * flashGain + flashMidLift - spWarmFg * fgMask * 0.25;
+                            // Preserve color richness in darkened background so it never turns gray mud
+                            const bGray = 0.299 * br + 0.587 * bg + 0.114 * bb;
+                            const bSat = 1 + 0.12 * spMix;
+                            br = bGray + (br - bGray) * bSat;
+                            bg = bGray + (bg - bGray) * bSat;
+                            bb = bGray + (bb - bGray) * bSat;
 
-                            const fgGray = 0.299 * r + 0.587 * g + 0.114 * b;
-                            const fgSatBoost = 1 + spFgAmt * 0.18 * fgMask;
-                            r = fgGray + (r - fgGray) * fgSatBoost;
-                            g = fgGray + (g - fgGray) * fgSatBoost;
-                            b = fgGray + (b - fgGray) * fgSatBoost;
-                        }
-
-                        if (bgMask > 0.01 && spBgAmt > 0) {
-                            const effectiveDark = spBgAmt * bgMask;
-                            const evMul = Math.pow(0.16, effectiveDark * 0.88);
-                            const gamma = 1 + effectiveDark * 1.15;
-                            const rNorm = r < 0 ? 0 : (r > 255 ? 1 : r * 0.00392157);
-                            const gNorm = g < 0 ? 0 : (g > 255 ? 1 : g * 0.00392157);
-                            const bNorm = b < 0 ? 0 : (b > 255 ? 1 : b * 0.00392157);
-
-                            let br = Math.pow(rNorm, gamma) * 255 * evMul;
-                            let bg = Math.pow(gNorm, gamma) * 255 * evMul;
-                            let bb = Math.pow(bNorm, gamma) * 255 * evMul;
-
-                            if (spTwAmt > 0) {
-                                const twW = spTwAmt * bgMask;
-                                br = br * (1 - twW * 0.35) + 8 * twW;
-                                bg = bg * (1 - twW * 0.18) + 22 * twW;
-                                bb = bb * (1 + twW * 0.18) + 46 * twW;
+                            // Subtle proportional cool twilight balance on shadows/midtones
+                            if (bgTwilightMix > 0.01) {
+                                br *= (1 - bgTwilightMix * 0.14);
+                                bg *= (1 - bgTwilightMix * 0.03);
+                                bb *= (1 + bgTwilightMix * 0.16);
                             }
-
-                            r = r * (1 - bgMask) + br * bgMask;
-                            g = g * (1 - bgMask) + bg * bgMask;
-                            b = b * (1 - bgMask) + bb * bgMask;
                         }
+
+                        r = fr * fgMask + br * bgMask;
+                        g = fg * fgMask + bg * bgMask;
+                        b = fb * fgMask + bb * bgMask;
                     }
 
                     if (sp.showMaskOverlay) {
-                        if (fgMask > 0.5) {
+                        if (rawMask > 0.5) {
                             r = r * 0.65 + 7; g = g * 0.65 + 73.5; b = b * 0.65 + 89.25;
                         } else {
                             r = r * 0.65 + 77; g = g * 0.65 + 14; b = b * 0.65 + 28;
@@ -3637,14 +3902,11 @@
             updateSplitLinePosition();
         }
 
-        function renderPreview() {
-            if (!state.sourceCanvas) return;
-
-            const previewDim = state.isScrubbing ? 480 : 960;
-            processFullPipeline(state.sourceCanvas, resultBuffer, resultCtx, previewDim);
-
+        function compositePreviewOnly() {
             const w = resultBuffer.width;
             const h = resultBuffer.height;
+            if (!w || !h) return;
+
             previewCanvas.width = w;
             previewCanvas.height = h;
             previewCtx.globalCompositeOperation = 'source-over';
@@ -3654,8 +3916,12 @@
             fitPreviewCanvasDimensions(w, h);
 
             if (state.isHoldingOriginal) {
-                const origGeom = buildTransformedSource(state.sourceCanvas, previewDim);
-                previewCtx.drawImage(origGeom, 0, 0, w, h);
+                if (origBuffer.width === w && origBuffer.height === h) {
+                    previewCtx.drawImage(origBuffer, 0, 0, w, h);
+                } else {
+                    const origGeom = buildTransformedSource(state.sourceCanvas, state.isScrubbing ? 480 : 960);
+                    previewCtx.drawImage(origGeom, 0, 0, w, h);
+                }
                 splitLine.classList.add('hidden');
                 badgeOriginal.classList.remove('hidden');
                 badgeResult.classList.add('hidden');
@@ -3663,13 +3929,6 @@
             }
 
             if (state.splitEnabled && state.subjectPop.brushMode === 'none') {
-                const origGeom = buildTransformedSource(state.sourceCanvas, previewDim);
-                origBuffer.width = w;
-                origBuffer.height = h;
-                origCtx.fillStyle = '#090a0d';
-                origCtx.fillRect(0, 0, w, h);
-                origCtx.drawImage(origGeom, 0, 0, w, h);
-
                 const splitX = Math.round(w * state.splitRatio);
                 previewCtx.save();
                 previewCtx.beginPath();
@@ -3695,7 +3954,33 @@
                 badgeOriginal.classList.add('hidden');
                 badgeResult.classList.remove('hidden');
             }
+        }
 
+        let splitRafPending = false;
+        function scheduleSplitCompositeOnly() {
+            if (splitRafPending) return;
+            splitRafPending = true;
+            requestAnimationFrame(() => {
+                splitRafPending = false;
+                compositePreviewOnly();
+            });
+        }
+
+        function renderPreview() {
+            if (!state.sourceCanvas) return;
+            const previewDim = state.isScrubbing ? 480 : 960;
+            processFullPipeline(state.sourceCanvas, resultBuffer, resultCtx, previewDim);
+
+            const w = resultBuffer.width;
+            const h = resultBuffer.height;
+            const origGeom = buildTransformedSource(state.sourceCanvas, previewDim);
+            origBuffer.width = w;
+            origBuffer.height = h;
+            origCtx.fillStyle = '#090a0d';
+            origCtx.fillRect(0, 0, w, h);
+            origCtx.drawImage(origGeom, 0, 0, w, h);
+
+            compositePreviewOnly();
             updateStatusBadges();
         }
 
@@ -3719,7 +4004,7 @@
                 labelMain = `🎭 Match: ${state.colorMatch.refName}`;
             } else if (state.subjectPop.master > 0) {
                 const spPreset = SUBJECT_POP_PRESETS.find(p => p.id === state.subjectPop.presetId);
-                const spName = spPreset && spPreset.id !== 'off' ? spPreset.name.replace(/^[^\s]+\s/, '') : 'FNATIX Light';
+                const spName = spPreset ? spPreset.name : 'AHS Pro Light';
                 labelMain = `💡 ${spName} (${state.subjectPop.master}%)`;
             }
             $('statusFilterName').textContent = labelMain;
@@ -4041,51 +4326,137 @@
             });
         }
 
+        function getActiveAhsPreset() {
+            return SUBJECT_POP_PRESETS.find(p => p.id === state.subjectPop.presetId) || SUBJECT_POP_PRESETS[3];
+        }
+
+        function computeEffectiveAhsParams() {
+            const sp = state.subjectPop;
+            const pr = getActiveAhsPreset();
+            const sh = AHSPRO_SHADOW_MODES.find(s => s.id === sp.shadowMode) || AHSPRO_SHADOW_MODES[2];
+            const bg = AHSPRO_BG_MODES.find(b => b.id === sp.bgMode) || AHSPRO_BG_MODES[2];
+            sp.fgBright = Math.max(20, Math.min(100, pr.fgBright + sh.fgMod));
+            sp.dehaze = Math.max(10, Math.min(100, pr.dehaze + sh.dehazeMod));
+            sp.bgDark = bg.bgDark;
+            sp.twilight = pr.twilight;
+            sp.warmFg = pr.warmFg;
+        }
+
         function syncSubjectPopSlidersUI() {
             const sp = state.subjectPop;
-            $('sliderSpMaster').value = sp.master;
-            $('spMasterVal').textContent = `${sp.master}%`;
-            $('sliderSpFgBright').value = sp.fgBright;
-            $('spFgBrightVal').textContent = `${sp.fgBright}%`;
-            $('sliderSpBgDark').value = sp.bgDark;
-            $('spBgDarkVal').textContent = `${sp.bgDark}%`;
-            $('sliderSpDehaze').value = sp.dehaze;
-            $('spDehazeVal').textContent = `${sp.dehaze}%`;
-            $('sliderSpTwilight').value = sp.twilight;
-            $('spTwilightVal').textContent = `${sp.twilight}%`;
+            const pr = getActiveAhsPreset();
+            const cat = AHSPRO_CATEGORIES.find(c => c.id === sp.categoryId) || AHSPRO_CATEGORIES[1];
+            if ($('sliderSpMaster')) $('sliderSpMaster').value = sp.master;
+            if ($('spMasterVal')) $('spMasterVal').textContent = `${sp.master}%`;
+            if ($('ahsCatBadge')) $('ahsCatBadge').textContent = cat.label.replace(/^[^\s]+\s/, '');
+            if ($('btnApplyAhsProLight')) $('btnApplyAhsProLight').textContent = `Terapkan - ${pr.name}`;
             updateAiSubjectStatusUI();
         }
 
         function renderSubjectPopPresets() {
-            const grid = $('subjectPopPresetsGrid');
-            if (!grid) return;
-            grid.innerHTML = '';
-            SUBJECT_POP_PRESETS.forEach(pr => {
-                const selected = state.subjectPop.presetId === pr.id && (pr.id === 'off' ? state.subjectPop.master === 0 : state.subjectPop.master > 0);
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = selected
-                    ? 'p-2 rounded-xl bg-amber-500/20 border-2 border-amber-400 text-left flex flex-col gap-0.5'
-                    : 'p-2 rounded-xl bg-[#0c0e14] hover:bg-[#1a1f2e] border border-white/10 text-left flex flex-col gap-0.5';
-                btn.innerHTML = `
-                    <span class="text-[11px] font-extrabold ${selected ? 'text-amber-300' : 'text-gray-100'} truncate">${pr.name}</span>
-                    <span class="text-[10px] text-gray-400 truncate">${pr.desc}</span>
-                `;
-                btn.addEventListener('click', () => {
-                    if (!state.subjectPop.subjectMask && pr.id !== 'off') computeSilhouetteSubjectMask(true);
-                    state.subjectPop.presetId = pr.id;
-                    state.subjectPop.master = pr.master;
-                    state.subjectPop.fgBright = pr.fgBright;
-                    state.subjectPop.bgDark = pr.bgDark;
-                    state.subjectPop.dehaze = pr.dehaze;
-                    state.subjectPop.twilight = pr.twilight;
-                    state.subjectPop.warmFg = pr.warmFg;
-                    syncSubjectPopSlidersUI();
-                    renderSubjectPopPresets();
-                    schedulePreviewRender();
+            const sp = state.subjectPop;
+
+            // 01 / Kategori Pencahayaan
+            const catGrid = $('ahsCategoryGrid');
+            if (catGrid) {
+                catGrid.innerHTML = '';
+                AHSPRO_CATEGORIES.forEach(c => {
+                    const active = sp.categoryId === c.id;
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = active
+                        ? 'py-2 px-1.5 rounded-xl bg-sky-500 text-white text-[11px] font-extrabold text-center leading-tight shadow-sm'
+                        : 'py-2 px-1.5 rounded-xl bg-[#0c0e14] hover:bg-[#1a1f2e] border border-white/10 text-gray-300 text-[11px] font-bold text-center leading-tight';
+                    btn.textContent = c.label;
+                    btn.addEventListener('click', () => {
+                        sp.categoryId = c.id;
+                        const firstInCat = SUBJECT_POP_PRESETS.find(p => p.cat === c.id);
+                        if (firstInCat) sp.presetId = firstInCat.id;
+                        computeEffectiveAhsParams();
+                        syncSubjectPopSlidersUI();
+                        renderSubjectPopPresets();
+                        if (sp.master > 0) schedulePreviewRender();
+                    });
+                    catGrid.appendChild(btn);
                 });
-                grid.appendChild(btn);
-            });
+            }
+
+            // 02 / Pilih Preset
+            const grid = $('subjectPopPresetsGrid');
+            if (grid) {
+                grid.innerHTML = '';
+                const list = SUBJECT_POP_PRESETS.filter(p => p.cat === sp.categoryId);
+                list.forEach(pr => {
+                    const selected = sp.presetId === pr.id;
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = selected
+                        ? 'w-full px-3 py-2 rounded-xl bg-sky-500/15 border-2 border-sky-400 text-left flex flex-col gap-0.5'
+                        : 'w-full px-3 py-2 rounded-xl bg-[#0c0e14] hover:bg-[#1a1f2e] border border-white/10 text-left flex flex-col gap-0.5';
+                    btn.innerHTML = `
+                        <span class="text-xs font-extrabold ${selected ? 'text-sky-300' : 'text-gray-100'} truncate">${pr.name}</span>
+                        <span class="text-[10px] text-gray-400 truncate">${pr.desc}</span>
+                    `;
+                    btn.addEventListener('click', () => {
+                        sp.presetId = pr.id;
+                        computeEffectiveAhsParams();
+                        syncSubjectPopSlidersUI();
+                        renderSubjectPopPresets();
+                        if (sp.master > 0) schedulePreviewRender();
+                    });
+                    grid.appendChild(btn);
+                });
+            }
+
+            // 03 / Bayangan Flash
+            const shGrid = $('ahsShadowGrid');
+            if (shGrid) {
+                shGrid.innerHTML = '';
+                AHSPRO_SHADOW_MODES.forEach(m => {
+                    const active = sp.shadowMode === m.id;
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = active
+                        ? 'py-2 px-1.5 rounded-xl bg-sky-500/20 border-2 border-sky-400 text-center flex flex-col items-center gap-0.5'
+                        : 'py-2 px-1.5 rounded-xl bg-[#0c0e14] hover:bg-[#1a1f2e] border border-white/10 text-center flex flex-col items-center gap-0.5';
+                    btn.innerHTML = `
+                        <span class="text-[11px] font-extrabold ${active ? 'text-white' : 'text-gray-200'}">${m.name}</span>
+                        <span class="text-[10px] ${active ? 'text-sky-300 font-bold' : 'text-gray-500'}">${m.sub}</span>
+                    `;
+                    btn.addEventListener('click', () => {
+                        sp.shadowMode = m.id;
+                        computeEffectiveAhsParams();
+                        renderSubjectPopPresets();
+                        if (sp.master > 0) schedulePreviewRender();
+                    });
+                    shGrid.appendChild(btn);
+                });
+            }
+
+            // 04 / Latar Belakang
+            const bgGrid = $('ahsBgGrid');
+            if (bgGrid) {
+                bgGrid.innerHTML = '';
+                AHSPRO_BG_MODES.forEach(m => {
+                    const active = sp.bgMode === m.id;
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = active
+                        ? 'py-2 px-1.5 rounded-xl bg-sky-500/20 border-2 border-sky-400 text-center flex flex-col items-center gap-0.5'
+                        : 'py-2 px-1.5 rounded-xl bg-[#0c0e14] hover:bg-[#1a1f2e] border border-white/10 text-center flex flex-col items-center gap-0.5';
+                    btn.innerHTML = `
+                        <span class="text-[11px] font-extrabold ${active ? 'text-white' : 'text-gray-200'}">${m.name}</span>
+                        <span class="text-[10px] ${active ? 'text-sky-300 font-bold' : 'text-gray-500'}">${m.sub}</span>
+                    `;
+                    btn.addEventListener('click', () => {
+                        sp.bgMode = m.id;
+                        computeEffectiveAhsParams();
+                        renderSubjectPopPresets();
+                        if (sp.master > 0) schedulePreviewRender();
+                    });
+                    bgGrid.appendChild(btn);
+                });
+            }
         }
 
         function renderHslControls() {
@@ -4446,7 +4817,7 @@
             const rect = previewCanvas.getBoundingClientRect();
             if (!rect.width) return;
             state.splitRatio = Math.max(0.0, Math.min(1.0, (clientX - rect.left) / rect.width));
-            schedulePreviewRender();
+            scheduleSplitCompositeOnly();
         }
 
         function handleBrushStroke(e) {
@@ -4546,14 +4917,8 @@
         $('btnRunAiSubject').addEventListener('click', () => {
             computeSilhouetteSubjectMask(false);
             if (state.subjectPop.master === 0) {
-                const fn = SUBJECT_POP_PRESETS[0];
-                state.subjectPop.presetId = fn.id;
-                state.subjectPop.master = fn.master;
-                state.subjectPop.fgBright = fn.fgBright;
-                state.subjectPop.bgDark = fn.bgDark;
-                state.subjectPop.dehaze = fn.dehaze;
-                state.subjectPop.twilight = fn.twilight;
-                state.subjectPop.warmFg = fn.warmFg;
+                computeEffectiveAhsParams();
+                state.subjectPop.master = 100;
                 syncSubjectPopSlidersUI(); renderSubjectPopPresets();
             }
             renderPreview();
@@ -4580,37 +4945,64 @@
             renderPreview();
         });
 
-        function ensureSubjectPopActiveOnSlide() {
-            if (state.subjectPop.master === 0) {
+        let ahsRenderTimer = null;
+        $('btnApplyAhsProLight').addEventListener('click', () => {
+            if (!state.sourceCanvas) return;
+            const btn = $('btnApplyAhsProLight');
+            const overlay = $('ahsRenderOverlay');
+            const pr = getActiveAhsPreset();
+
+            btn.disabled = true;
+            btn.textContent = 'Sedang Merender 100%...';
+            if (overlay) overlay.classList.remove('hidden');
+
+            clearTimeout(ahsRenderTimer);
+            ahsRenderTimer = setTimeout(() => {
                 if (!state.subjectPop.subjectMask) computeSilhouetteSubjectMask(true);
-                state.subjectPop.presetId = 'fnatix_viral';
+                computeEffectiveAhsParams();
                 state.subjectPop.master = 100;
-                syncSubjectPopSlidersUI(); renderSubjectPopPresets();
-            }
-        }
+                syncSubjectPopSlidersUI();
+                renderSubjectPopPresets();
+                renderPreview();
+                btn.disabled = false;
+                if (overlay) overlay.classList.add('hidden');
+                showToast(`✨ Selesai: ${pr.name} (Geser Kepekatan 0%–100%)`);
+            }, 380);
+        });
+
+        $('btnAhsReset100').addEventListener('click', () => {
+            if (!state.subjectPop.subjectMask) computeSilhouetteSubjectMask(true);
+            computeEffectiveAhsParams();
+            state.subjectPop.master = 100;
+            syncSubjectPopSlidersUI();
+            renderPreview();
+        });
 
         $('sliderSpMaster').addEventListener('input', (e) => {
             state.subjectPop.master = parseInt(e.target.value, 10);
-            if (state.subjectPop.master > 0 && state.subjectPop.presetId === 'off') {
-                if (!state.subjectPop.subjectMask) computeSilhouetteSubjectMask(true);
-                state.subjectPop.presetId = 'fnatix_viral';
-                renderSubjectPopPresets();
+            if (state.subjectPop.master > 0 && !state.subjectPop.subjectMask) {
+                computeSilhouetteSubjectMask(true);
             }
+            computeEffectiveAhsParams();
             $('spMasterVal').textContent = `${state.subjectPop.master}%`;
             schedulePreviewRender();
         });
-        $('sliderSpFgBright').addEventListener('input', (e) => { state.subjectPop.fgBright = parseInt(e.target.value, 10); $('spFgBrightVal').textContent = `${state.subjectPop.fgBright}%`; ensureSubjectPopActiveOnSlide(); schedulePreviewRender(); });
-        $('sliderSpBgDark').addEventListener('input', (e) => { state.subjectPop.bgDark = parseInt(e.target.value, 10); $('spBgDarkVal').textContent = `${state.subjectPop.bgDark}%`; ensureSubjectPopActiveOnSlide(); schedulePreviewRender(); });
-        $('sliderSpDehaze').addEventListener('input', (e) => { state.subjectPop.dehaze = parseInt(e.target.value, 10); $('spDehazeVal').textContent = `${state.subjectPop.dehaze}%`; ensureSubjectPopActiveOnSlide(); schedulePreviewRender(); });
-        $('sliderSpTwilight').addEventListener('input', (e) => { state.subjectPop.twilight = parseInt(e.target.value, 10); $('spTwilightVal').textContent = `${state.subjectPop.twilight}%`; ensureSubjectPopActiveOnSlide(); schedulePreviewRender(); });
+
         $('btnResetSubjectPop').addEventListener('click', () => {
-            state.subjectPop.presetId = 'off'; state.subjectPop.master = 0;
-            state.subjectPop.fgBright = 82; state.subjectPop.bgDark = 88;
-            state.subjectPop.dehaze = 80; state.subjectPop.twilight = 72; state.subjectPop.warmFg = 14;
-            state.subjectPop.showMaskOverlay = false; $('btnToggleShowMask').textContent = '👁️ Cek Masker';
-            setSubjectBrushMode('none'); computeSilhouetteSubjectMask(true);
-            syncSubjectPopSlidersUI(); renderSubjectPopPresets(); renderPreview();
-            showToast('↺ Subject Pop direset');
+            state.subjectPop.categoryId = 'outdoor_ccd';
+            state.subjectPop.presetId = 'ccd_digicam_2005';
+            state.subjectPop.shadowMode = 'hard';
+            state.subjectPop.bgMode = 'dark';
+            state.subjectPop.master = 0;
+            computeEffectiveAhsParams();
+            state.subjectPop.showMaskOverlay = false;
+            $('btnToggleShowMask').textContent = '👁️ Cek Masker';
+            setSubjectBrushMode('none');
+            computeSilhouetteSubjectMask(true);
+            syncSubjectPopSlidersUI();
+            renderSubjectPopPresets();
+            renderPreview();
+            showToast('↺ AHS Pro Light direset');
         });
 
         // Filter Tab Controls
@@ -5293,7 +5685,10 @@
                 hsl: JSON.parse(JSON.stringify(state.hsl)),
                 grading: JSON.parse(JSON.stringify(state.grading)),
                 subjectPop: {
+                    categoryId: sp.categoryId,
                     presetId: sp.presetId,
+                    shadowMode: sp.shadowMode,
+                    bgMode: sp.bgMode,
                     master: sp.master,
                     fgBright: sp.fgBright,
                     bgDark: sp.bgDark,
@@ -5340,7 +5735,10 @@
 
                     if (proj.subjectPop) {
                         const spIn = proj.subjectPop;
-                        state.subjectPop.presetId = spIn.presetId || 'off';
+                        state.subjectPop.categoryId = spIn.categoryId || 'outdoor_ccd';
+                        state.subjectPop.presetId = spIn.presetId || 'ccd_digicam_2005';
+                        state.subjectPop.shadowMode = spIn.shadowMode || 'hard';
+                        state.subjectPop.bgMode = spIn.bgMode || 'dark';
                         state.subjectPop.master = spIn.master || 0;
                         state.subjectPop.fgBright = spIn.fgBright ?? 82;
                         state.subjectPop.bgDark = spIn.bgDark ?? 88;
@@ -5652,12 +6050,11 @@
             fsSplitLine.style.left = `${(state.splitRatio * 100).toFixed(3)}%`;
         }
 
-        function renderFullscreenPreview() {
-            if (!isFullscreenOpen() || !state.sourceCanvas) return;
-            const fsDim = state.isScrubbing ? 720 : 1600;
-            processFullPipeline(state.sourceCanvas, fsResultBuf, fsResultCtx, fsDim);
+        function compositeFullscreenOnly() {
             const w = fsResultBuf.width;
             const h = fsResultBuf.height;
+            if (!w || !h || !isFullscreenOpen()) return;
+
             fsCanvas.width = w;
             fsCanvas.height = h;
             fsCtx.globalCompositeOperation = 'source-over';
@@ -5666,22 +6063,8 @@
 
             fitFullscreenCanvasDimensions(w, h);
 
-            const filter = state.selectedFilterId === 'none'
-                ? NONE_FILTER
-                : (getAllFilters().find(f => f.id === state.selectedFilterId) || NONE_FILTER);
-            const fName = state.colorMatch.active ? `Match: ${state.colorMatch.refName}` : filter.name;
-            fsStatusLabel.textContent = `${fName} • ${w}×${h}`;
-
-            $('fsSliderFilterOpacity').value = state.filterOpacity;
-            $('fsFilterOpacityLabel').textContent = `${state.filterOpacity}%`;
-            $('btnFsSplit').textContent = state.splitEnabled ? 'SPLIT: ON' : 'SPLIT: OFF';
-            $('btnFsSplit').className = state.splitEnabled
-                ? 'px-2.5 py-1 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/40 text-sky-300 text-[11px] font-mono font-bold'
-                : 'px-2.5 py-1 rounded-lg bg-[#151821] hover:bg-[#1e222e] border border-white/15 text-gray-300 text-[11px] font-mono font-bold';
-
             if (fsHoldOriginal || state.isHoldingOriginal) {
-                const origGeom = buildTransformedSource(state.sourceCanvas, fsDim);
-                fsCtx.drawImage(origGeom, 0, 0, w, h);
+                fsCtx.drawImage(fsOrigBuf, 0, 0, w, h);
                 fsSplitLine.classList.add('hidden');
                 fsBadgeOriginal.classList.remove('hidden');
                 fsBadgeResult.classList.add('hidden');
@@ -5689,13 +6072,6 @@
             }
 
             if (state.splitEnabled) {
-                const origGeom = buildTransformedSource(state.sourceCanvas, fsDim);
-                fsOrigBuf.width = w;
-                fsOrigBuf.height = h;
-                fsOrigCtx.fillStyle = '#050608';
-                fsOrigCtx.fillRect(0, 0, w, h);
-                fsOrigCtx.drawImage(origGeom, 0, 0, w, h);
-
                 const splitX = Math.round(w * state.splitRatio);
                 fsCtx.save();
                 fsCtx.beginPath();
@@ -5722,6 +6098,46 @@
                 fsBadgeResult.classList.remove('hidden');
             }
             fsBadgeResult.textContent = badgeResult.textContent || 'HASIL';
+        }
+
+        let fsSplitRafPending = false;
+        function scheduleFsSplitCompositeOnly() {
+            if (fsSplitRafPending) return;
+            fsSplitRafPending = true;
+            requestAnimationFrame(() => {
+                fsSplitRafPending = false;
+                compositeFullscreenOnly();
+            });
+        }
+
+        function renderFullscreenPreview() {
+            if (!isFullscreenOpen() || !state.sourceCanvas) return;
+            const fsDim = state.isScrubbing ? 720 : 1600;
+            processFullPipeline(state.sourceCanvas, fsResultBuf, fsResultCtx, fsDim);
+            const w = fsResultBuf.width;
+            const h = fsResultBuf.height;
+
+            const origGeom = buildTransformedSource(state.sourceCanvas, fsDim);
+            fsOrigBuf.width = w;
+            fsOrigBuf.height = h;
+            fsOrigCtx.fillStyle = '#050608';
+            fsOrigCtx.fillRect(0, 0, w, h);
+            fsOrigCtx.drawImage(origGeom, 0, 0, w, h);
+
+            const filter = state.selectedFilterId === 'none'
+                ? NONE_FILTER
+                : (getAllFilters().find(f => f.id === state.selectedFilterId) || NONE_FILTER);
+            const fName = state.colorMatch.active ? `Match: ${state.colorMatch.refName}` : filter.name;
+            fsStatusLabel.textContent = `${fName} • ${w}×${h}`;
+
+            $('fsSliderFilterOpacity').value = state.filterOpacity;
+            $('fsFilterOpacityLabel').textContent = `${state.filterOpacity}%`;
+            $('btnFsSplit').textContent = state.splitEnabled ? 'SPLIT: ON' : 'SPLIT: OFF';
+            $('btnFsSplit').className = state.splitEnabled
+                ? 'px-2.5 py-1 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/40 text-sky-300 text-[11px] font-mono font-bold'
+                : 'px-2.5 py-1 rounded-lg bg-[#151821] hover:bg-[#1e222e] border border-white/15 text-gray-300 text-[11px] font-mono font-bold';
+
+            compositeFullscreenOnly();
         }
 
         function openFullscreenPreview() {
@@ -5804,8 +6220,8 @@
                 const rect = fsCanvas.getBoundingClientRect();
                 if (rect.width) {
                     state.splitRatio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-                    renderFullscreenPreview();
-                    schedulePreviewRender();
+                    scheduleFsSplitCompositeOnly();
+                    scheduleSplitCompositeOnly();
                 }
                 return;
             }
@@ -5822,8 +6238,8 @@
                 const rect = fsCanvas.getBoundingClientRect();
                 if (rect.width) {
                     state.splitRatio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-                    renderFullscreenPreview();
-                    schedulePreviewRender();
+                    scheduleFsSplitCompositeOnly();
+                    scheduleSplitCompositeOnly();
                 }
             } else if (fsPanning) {
                 fsPanX = e.clientX - fsPanStartX;
@@ -5932,6 +6348,26 @@
         // =========================================================================
         // 16. BOOTSTRAP APPLICATION (WITH AUTO-SESSION RESTORE)
         // =========================================================================
+        function applyThemeMode(mode) {
+            const valid = (mode === 'light' || mode === 'amoled' || mode === 'dark') ? mode : 'dark';
+            state.themeMode = valid;
+            document.body.classList.remove('theme-dark', 'theme-amoled', 'theme-light');
+            document.body.classList.add('theme-' + valid);
+            const labels = { dark: '🌙 DARK', amoled: '🖤 AMOLED', light: '☀️ LIGHT' };
+            const btn = $('btnThemeMode');
+            if (btn) btn.textContent = labels[valid];
+            safeStorage.set('ahstudio_theme_v1', valid);
+        }
+
+        $('btnThemeMode').addEventListener('click', () => {
+            const order = ['dark', 'amoled', 'light'];
+            const next = order[(order.indexOf(state.themeMode) + 1) % order.length];
+            applyThemeMode(next);
+            const names = { dark: 'Dark Mode', amoled: 'AMOLED Black Mode', light: 'Light Mode' };
+            showToast(`🎨 Tema: ${names[next]}`);
+        });
+
+        applyThemeMode(safeStorage.get('ahstudio_theme_v1') || 'dark');
         applyResponsiveLayout();
         state.sourceCanvas = generateSampleCanvas('dermaga');
         computeSilhouetteSubjectMask(true);
