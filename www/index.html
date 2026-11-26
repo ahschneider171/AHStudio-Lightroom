@@ -53,13 +53,14 @@
             cursor: grabbing !important;
             user-select: none;
         }
+
         /* THEME MODES: DARK (default), AMOLED (#000000), LIGHT */
         body.theme-amoled,
         body.theme-amoled #appRoot,
         body.theme-amoled #stickyStage,
         body.theme-amoled #leftWorkspace,
         body.theme-amoled #rightControls,
-        body.theme-amoled #modeTabsBar,
+        body.theme-amoled #bottomDockBar,
         body.theme-amoled #canvasViewport,
         body.theme-amoled #fullscreenModal {
             background-color: #000000 !important;
@@ -86,10 +87,14 @@
         }
         body.theme-light #appRoot,
         body.theme-light #rightControls,
-        body.theme-light #stickyStage,
-        body.theme-light #modeTabsBar {
+        body.theme-light #stickyStage {
             background-color: #f1f5f9 !important;
             color: #0f172a !important;
+        }
+        body.theme-light #bottomDockBar {
+            background-color: rgba(255, 255, 255, 0.96) !important;
+            border-top-color: rgba(15, 23, 42, 0.14) !important;
+            box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.10) !important;
         }
         body.theme-light #stickyStage {
             border-bottom-color: rgba(15, 23, 42, 0.12) !important;
@@ -183,6 +188,7 @@
         body.theme-light input[type="text"] {
             color: #0f172a !important;
         }
+
         input[type="range"] {
             -webkit-appearance: none;
             appearance: none;
@@ -219,12 +225,12 @@
             color: #ffffff !important;
         }
 
-        /* PORTRAIT: TRUE STICKY AUTO-FITTING STAGE */
+        /* PORTRAIT: TRUE STICKY AUTO-FITTING STAGE + BOTTOM DOCK PADDING */
         #appRoot {
             width: 100%;
             max-width: 580px;
             margin: 0 auto;
-            padding: 8px 10px 64px 10px;
+            padding: 8px 10px 108px 10px;
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -236,7 +242,7 @@
             position: -webkit-sticky;
             position: sticky;
             top: 0;
-            z-index: 40;
+            z-index: 35;
             background-color: #090a0d;
             padding-top: 4px;
             padding-bottom: 8px;
@@ -244,7 +250,7 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.72);
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 7px;
         }
         #canvasStageBg {
             width: 100%;
@@ -279,6 +285,45 @@
             min-width: 0;
         }
 
+        /* FIXED BOTTOM DOCK NAVIGATION BAR */
+        #bottomDockBar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 42;
+            background-color: rgba(13, 16, 23, 0.97);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(56, 189, 248, 0.28);
+            box-shadow: 0 -10px 28px rgba(0, 0, 0, 0.82);
+            padding: 8px 10px calc(10px + env(safe-area-inset-bottom, 0px)) 10px;
+        }
+        #bottomDockInner {
+            max-width: 580px;
+            margin: 0 auto;
+        }
+        .main-tab-btn {
+            min-width: 82px;
+            min-height: 54px;
+            padding: 7px 11px;
+            border-radius: 15px;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            line-height: 1.15;
+            transition: transform 0.12s ease, background-color 0.15s ease;
+        }
+        .main-tab-btn:active {
+            transform: scale(0.95);
+        }
+        #bottomDockInner {
+            max-width: 580px;
+            margin: 0 auto;
+        }
+
         /* LANDSCAPE / TABLET / DESKTOP 2-COLUMN STUDIO */
         body.mode-landscape {
             height: 100dvh;
@@ -289,7 +334,7 @@
             height: 100dvh;
             padding: 0;
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 415px;
+            grid-template-columns: minmax(0, 1fr) 425px;
             gap: 0;
             overflow: hidden;
         }
@@ -328,21 +373,24 @@
             height: 100dvh;
             overflow-y: auto;
             overscroll-behavior: contain;
-            padding: 10px 12px 48px 12px;
+            padding: 10px 12px 108px 12px;
             gap: 8px;
             background-color: #090a0d;
         }
-        body.mode-landscape #modeTabsBar {
-            position: sticky;
-            top: -10px;
-            z-index: 20;
-            background-color: #090a0d;
-            padding-top: 4px;
-            padding-bottom: 4px;
+        body.mode-landscape #bottomDockBar {
+            left: auto;
+            right: 0;
+            width: 425px;
+        }
+        body.mode-landscape #bottomDockInner {
+            max-width: 100%;
         }
         @media (min-width: 1200px) {
             body.mode-landscape #appRoot {
-                grid-template-columns: minmax(0, 1fr) 460px;
+                grid-template-columns: minmax(0, 1fr) 465px;
+            }
+            body.mode-landscape #bottomDockBar {
+                width: 465px;
             }
             body.mode-landscape #filterGrid {
                 grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -403,7 +451,7 @@
                 </button>
             </div>
 
-            <!-- STICKY PREVIEW STAGE + 5 ACTION BUTTONS -->
+            <!-- STICKY PREVIEW STAGE + CLEAN TOP ACTION BAR (WITH UNDO & REDO) -->
             <section id="stickyStage">
                 <div id="canvasStageBg">
                     <div id="canvasViewport">
@@ -453,38 +501,48 @@
                         <!-- Bottom-Right Preview Controls -->
                         <div class="absolute bottom-2 right-2 flex items-center gap-1">
                             <button id="btnTogglePreviewSize" type="button" class="px-2 py-0.5 rounded-md bg-black/85 hover:bg-black border border-white/15 text-[10px] font-mono font-bold text-sky-300">
-                                Perkecil Preview
+                                Perkecil
                             </button>
                             <button id="btnFullscreenPreview" type="button" title="Layar Penuh Preview (F)" class="px-2 py-0.5 rounded-md bg-black/85 hover:bg-black border border-emerald-400/40 text-[10px] font-mono font-bold text-emerald-300 flex items-center gap-1">
-                                ⛶ Fullscreen
+                                ⛶ Full
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- 5 Action Buttons -->
-                <div class="grid grid-cols-5 gap-1 shrink-0">
-                    <label for="mainPhotoInput" role="button" tabindex="0" class="cursor-pointer py-2 px-1 rounded-xl bg-[#151821] hover:bg-[#1e222e] border border-white/10 text-[10px] font-extrabold text-gray-100 flex items-center justify-center gap-1 select-none">
-                        <svg class="w-3 h-3 text-sky-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+                <!-- TOP ACTION BAR (SPACIOUS & CLEAN WITH UNDO / REDO) -->
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <label for="mainPhotoInput" role="button" tabindex="0" class="flex-1 min-w-0 cursor-pointer py-2 px-2 rounded-xl bg-[#151821] hover:bg-[#1e222e] border border-white/10 text-[11px] font-extrabold text-gray-100 flex items-center justify-center gap-1 select-none">
+                        <svg class="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                         </svg>
-                        <span class="truncate">Upload Foto</span>
+                        <span class="truncate">Upload</span>
                     </label>
 
-                    <button id="btnHoldCompare" type="button" class="py-2 px-1 rounded-xl bg-[#151821] hover:bg-[#1e222e] border border-white/10 text-[10px] font-mono font-extrabold text-gray-100 flex items-center justify-center gap-0.5 select-none">
-                        <span class="truncate">👁️ TAHAN</span>
+                    <button id="btnHoldCompare" type="button" title="Tahan untuk lihat foto asli" class="shrink-0 py-2 px-2.5 rounded-xl bg-[#151821] hover:bg-[#1e222e] border border-white/10 text-[11px] font-mono font-extrabold text-gray-100 flex items-center justify-center gap-1 select-none">
+                        <span>👁️</span>
+                        <span class="hidden sm:inline">TAHAN</span>
                     </button>
 
-                    <button id="btnForceRerender" type="button" class="py-2 px-1 rounded-xl bg-[#151821] hover:bg-[#1e222e] border border-white/10 text-[10px] font-extrabold text-amber-300 flex items-center justify-center gap-0.5 select-none">
-                        <span class="truncate">🔄 Render</span>
+                    <!-- UNDO & REDO BUTTONS -->
+                    <div class="flex items-center gap-1 shrink-0">
+                        <button id="btnUndo" type="button" title="Undo / Batalkan (Ctrl+Z)" disabled class="py-2 px-2.5 rounded-xl bg-[#151821] hover:bg-[#1e222e] disabled:opacity-35 disabled:pointer-events-none border border-sky-400/30 text-[11px] font-extrabold text-sky-300 flex items-center justify-center gap-1 select-none">
+                            <span>↩️</span>
+                            <span class="hidden sm:inline">Undo</span>
+                        </button>
+                        <button id="btnRedo" type="button" title="Redo / Ulangi (Ctrl+Y)" disabled class="py-2 px-2.5 rounded-xl bg-[#151821] hover:bg-[#1e222e] disabled:opacity-35 disabled:pointer-events-none border border-sky-400/30 text-[11px] font-extrabold text-sky-300 flex items-center justify-center gap-1 select-none">
+                            <span>↪️</span>
+                            <span class="hidden sm:inline">Redo</span>
+                        </button>
+                    </div>
+
+                    <button id="btnStageBatch" type="button" title="Batch Edit Banyak Foto" class="shrink-0 py-2 px-2.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-400/35 text-[11px] font-extrabold text-indigo-300 flex items-center justify-center gap-1">
+                        <span>📚</span>
+                        <span class="hidden sm:inline">BATCH</span>
                     </button>
 
-                    <button id="btnStageBatch" type="button" class="py-2 px-1 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-400/35 text-[10px] font-extrabold text-indigo-300 flex items-center justify-center gap-0.5">
-                        <span class="truncate">📚 BATCH</span>
-                    </button>
-
-                    <button id="btnOpenExportModal" type="button" class="py-2 px-1 rounded-xl bg-sky-500 hover:bg-sky-400 text-[10px] font-extrabold text-white flex items-center justify-center gap-1">
-                        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+                    <button id="btnOpenExportModal" type="button" class="flex-1 min-w-0 py-2 px-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-[11px] font-extrabold text-white flex items-center justify-center gap-1 shadow-md shadow-sky-500/20">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                         </svg>
                         <span class="truncate">SIMPAN</span>
@@ -493,35 +551,8 @@
             </section>
         </div>
 
-        <!-- RIGHT / BOTTOM CONTROLS -->
+        <!-- RIGHT / BOTTOM TOOL PANELS -->
         <div id="rightControls">
-
-            <!-- ALWAYS-VISIBLE 7-TAB NAVIGATION BAR -->
-            <nav id="modeTabsBar" aria-label="Menu Alat Edit">
-                <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar p-1.5 rounded-2xl bg-[#141824] border border-sky-400/25 shadow-md">
-                    <button type="button" data-tab="filter" class="main-tab-btn shrink-0 py-2 px-3 rounded-xl bg-sky-500 text-white text-xs font-extrabold">
-                        🎨 Filter (<span id="totalFilterCount">114</span>)
-                    </button>
-                    <button type="button" data-tab="subjectpop" class="main-tab-btn shrink-0 py-2 px-3 rounded-xl bg-[#1c2130] text-amber-300 hover:text-white text-xs font-extrabold">
-                        💡 AHS Pro Light
-                    </button>
-                    <button type="button" data-tab="match" class="main-tab-btn shrink-0 py-2 px-3 rounded-xl bg-[#1c2130] text-gray-200 hover:text-white text-xs font-bold">
-                        🎭 AI Referensi
-                    </button>
-                    <button type="button" data-tab="adjust" class="main-tab-btn shrink-0 py-2 px-3 rounded-xl bg-[#1c2130] text-gray-200 hover:text-white text-xs font-bold">
-                        🎛️ Adjust Pro
-                    </button>
-                    <button type="button" data-tab="curvehsl" class="main-tab-btn shrink-0 py-2 px-3 rounded-xl bg-[#1c2130] text-gray-200 hover:text-white text-xs font-bold">
-                        📈 Kurva &amp; HSL
-                    </button>
-                    <button type="button" data-tab="gradingflash" class="main-tab-btn shrink-0 py-2 px-3 rounded-xl bg-[#1c2130] text-gray-200 hover:text-white text-xs font-bold">
-                        🎨 Grading &amp; Flash
-                    </button>
-                    <button type="button" data-tab="cropframe" class="main-tab-btn shrink-0 py-2 px-3 rounded-xl bg-[#1c2130] text-gray-200 hover:text-white text-xs font-bold">
-                        ✂️ Crop &amp; Bingkai
-                    </button>
-                </div>
-            </nav>
 
             <!-- TAB 1: FILTERS -->
             <main id="panelFilter" class="flex flex-col gap-2">
@@ -552,7 +583,7 @@
 
                     <div class="px-2.5 py-1.5 rounded-xl bg-[#0c0e14] border border-white/10 flex items-center justify-between gap-2">
                         <p class="text-[10px] text-gray-400 leading-tight">
-                            <span class="text-sky-400 font-bold">ⓘ Full-HD RAW &amp; Gambar:</span> Mendukung JPG, PNG, WebP, dan Full-Res Camera RAW (<strong class="text-gray-200">.DNG, .ARW, .CR2, .CR3, .NEF, .RAF, .ORF</strong>).
+                            <span class="text-sky-400 font-bold">ⓘ Full-HD RAW &amp; Gambar:</span> Mendukung JPG, PNG, WebP, HEIC &amp; Camera RAW (<strong class="text-gray-200">.DNG, .ARW, .CR2, .CR3, .NEF</strong>).
                         </p>
                         <button id="btnTipRerender" type="button" class="shrink-0 px-2.5 py-1 rounded-lg bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-[10px] font-extrabold text-sky-300">
                             🔄 Render Ulang
@@ -588,9 +619,14 @@
                             <h2 class="text-xs font-extrabold text-sky-300">💡 AHS Pro Light &amp; Studio Flash</h2>
                             <p class="text-[10px] text-gray-400">Pilih kategori, preset, bayangan flash &amp; latar belakang</p>
                         </div>
-                        <button id="btnResetSubjectPop" type="button" class="shrink-0 px-2 py-1 rounded-lg bg-[#1d212e] hover:bg-[#282e40] border border-white/10 text-[10px] font-bold text-gray-200">
-                            ↺ Reset
-                        </button>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <button id="btnAutoAhsProLight" type="button" class="px-2.5 py-1 rounded-lg bg-gradient-to-r from-amber-500 to-sky-500 hover:brightness-110 active:scale-[0.98] transition text-slate-950 text-[10px] font-extrabold shadow-sm">
+                                ✨ Auto AI Light
+                            </button>
+                            <button id="btnResetSubjectPop" type="button" class="px-2 py-1 rounded-lg bg-[#1d212e] hover:bg-[#282e40] border border-white/10 text-[10px] font-bold text-gray-200">
+                                ↺ Reset
+                            </button>
+                        </div>
                     </div>
 
                     <!-- 01 / KATEGORI PENCAHAYAAN -->
@@ -651,7 +687,7 @@
                         </div>
                     </div>
 
-                    <!-- COMPACT AI SILUET & KUAS MASKER -->
+                    <!-- COMPACT AI SILUET & KUAS MASKER (60FPS INSTANT) -->
                     <div class="p-2.5 rounded-xl bg-[#0c0e14] border border-emerald-400/25 flex flex-col gap-2">
                         <div class="flex items-center justify-between gap-1.5">
                             <div class="flex items-center gap-1.5 min-w-0">
@@ -1040,7 +1076,41 @@
         </div>
     </div>
 
-    <!-- ACCESSIBLE FILE INPUTS (SUPPORTS STANDARD IMAGES + FULL-HD CAMERA RAW FILES) -->
+    <!-- FIXED BOTTOM DOCK: 7-TAB NAVIGATION BAR -->
+    <nav id="bottomDockBar" aria-label="Dock Alat Edit">
+        <div id="bottomDockInner" class="flex items-center gap-2 overflow-x-auto no-scrollbar">
+            <button type="button" data-tab="filter" class="main-tab-btn shrink-0 bg-sky-500 text-white text-xs font-extrabold shadow-md">
+                <span class="text-base leading-none">🎨</span>
+                <span>Filter (<span id="totalFilterCount">114</span>)</span>
+            </button>
+            <button type="button" data-tab="subjectpop" class="main-tab-btn shrink-0 bg-[#1c2130] text-amber-300 hover:text-white text-xs font-extrabold">
+                <span class="text-base leading-none">💡</span>
+                <span>AHS Pro Light</span>
+            </button>
+            <button type="button" data-tab="match" class="main-tab-btn shrink-0 bg-[#1c2130] text-gray-200 hover:text-white text-xs font-bold">
+                <span class="text-base leading-none">🎭</span>
+                <span>AI Referensi</span>
+            </button>
+            <button type="button" data-tab="adjust" class="main-tab-btn shrink-0 bg-[#1c2130] text-gray-200 hover:text-white text-xs font-bold">
+                <span class="text-base leading-none">🎛️</span>
+                <span>Adjust Pro</span>
+            </button>
+            <button type="button" data-tab="curvehsl" class="main-tab-btn shrink-0 bg-[#1c2130] text-gray-200 hover:text-white text-xs font-bold">
+                <span class="text-base leading-none">📈</span>
+                <span>Kurva &amp; HSL</span>
+            </button>
+            <button type="button" data-tab="gradingflash" class="main-tab-btn shrink-0 bg-[#1c2130] text-gray-200 hover:text-white text-xs font-bold">
+                <span class="text-base leading-none">⚡</span>
+                <span>Grading &amp; Flash</span>
+            </button>
+            <button type="button" data-tab="cropframe" class="main-tab-btn shrink-0 bg-[#1c2130] text-gray-200 hover:text-white text-xs font-bold">
+                <span class="text-base leading-none">✂️</span>
+                <span>Crop &amp; Bingkai</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ACCESSIBLE FILE INPUTS -->
     <input id="mainPhotoInput" type="file" accept="image/*,.heic,.heif,.dng,.arw,.cr2,.cr3,.nef,.raf,.orf,.rw2,.srw,.pef" class="sr-file-input">
     <input id="refPhotoInput" type="file" accept="image/*,.heic,.heif,.dng,.arw,.cr2,.cr3,.nef,.raf,.orf,.rw2,.srw,.pef" class="sr-file-input">
     <input id="presetFileInput" type="file" accept=".xmp,.cube,.lrtemplate,.json,application/xml,text/xml,application/json,text/plain,application/octet-stream" multiple class="sr-file-input">
@@ -1072,7 +1142,7 @@
         </div>
     </div>
 
-    <!-- MODAL 2: BULLETPROOF 3-TIER EXPORT PRO (ANDROID WEBVIEW & MOBILE SAFE) -->
+    <!-- MODAL 2: BULLETPROOF 3-TIER EXPORT PRO -->
     <div id="exportModal" class="hidden fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4 overflow-y-auto">
         <div class="w-full max-w-sm max-h-[92dvh] overflow-y-auto rounded-2xl bg-[#141722] border border-white/15 p-4 flex flex-col gap-3">
             <div class="flex items-center justify-between">
@@ -1115,7 +1185,6 @@
                 ⬇️ Proses &amp; Simpan Sekarang
             </button>
 
-            <!-- TIER-3 ANTI-GAGAL ANDROID WEBVIEW READY-TO-SAVE CARD -->
             <div id="exportReadyCard" class="hidden p-3 rounded-2xl bg-[#0c0e14] border border-emerald-400/40 flex flex-col gap-2.5">
                 <div class="flex items-center justify-between gap-2">
                     <span class="text-xs font-extrabold text-emerald-300">✅ Hasil Foto Siap Disimpan</span>
@@ -1141,10 +1210,6 @@
                         📥 Unduh via Browser
                     </a>
                 </div>
-
-                <p class="text-[10px] text-gray-400 leading-snug text-center">
-                    File otomatis disimpan ke <strong class="text-sky-300">Internal Storage/Download</strong> (atau <strong class="text-sky-300">Documents/AHStudio</strong>). Tekan <strong class="text-emerald-300">Simpan ke Galeri</strong> untuk memunculkan menu Galeri / File Manager Android.
-                </p>
             </div>
         </div>
     </div>
@@ -1176,7 +1241,7 @@
         </div>
     </div>
 
-    <!-- MODAL 4: PROJECT SAVE & LOAD MANAGER (.ahproj + AUTO-SAVE) -->
+    <!-- MODAL 4: PROJECT SAVE & LOAD MANAGER -->
     <div id="projectModal" class="hidden fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4 overflow-y-auto">
         <div class="w-full max-w-sm max-h-[92dvh] overflow-y-auto rounded-2xl bg-[#141722] border border-white/15 p-4 flex flex-col gap-3">
             <div class="flex items-center justify-between">
@@ -1187,7 +1252,6 @@
                 <button id="btnCloseProjectModal" type="button" class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-gray-200 text-xs font-bold">✕</button>
             </div>
 
-            <!-- Auto-save status box -->
             <div class="p-3 rounded-xl bg-[#0c0e14] border border-sky-400/30 flex flex-col gap-2">
                 <div class="flex items-center justify-between gap-2">
                     <span class="text-xs font-extrabold text-sky-300">⚡ Sesi Terakhir (Auto-Save)</span>
@@ -1206,7 +1270,6 @@
                 </div>
             </div>
 
-            <!-- Export & Import .ahproj file to Internal Storage / Download -->
             <div class="p-3 rounded-xl bg-[#0c0e14] border border-amber-400/30 flex flex-col gap-2">
                 <span class="text-xs font-extrabold text-amber-300">📦 File Proyek (.ahproj) di Penyimpanan</span>
                 <input id="inputProjectName" type="text" placeholder="Nama proyek (misal: Edit_Senja_Dermaga)" class="w-full px-3 py-2 rounded-xl bg-[#141722] border border-white/15 focus:border-amber-400 text-xs text-white outline-none">
@@ -1279,7 +1342,7 @@
     </div>
 
     <!-- TOAST -->
-    <div id="toastBox" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-opacity duration-200">
+    <div id="toastBox" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-opacity duration-200">
         <div id="toastMsg" class="px-4 py-2 rounded-full bg-gray-900/95 border border-sky-400/40 text-xs font-bold text-white shadow-xl whitespace-nowrap">
             Siap
         </div>
@@ -1294,8 +1357,8 @@
     (function () {
         'use strict';
 
-        const MAX_WORK_DIM = 2560; // True Full-HD / QHD+ internal working cap
-        const MAX_SENSOR_DIM = 4096; // Full-HD+ sensor decode cap for uncompressed Bayer RAW
+        const MAX_WORK_DIM = 2560;
+        const MAX_SENSOR_DIM = 4096;
 
         // =========================================================================
         // 1. SAFE STORAGE & DOM UTILITIES
@@ -1317,12 +1380,7 @@
         }
 
         // =========================================================================
-        // 2. TRUE FULL-HD CAMERA RAW LOADER (`.DNG`, `.ARW`, `.CR2`, `.CR3`, `.NEF`, `.RAF`, `.ORF`, `.RW2`, `.SRW`, `.PEF`)
-        //    - Fixes skewed/diagonal/garbled preview on Android Pro Mode DNG & packed 12-bit/14-bit/16-bit Bayer RAW
-        //    - Reads TIFF RowsPerStrip (0x0116), TileWidth (0x0142), TileLength (0x0143), TileOffsets (0x0144), TileByteCounts (0x0145)
-        //    - Unpacks bit-packed 10/12/14-bit sensor rows (exact row stride = ceil(width * bitsPerSample / 8)) so rows NEVER skew diagonally!
-        //    - Properly extracts EXIF Orientation from both root TIFF IFD and EXIF SubIFD (0x8769)
-        //    - Selects highest-resolution embedded HD/4K JPEG preview when available, or clean Bayer demosaic fallback
+        // 2. FULL-HD CAMERA RAW & HEIC LOADER
         // =========================================================================
         const RAW_EXTENSIONS = new Set(['dng', 'arw', 'cr2', 'cr3', 'nef', 'raf', 'orf', 'rw2', 'srw', 'pef', 'raw', 'sr2', 'kdc', 'dcr']);
         const HEIC_EXTENSIONS = new Set(['heic', 'heif', 'hif']);
@@ -1340,8 +1398,6 @@
             return HEIC_EXTENSIONS.has(ext) || type.includes('heic') || type.includes('heif');
         }
 
-        // Detects the classic libjpeg-turbo / Android WebView #808080 solid-gray bottom fill
-        // caused by truncated JPEG streams or partially decoded HEIC grid tiles
         function isCanvasTruncatedGray(canvas) {
             if (!canvas || canvas.width < 16 || canvas.height < 16) return true;
             try {
@@ -1394,7 +1450,6 @@
         }
 
         async function decodeHeicToCanvas(file) {
-            // 1. Try native ImageBitmap first — verify it did NOT partially decode with #808080 gray bottom tiles!
             try {
                 if (typeof createImageBitmap === 'function') {
                     const bmp = await createImageBitmap(file);
@@ -1409,7 +1464,6 @@
                 }
             } catch (eNative1) {}
 
-            // 2. Try native Image element — also verify against #808080 gray bottom truncation
             try {
                 const img = await decodeBlobViaUrlOrData(file);
                 if (img && (img.naturalWidth || img.width) > 0) {
@@ -1421,7 +1475,6 @@
                 }
             } catch (eNative2) {}
 
-            // 3. Full pure-JS libheif decoder (heic2any) for multi-tile HEIC grid images
             const converter = await loadHeic2AnyLibrary();
             const converted = await converter({
                 blob: file,
@@ -1452,9 +1505,7 @@
         function decodeBlobViaUrlOrData(blob) {
             return new Promise((resolve, reject) => {
                 let objUrl = null;
-                try {
-                    objUrl = URL.createObjectURL(blob);
-                } catch (e) {}
+                try { objUrl = URL.createObjectURL(blob); } catch (e) {}
 
                 if (objUrl) {
                     const img = new Image();
@@ -1568,8 +1619,6 @@
             return 1;
         }
 
-        // Exact ITU-T T.81 JPEG Marker & Entropy-Scan Walker!
-        // Jumps cleanly over APP1 EXIF thumbnails (ignoring inner FF D8 / FF D9) and finds the TRUE EOI (FF D9)
         function parseExactJpegStreamInfo(bytes, start) {
             const len = bytes.length;
             if (start < 0 || start + 32 >= len) return null;
@@ -1591,26 +1640,15 @@
                 if (pos >= len) break;
 
                 const marker = bytes[pos++];
-
-                // Stuffed 0xFF00 or standalone RST0..RST7 / TEM
-                if (marker === 0x00 || marker === 0x01 || (marker >= 0xD0 && marker <= 0xD7)) {
-                    continue;
-                }
-                // True End Of Image (EOI)
+                if (marker === 0x00 || marker === 0x01 || (marker >= 0xD0 && marker <= 0xD7)) continue;
                 if (marker === 0xD9) {
                     if (sawSof && sawSos && width > 0 && height > 0) {
                         return { end: pos, width, height, area: width * height };
                     }
                     return null;
                 }
-                // Nested SOI without EOI -> invalid
-                if (marker === 0xD8) {
-                    return null;
-                }
-                // Lossless / Arithmetic / Hierarchical SOF -> not browser-decodable JPEG preview
-                if (marker === 0xC3 || (marker >= 0xC5 && marker <= 0xCF)) {
-                    return null;
-                }
+                if (marker === 0xD8) return null;
+                if (marker === 0xC3 || (marker >= 0xC5 && marker <= 0xCF)) return null;
 
                 if (pos + 2 > len) return null;
                 const segLen = (bytes[pos] << 8) | bytes[pos + 1];
@@ -1629,7 +1667,6 @@
                 if (marker === 0xDA) {
                     if (!sawSof) return null;
                     sawSos = true;
-                    // Scan entropy-coded segment until next real marker (FF followed by non-00 and non-D0..D7)
                     while (pos < len - 1) {
                         if (bytes[pos] !== 0xFF) {
                             pos++;
@@ -1643,7 +1680,6 @@
                             pos = mPos + 1;
                             continue;
                         }
-                        // Found next structural marker (e.g., FF D9 EOI, or FF C4/FF DA for progressive JPEG)!
                         pos = mPos - 1;
                         break;
                     }
@@ -1811,7 +1847,6 @@
                     if (nextIfd > 0 && nextIfd < len) ifdQueue.push({ off: nextIfd, isRoot: node.isRoot });
                 }
 
-                // Explicit JPEGInterchangeFormat (0x0201 / 0x0202)
                 if (jpegOff > 0 && jpegLen > 2048 && jpegOff + jpegLen <= len) {
                     result.slices.push({
                         start: jpegOff, end: jpegOff + jpegLen, size: jpegLen,
@@ -1820,7 +1855,6 @@
                     });
                 }
 
-                // Single-strip or Multi-strip JPEG-compressed preview (compression 6 or 7)
                 if ((compression === 6 || compression === 7) && stripOffCnt >= 1 && stripLenCnt >= 1) {
                     const sOffs = readTagArray(stripOffPos, stripOffCnt, stripOffType);
                     const sLens = readTagArray(stripLenPos, stripLenCnt, stripLenType);
@@ -1834,7 +1868,6 @@
                             });
                         }
                     } else if (sOffs.length > 1 && sOffs.length === sLens.length) {
-                        // Concatenate multi-strip JPEG stream if first strip starts with JPEG SOI
                         if (sOffs[0] > 0 && sOffs[0] + 2 <= len && bytes[sOffs[0]] === 0xFF && bytes[sOffs[0] + 1] === 0xD8) {
                             let totalBytes = 0;
                             for (let k = 0; k < sLens.length; k++) totalBytes += sLens[k];
@@ -1858,7 +1891,6 @@
                     }
                 }
 
-                // Full-resolution Uncompressed TIFF / Linear DNG / Bayer CFA sensor IFD (Strip OR Tile based)
                 if (compression === 1 && width >= 256 && height >= 256 && (stripOffCnt >= 1 || tileOffCnt >= 1)) {
                     const isTiled = tileOffCnt >= 1 && tileWidth > 0 && tileLength > 0;
                     const offsets = isTiled
@@ -1894,7 +1926,6 @@
             const meta = parseTiffMetadataAndSlices(bytes);
             const candidates = [];
 
-            // 1. Add explicit TIFF/DNG IFD JPEG slices (verified with exact JPEG marker walker)
             for (let i = 0; i < meta.slices.length; i++) {
                 const sl = meta.slices[i];
                 const buf = sl.customBytes || bytes;
@@ -1927,7 +1958,6 @@
                 }
             }
 
-            // 2. Full binary scan using exact JPEG marker walker (jumps right over EXIF thumbnails so JPEG is NEVER truncated!)
             const len = bytes.length;
             let scanPos = 0;
             while (scanPos < len - 32) {
@@ -1946,7 +1976,6 @@
                             expectedPixels: info.area,
                             orientation: jpegOri !== 1 ? jpegOri : meta.orientation
                         });
-                        // Jump past this complete JPEG stream!
                         scanPos = info.end;
                         continue;
                     }
@@ -1954,7 +1983,6 @@
                 scanPos++;
             }
 
-            // Deduplicate and strictly prioritize highest-resolution (sofArea / size) complete JPEG streams first
             const seen = new Set();
             const unique = [];
             candidates.sort((a, b) => (b.sofArea - a.sofArea) || (b.size - a.size) || (b.expectedPixels - a.expectedPixels));
@@ -1986,10 +2014,7 @@
                         testCanvas.height = h;
                         testCanvas.getContext('2d').drawImage(img, 0, 0);
 
-                        // Reject any truncated JPEG that exhibits #808080 solid gray bottom rows!
-                        if (isCanvasTruncatedGray(testCanvas)) {
-                            continue;
-                        }
+                        if (isCanvasTruncatedGray(testCanvas)) continue;
 
                         bestPixelArea = area;
                         bestCanvas = applyExifOrientationToCanvas(testCanvas, cand.orientation || meta.orientation);
@@ -1998,12 +2023,10 @@
                 } catch (err) {}
             }
 
-            // If we decoded an intact, non-truncated HD preview (>= 800px long edge), return it!
             if (bestCanvas && Math.max(bestCanvas.width, bestCanvas.height) >= 800) {
                 return bestCanvas;
             }
 
-            // Otherwise decode the full uncompressed sensor IFD with exact bit-packed row stride & tile/strip assembly
             if (meta.rawIfd && (!bestCanvas || meta.rawIfd.area > bestPixelArea * 2)) {
                 try {
                     return decodeUncompressedRawIfdHD(bytes, meta.rawIfd, meta.rawIfd.orientation || meta.orientation);
@@ -2013,10 +2036,7 @@
                 }
             }
 
-            if (bestCanvas) {
-                return bestCanvas;
-            }
-
+            if (bestCanvas) return bestCanvas;
             throw new Error('Tidak ditemukan data gambar HD yang utuh pada file RAW ini');
         }
 
@@ -2081,9 +2101,7 @@
                 const sampleIdxInRow = cx * samples + ch;
                 const rowStart = cy * rowBytes;
 
-                if (bitsPerSample === 8) {
-                    return fullRaster[rowStart + sampleIdxInRow] || 0;
-                }
+                if (bitsPerSample === 8) return fullRaster[rowStart + sampleIdxInRow] || 0;
                 if (bitsPerSample === 16) {
                     const off = rowStart + sampleIdxInRow * 2;
                     return le
@@ -2255,7 +2273,8 @@
             return { canvas: srcCanvas, isRaw: rawFlag || heicFlag, rawExt, origW, origH };
         }
 
-        // 3. '🚫 Tanpa Filter (Asli)' DEFAULT + 114 BUILT-IN FILTERS + CUSTOM PRESETS
+        // =========================================================================
+        // 3. '🚫 Tanpa Filter (Asli)' + 114 BUILT-IN FILTERS + CUSTOM PRESETS
         // =========================================================================
         const FILTER_CATEGORIES = [
             { id: 'custom', label: '📁 Preset Saya' },
@@ -2282,7 +2301,6 @@
         const NONE_FILTER = mkFilter('none', '🚫 Tanpa Filter (Asli)', 'all', '#334155', '#0f172a', {});
 
         const BUILTIN_FILTERS = [
-            // 1. FNATIX & CLEAN TONE (12)
             mkFilter('fnatix_light', 'AHS Pro LIGHT', 'fnatix', '#6b8ba4', '#f3e5dc', { exp: 7, con: 8, sat: -5, temp: -4, shB: 15, shG: 7, hiR: 7, hiG: 4, skinLift: 26, skyTeal: 24 }),
             mkFilter('fnatix_pier', 'AHS Pro Pier Sunset', 'fnatix', '#3d5a6c', '#e8b48a', { exp: 4, con: 14, sat: 4, temp: 6, shB: 18, shG: 8, hiR: 12, hiG: 6, skinLift: 28, skyTeal: 26 }),
             mkFilter('porcelain_skin', 'Porcelain Skin Lift', 'fnatix', '#f5dcd6', '#d8e2eb', { exp: 10, con: 4, sat: -10, temp: -3, tint: 4, fade: 8, skinLift: 32 }),
@@ -2296,7 +2314,6 @@
             mkFilter('urban_coastal', 'Urban Coastal Film', 'fnatix', '#466375', '#decbb7', { exp: 3, con: 13, sat: -4, temp: 3, shB: 15, shG: 7, hiR: 8, skyTeal: 20 }),
             mkFilter('clean_studio', 'Clean Studio Daylight', 'fnatix', '#e2e8f0', '#64748b', { exp: 8, con: 9, sat: -6, temp: -4, shB: 8, skinLift: 22 }),
 
-            // 2. JAPANESE & FUJIFILM (18)
             mkFilter('fuji_classic_chrome', 'Fuji Classic Chrome', 'japanese', '#2d5362', '#cbbba0', { exp: 0, con: 18, sat: -16, temp: -5, shB: 18, shG: 10, hiR: 8, hiG: 4, greenMoss: 25, skyTeal: 22 }),
             mkFilter('tokyo_street_teal', 'Tokyo Street Teal', 'japanese', '#1d4d5f', '#d97736', { exp: -2, con: 20, sat: 4, temp: -8, shB: 24, shG: 14, hiR: 10, skyTeal: 28 }),
             mkFilter('sakura_morning', 'Sakura Morning Air', 'japanese', '#f8d7e3', '#a3c4dc', { exp: 9, con: 4, sat: -4, temp: -4, tint: 6, fade: 9, shB: 12, skinLift: 26 }),
@@ -2316,7 +2333,6 @@
             mkFilter('shibuya_afternoon', 'Shibuya Afternoon', 'japanese', '#3a6073', '#e2d1c3', { exp: 4, con: 12, sat: -2, temp: -3, shB: 16, shG: 6, skyTeal: 18 }),
             mkFilter('ghibli_summer', 'Ghibli Summer', 'japanese', '#2a9d8f', '#e9c46a', { exp: 6, con: 12, sat: 16, temp: 4, shG: 14, shB: 10, hiR: 8, hiG: 10 }),
 
-            // 3. SIANG & CERAH (18)
             mkFilter('crisp_daylight', 'Crisp Daylight', 'daylight', '#38bdf8', '#f8fafc', { exp: 6, con: 10, sat: 8, temp: -2, shB: 6 }),
             mkFilter('sunny_breeze', 'Sunny Breeze', 'daylight', '#60a5fa', '#fef08a', { exp: 8, con: 8, sat: 10, temp: 8, hiR: 10, hiG: 8 }),
             mkFilter('superia_400_day', 'Fuji Superia 400 Day', 'daylight', '#34d399', '#fde68a', { exp: 5, con: 12, sat: 8, temp: 2, shG: 12, shB: 8, greenMoss: 12 }),
@@ -2336,7 +2352,6 @@
             mkFilter('warm_sand', 'Warm Sand', 'daylight', '#d6ccc2', '#edede9', { exp: 6, con: 8, sat: -6, temp: 10, fade: 7, hiR: 10, hiG: 6 }),
             mkFilter('clear_morning', 'Clear Morning', 'daylight', '#7dd3fc', '#f8fafc', { exp: 8, con: 8, sat: 4, temp: -5, shB: 10 }),
 
-            // 4. Y2K & DIGICAM (16)
             mkFilter('sony_cybershot', 'Sony Cyber-shot 2004', 'y2k', '#1d4ed8', '#93c5fd', { exp: 2, con: 20, sat: 14, temp: -10, shB: 20, shG: 6, grain: 14 }),
             mkFilter('canon_ixus', 'Canon IXUS Flash', 'y2k', '#f59e0b', '#3b82f6', { exp: 4, con: 18, sat: 12, temp: 6, shB: 10, hiR: 10, grain: 12 }),
             mkFilter('kodak_easyshare', 'Kodak EasyShare', 'y2k', '#ea580c', '#fde047', { exp: 3, con: 16, sat: 16, temp: 14, shR: 10, hiR: 12, grain: 15 }),
@@ -2354,7 +2369,6 @@
             mkFilter('flash_nostalgia', 'Flash Nostalgia', 'y2k', '#f59e0b', '#1f2937', { exp: 4, con: 18, sat: 6, temp: 10, shB: 10, hiR: 12, grain: 14 }),
             mkFilter('silver_ccd', 'Silver CCD', 'y2k', '#94a3b8', '#e2e8f0', { exp: 4, con: 16, sat: -16, temp: -8, shB: 14, grain: 12 }),
 
-            // 5. FILM ANALOG (16)
             mkFilter('portra_400', 'Kodak Portra 400', 'film', '#e6ccb2', '#7f5539', { exp: 5, con: 6, sat: -4, temp: 8, fade: 9, shR: 6, shG: 4, hiR: 10, hiG: 6, skinLift: 20, grain: 12 }),
             mkFilter('portra_800', 'Kodak Portra 800', 'film', '#ddb892', '#9c6644', { exp: 5, con: 10, sat: 6, temp: 10, fade: 8, shG: 6, hiR: 12, hiG: 7, skinLift: 18, grain: 16 }),
             mkFilter('ultramax_400', 'Kodak Ultramax 400', 'film', '#2563eb', '#f59e0b', { exp: 2, con: 16, sat: 16, temp: 8, shB: 14, hiR: 12, hiG: 6, grain: 15 }),
@@ -2372,7 +2386,6 @@
             mkFilter('instax_mini', 'Instax Mini Soft', 'film', '#94a3b8', '#f8fafc', { exp: 8, con: 4, sat: -8, temp: -4, fade: 14, shB: 14, grain: 10 }),
             mkFilter('super_8mm', 'Super 8mm', 'film', '#b45309', '#fde047', { exp: 2, con: 15, sat: 6, temp: 16, fade: 12, hiR: 14, hiG: 8, grain: 24 }),
 
-            // 6. NIGHT & NEON (12)
             mkFilter('tokyo_midnight', 'Tokyo Midnight', 'night', '#0f172a', '#06b6d4', { exp: 0, con: 20, sat: 12, temp: -14, shB: 26, shG: 14 }),
             mkFilter('cyberpunk_teal', 'Cyberpunk Teal', 'night', '#0f766e', '#ec4899', { exp: 1, con: 22, sat: 20, temp: -10, tint: 12, shB: 24, shG: 16, hiR: 14 }),
             mkFilter('neon_rain', 'Neon Rain', 'night', '#1e1b4b', '#38bdf8', { exp: 0, con: 18, sat: 16, temp: -16, shB: 28 }),
@@ -2386,7 +2399,6 @@
             mkFilter('emerald_night', 'Emerald Night', 'night', '#064e3b', '#34d399', { exp: 0, con: 18, sat: 10, temp: -6, tint: -12, shG: 22, shB: 12 }),
             mkFilter('blade_runner', 'Blade Runner Amber', 'night', '#0c4a6e', '#fb923c', { exp: 1, con: 22, sat: 16, temp: 8, shB: 24, shG: 12, hiR: 18, hiG: 10 }),
 
-            // 7. WARM & GOLDEN (12)
             mkFilter('sunset_amber', 'Sunset Amber', 'warm', '#c2410c', '#fdba74', { exp: 4, con: 12, sat: 14, temp: 20, hiR: 16, hiG: 8 }),
             mkFilter('honey_glow', 'Honey Glow', 'warm', '#ca8a04', '#fef08a', { exp: 6, con: 8, sat: 10, temp: 18, fade: 6, hiR: 14, hiG: 10 }),
             mkFilter('autumn_maple', 'Autumn Maple', 'warm', '#991b1b', '#fca5a5', { exp: 2, con: 14, sat: 16, temp: 16, tint: 6, shR: 12 }),
@@ -2400,7 +2412,6 @@
             mkFilter('bronze_hour', 'Bronze Hour', 'warm', '#78350f', '#d97706', { exp: 1, con: 15, sat: 6, temp: 16, shR: 8, shG: 4 }),
             mkFilter('cinnamon_film', 'Cinnamon Film', 'warm', '#7c2d12', '#fdba74', { exp: 2, con: 12, sat: 0, temp: 18, fade: 10, shR: 10 }),
 
-            // 8. COOL & MOODY (10)
             mkFilter('nordic_slate', 'Nordic Slate', 'cool', '#1e293b', '#94a3b8', { exp: 1, con: 14, sat: -22, temp: -12, shB: 16, shG: 8, fade: 7 }),
             mkFilter('misty_morning', 'Misty Morning', 'cool', '#475569', '#e2e8f0', { exp: 6, con: 2, sat: -18, temp: -10, shB: 14, fade: 16 }),
             mkFilter('moody_forest', 'Moody Forest', 'cool', '#14532d', '#6b9080', { exp: -3, con: 16, sat: -14, temp: -8, shG: 16, shB: 12, greenMoss: 30 }),
@@ -2431,7 +2442,7 @@
         }
 
         // =========================================================================
-        // 4. 20 CAMERA FLASH PRESETS & FNATIX SUBJECT POP PRESETS
+        // 4. 20 CAMERA FLASH PRESETS & AHS PRO LIGHT PRESETS
         // =========================================================================
         const FLASH_PRESETS = [
             { id: 'off', name: 'Off (Tanpa Flash)', desc: 'Cahaya alami foto', color: [255, 255, 255], radius: 0.75, vignette: 0, mode: 'screen' },
@@ -2480,37 +2491,37 @@
         ];
 
         const SUBJECT_POP_PRESETS = [
-            { id: 'direct_flash_pro', cat: 'flash', name: 'Direct On-Camera Flash', desc: 'Kilatan keras langsung ke wajah & objek utama', fgBright: 84, bgDark: 84, dehaze: 80, twilight: 42, warmFg: 4 },
-            { id: 'paparazzi_pop', cat: 'flash', name: 'Paparazzi Night Pop', desc: 'Subjek super tajam dengan latar belakang gelap', fgBright: 88, bgDark: 92, dehaze: 84, twilight: 35, warmFg: 2 },
-            { id: 'soft_fill_flash', cat: 'flash', name: 'Soft Fill Flash', desc: 'Cahaya pengisi lembut tanpa bayangan kasar', fgBright: 72, bgDark: 55, dehaze: 54, twilight: 30, warmFg: 8 },
+            { id: 'direct_flash_pro', cat: 'flash', name: 'Direct On-Camera Flash', desc: 'Kilatan keras langsung ke wajah & objek utama', fgBright: 86, bgDark: 84, dehaze: 80, twilight: 15, warmFg: 4, fgTemp: 4, fgTint: 0, bgTemp: -6, bgTint: 0, fgSat: 4, bgSat: -8, mono: false },
+            { id: 'paparazzi_pop', cat: 'flash', name: 'Paparazzi Night Pop', desc: 'Subjek super tajam dengan latar belakang gelap', fgBright: 90, bgDark: 92, dehaze: 84, twilight: 10, warmFg: 2, fgTemp: 2, fgTint: 2, bgTemp: -10, bgTint: 0, fgSat: 6, bgSat: -18, mono: false },
+            { id: 'soft_fill_flash', cat: 'flash', name: 'Soft Fill Flash', desc: 'Cahaya pengisi lembut tanpa bayangan kasar', fgBright: 74, bgDark: 55, dehaze: 54, twilight: 12, warmFg: 8, fgTemp: 10, fgTint: 3, bgTemp: 4, bgTint: 0, fgSat: 6, bgSat: 4, mono: false },
 
-            { id: 'ccd_digicam_2005', cat: 'outdoor_ccd', name: 'CCD Digicam 2005', desc: 'Warna cerah khas sensor CCD & flash ringan', fgBright: 72, bgDark: 80, dehaze: 74, twilight: 48, warmFg: 0 },
-            { id: 'outdoor_daylight', cat: 'outdoor_ccd', name: 'Outdoor Daylight', desc: 'Cahaya siang bersih, warna kulit segar', fgBright: 74, bgDark: 60, dehaze: 64, twilight: 38, warmFg: 4 },
-            { id: 'night_street_flash', cat: 'outdoor_ccd', name: 'Night Street Flash', desc: 'Flash malam kota, struktur wajah & objek 100% tetap', fgBright: 78, bgDark: 86, dehaze: 78, twilight: 48, warmFg: 0 },
+            { id: 'ccd_digicam_2005', cat: 'outdoor_ccd', name: 'CCD Digicam 2005', desc: 'Warna cerah khas sensor CCD & flash ringan', fgBright: 80, bgDark: 86, dehaze: 78, twilight: 54, warmFg: -2, fgTemp: -8, fgTint: -4, bgTemp: -26, bgTint: 4, fgSat: 14, bgSat: 18, mono: false },
+            { id: 'outdoor_daylight', cat: 'outdoor_ccd', name: 'Outdoor Daylight', desc: 'Cahaya siang bersih, warna kulit segar', fgBright: 78, bgDark: 58, dehaze: 66, twilight: 14, warmFg: 6, fgTemp: 6, fgTint: 2, bgTemp: -6, bgTint: -2, fgSat: 8, bgSat: 12, mono: false },
+            { id: 'night_street_flash', cat: 'outdoor_ccd', name: 'Night Street Flash', desc: 'Flash malam kota, struktur wajah & objek 100% tetap', fgBright: 86, bgDark: 92, dehaze: 82, twilight: 36, warmFg: 4, fgTemp: 8, fgTint: 0, bgTemp: -20, bgTint: 6, fgSat: 8, bgSat: 10, mono: false },
 
-            { id: 'porcelain_glow', cat: 'clean_glow', name: 'Porcelain Skin Glow', desc: 'Kulit cerah bersih dengan kilau lembut', fgBright: 78, bgDark: 58, dehaze: 52, twilight: 34, warmFg: 8 },
-            { id: 'ahspro_signature', cat: 'clean_glow', name: 'AHS Pro Light Signature', desc: 'Subjek terang natural & latar senja kontras', fgBright: 82, bgDark: 88, dehaze: 78, twilight: 66, warmFg: 6 },
-            { id: 'airy_editorial', cat: 'clean_glow', name: 'Airy Editorial Pop', desc: 'Cahaya merata jernih khas majalah fashion', fgBright: 74, bgDark: 48, dehaze: 58, twilight: 28, warmFg: 6 },
+            { id: 'porcelain_glow', cat: 'clean_glow', name: 'Porcelain Skin Glow', desc: 'Kulit cerah bersih dengan kilau lembut', fgBright: 82, bgDark: 54, dehaze: 50, twilight: 10, warmFg: 10, fgTemp: 6, fgTint: 8, bgTemp: -4, bgTint: 4, fgSat: -6, bgSat: -10, mono: false },
+            { id: 'ahspro_signature', cat: 'clean_glow', name: 'AHS Pro Light Signature', desc: 'Subjek terang natural & latar senja kontras', fgBright: 84, bgDark: 86, dehaze: 78, twilight: 48, warmFg: 10, fgTemp: 12, fgTint: 3, bgTemp: -22, bgTint: 2, fgSat: 8, bgSat: 14, mono: false },
+            { id: 'airy_editorial', cat: 'clean_glow', name: 'Airy Editorial Pop', desc: 'Cahaya merata jernih khas majalah fashion', fgBright: 76, bgDark: 45, dehaze: 56, twilight: 8, warmFg: 6, fgTemp: -4, fgTint: 2, bgTemp: -6, bgTint: 0, fgSat: -10, bgSat: -14, mono: false },
 
-            { id: 'golden_hour_rim', cat: 'sunset', name: 'Golden Hour Rim', desc: 'Sinar keemasan hangat di kulit & rambut', fgBright: 78, bgDark: 72, dehaze: 68, twilight: 38, warmFg: 18 },
-            { id: 'twilight_dusk_flash', cat: 'sunset', name: 'Twilight Dusk Flash', desc: 'Flash depan hangat dengan langit biru senja', fgBright: 82, bgDark: 86, dehaze: 76, twilight: 72, warmFg: 12 },
-            { id: 'amber_pier_sunset', cat: 'sunset', name: 'Amber Pier Sunset', desc: 'Nuansa senja dermaga hangat & kontras dalam', fgBright: 76, bgDark: 82, dehaze: 74, twilight: 54, warmFg: 16 },
+            { id: 'golden_hour_rim', cat: 'sunset', name: 'Golden Hour Rim', desc: 'Sinar keemasan hangat di kulit & rambut', fgBright: 80, bgDark: 70, dehaze: 68, twilight: 12, warmFg: 22, fgTemp: 28, fgTint: 6, bgTemp: 22, bgTint: 8, fgSat: 14, bgSat: 18, mono: false },
+            { id: 'twilight_dusk_flash', cat: 'sunset', name: 'Twilight Dusk Flash', desc: 'Flash depan hangat dengan langit biru senja', fgBright: 84, bgDark: 86, dehaze: 76, twilight: 68, warmFg: 16, fgTemp: 18, fgTint: 4, bgTemp: -34, bgTint: 8, fgSat: 10, bgSat: 20, mono: false },
+            { id: 'amber_pier_sunset', cat: 'sunset', name: 'Amber Pier Sunset', desc: 'Nuansa senja dermaga hangat & kontras dalam', fgBright: 78, bgDark: 80, dehaze: 74, twilight: 24, warmFg: 20, fgTemp: 24, fgTint: 8, bgTemp: 16, bgTint: 10, fgSat: 12, bgSat: 16, mono: false },
 
-            { id: 'key_light_studio', cat: 'studio', name: 'Key Light 45° Studio', desc: 'Pencahayaan studio terarah yang tegas & rapi', fgBright: 80, bgDark: 84, dehaze: 76, twilight: 24, warmFg: 6 },
-            { id: 'ring_light_beauty', cat: 'studio', name: 'Ring Light Beauty', desc: 'Cahaya depan merata untuk detail wajah', fgBright: 84, bgDark: 68, dehaze: 60, twilight: 20, warmFg: 6 },
-            { id: 'dramatic_chiaroscuro', cat: 'studio', name: 'Dramatic Chiaroscuro', desc: 'Kontras studio gelap dengan sorotan subjek', fgBright: 78, bgDark: 92, dehaze: 84, twilight: 18, warmFg: 4 },
+            { id: 'key_light_studio', cat: 'studio', name: 'Key Light 45° Studio', desc: 'Pencahayaan studio terarah yang tegas & rapi', fgBright: 82, bgDark: 84, dehaze: 76, twilight: 8, warmFg: 6, fgTemp: 6, fgTint: 1, bgTemp: -4, bgTint: 0, fgSat: 4, bgSat: -12, mono: false },
+            { id: 'ring_light_beauty', cat: 'studio', name: 'Ring Light Beauty', desc: 'Cahaya depan merata untuk detail wajah', fgBright: 86, bgDark: 66, dehaze: 58, twilight: 8, warmFg: 8, fgTemp: 4, fgTint: 6, bgTemp: -2, bgTint: 2, fgSat: 2, bgSat: -8, mono: false },
+            { id: 'dramatic_chiaroscuro', cat: 'studio', name: 'Dramatic Chiaroscuro', desc: 'Kontras studio gelap dengan sorotan subjek', fgBright: 80, bgDark: 92, dehaze: 84, twilight: 6, warmFg: 6, fgTemp: 10, fgTint: 2, bgTemp: -8, bgTint: 0, fgSat: -4, bgSat: -24, mono: false },
 
-            { id: 'disposable_35mm_pop', cat: 'retro_analog', name: 'Disposable 35mm Flash', desc: 'Kilatan kamera sekali pakai & kontras klasik', fgBright: 84, bgDark: 84, dehaze: 76, twilight: 42, warmFg: 10 },
-            { id: 'portra_warm_pop', cat: 'retro_analog', name: 'Portra Warm Flash', desc: 'Warna kulit hangat ala film Kodak Portra', fgBright: 74, bgDark: 64, dehaze: 58, twilight: 32, warmFg: 16 },
-            { id: 'y2k_party_cam', cat: 'retro_analog', name: 'Y2K Party Cam', desc: 'Flash pesta era 2000-an yang kontras & hidup', fgBright: 86, bgDark: 90, dehaze: 80, twilight: 54, warmFg: 6 },
+            { id: 'disposable_35mm_pop', cat: 'retro_analog', name: 'Disposable 35mm Flash', desc: 'Kilatan kamera sekali pakai & kontras klasik', fgBright: 84, bgDark: 84, dehaze: 76, twilight: 18, warmFg: 14, fgTemp: 16, fgTint: -8, bgTemp: 8, bgTint: -12, fgSat: 12, bgSat: 10, mono: false },
+            { id: 'portra_warm_pop', cat: 'retro_analog', name: 'Portra Warm Flash', desc: 'Warna kulit hangat ala film Kodak Portra', fgBright: 76, bgDark: 62, dehaze: 56, twilight: 14, warmFg: 18, fgTemp: 20, fgTint: 6, bgTemp: 12, bgTint: 4, fgSat: 4, bgSat: -4, mono: false },
+            { id: 'y2k_party_cam', cat: 'retro_analog', name: 'Y2K Party Cam', desc: 'Flash pesta era 2000-an yang kontras & hidup', fgBright: 86, bgDark: 90, dehaze: 80, twilight: 44, warmFg: 8, fgTemp: -6, fgTint: 12, bgTemp: -24, bgTint: 14, fgSat: 16, bgSat: 22, mono: false },
 
-            { id: 'tokyo_neon_rain', cat: 'neon_malam', name: 'Tokyo Neon Rain', desc: 'Sorotan subjek tajam dengan nuansa biru-cyan', fgBright: 82, bgDark: 90, dehaze: 80, twilight: 78, warmFg: 2 },
-            { id: 'cyber_club_strobe', cat: 'neon_malam', name: 'Cyber Club Strobe', desc: 'Cahaya malam kontras tinggi dengan aksen neon', fgBright: 84, bgDark: 92, dehaze: 82, twilight: 72, warmFg: 2 },
-            { id: 'midnight_blue_hour', cat: 'neon_malam', name: 'Midnight Blue Hour', desc: 'Latar biru malam pekat dengan subjek cerah', fgBright: 80, bgDark: 92, dehaze: 78, twilight: 82, warmFg: 6 },
+            { id: 'tokyo_neon_rain', cat: 'neon_malam', name: 'Tokyo Neon Rain', desc: 'Sorotan subjek tajam dengan nuansa biru-cyan', fgBright: 82, bgDark: 90, dehaze: 80, twilight: 74, warmFg: 2, fgTemp: -12, fgTint: -6, bgTemp: -36, bgTint: -10, fgSat: 10, bgSat: 24, mono: false },
+            { id: 'cyber_club_strobe', cat: 'neon_malam', name: 'Cyber Club Strobe', desc: 'Cahaya malam kontras tinggi dengan aksen neon', fgBright: 84, bgDark: 92, dehaze: 82, twilight: 64, warmFg: 4, fgTemp: -4, fgTint: 16, bgTemp: -28, bgTint: 24, fgSat: 14, bgSat: 28, mono: false },
+            { id: 'midnight_blue_hour', cat: 'neon_malam', name: 'Midnight Blue Hour', desc: 'Latar biru malam pekat dengan subjek cerah', fgBright: 80, bgDark: 92, dehaze: 78, twilight: 80, warmFg: 8, fgTemp: 8, fgTint: 2, bgTemp: -40, bgTint: 4, fgSat: 6, bgSat: 18, mono: false },
 
-            { id: 'cinema_eterna_pop', cat: 'film_editorial', name: 'Cinema Eterna Pop', desc: 'Tone sinematik lembut dengan pemisahan subjek', fgBright: 70, bgDark: 72, dehaze: 64, twilight: 50, warmFg: 6 },
-            { id: 'monochrome_spotlight', cat: 'film_editorial', name: 'High-Contrast Spotlight', desc: 'Sorotan dramatis pada subjek & latar dalam', fgBright: 80, bgDark: 92, dehaze: 84, twilight: 30, warmFg: 4 },
-            { id: 'editorial_magazine', cat: 'film_editorial', name: 'Editorial Magazine', desc: 'Ketajaman & kontras bersih ala editorial', fgBright: 76, bgDark: 66, dehaze: 70, twilight: 36, warmFg: 6 }
+            { id: 'cinema_eterna_pop', cat: 'film_editorial', name: 'Cinema Eterna Pop', desc: 'Tone sinematik lembut dengan pemisahan subjek', fgBright: 72, bgDark: 72, dehaze: 62, twilight: 32, warmFg: 6, fgTemp: -4, fgTint: -4, bgTemp: -14, bgTint: -6, fgSat: -16, bgSat: -20, mono: false },
+            { id: 'monochrome_spotlight', cat: 'film_editorial', name: 'High-Contrast Spotlight', desc: 'Sorotan dramatis hitam-putih pada subjek', fgBright: 84, bgDark: 92, dehaze: 84, twilight: 0, warmFg: 0, fgTemp: 0, fgTint: 0, fgSat: -100, bgSat: -100, mono: true },
+            { id: 'editorial_magazine', cat: 'film_editorial', name: 'Editorial Magazine', desc: 'Ketajaman & kontras bersih ala editorial', fgBright: 78, bgDark: 66, dehaze: 70, twilight: 16, warmFg: 6, fgTemp: 4, fgTint: 2, bgTemp: -10, bgTint: 0, fgSat: -6, bgSat: -12, mono: false }
         ];
 
         const ADJUST_DEFS = [
@@ -2601,11 +2612,11 @@
                 centerX: 0.5,
                 centerY: 0.45,
                 master: 0,
-                fgBright: 72,
-                bgDark: 80,
-                dehaze: 74,
-                twilight: 48,
-                warmFg: 0,
+                fgBright: 80,
+                bgDark: 92,
+                dehaze: 80,
+                twilight: 54,
+                warmFg: -2,
                 brushMode: 'none',
                 brushRadius: 44,
                 showMaskOverlay: false,
@@ -2633,7 +2644,8 @@
             frame: { style: 'none', thickness: 6, caption: "Memories • AHStudio '26" },
             watermark: { text: '', font: 'sans', pos: 'bc', size: 100, opacity: 85 },
             exportOpts: { format: 'image/jpeg', scale: 1, quality: 95 },
-            lastExportFile: null
+            lastExportFile: null,
+            lastExportMeta: null
         };
 
         const appRoot = $('appRoot');
@@ -2654,11 +2666,38 @@
         const origCtx = origBuffer.getContext('2d');
 
         // =========================================================================
-        // 6. SILHOUETTE SEGMENTATION ENGINE (140PX PROXY FOR INSTANT SPEED)
+        // 6. SILHOUETTE SEGMENTATION ENGINE + ANTI-WHITE-HALO EDGE REFINEMENT
         // =========================================================================
+        function refineMaskAntiHalo(rawMask, w, h) {
+            const total = w * h;
+            // 1-pixel morphological inward shrink (erosion) on soft fringe + tight S-curve contrast
+            // prevents bright sky/background pixels at the silhouette boundary from being lifted into a white halo!
+            const shrunk = new Float32Array(total);
+            for (let y = 0; y < h; y++) {
+                const row = y * w;
+                const yUp = y > 0 ? y - 1 : 0;
+                const yDn = y < h - 1 ? y + 1 : h - 1;
+                for (let x = 0; x < w; x++) {
+                    const xLt = x > 0 ? x - 1 : 0;
+                    const xRt = x < w - 1 ? x + 1 : w - 1;
+                    const c = rawMask[row + x];
+                    const nMin = Math.min(
+                        rawMask[yUp * w + x],
+                        rawMask[yDn * w + x],
+                        rawMask[row + xLt],
+                        rawMask[row + xRt]
+                    );
+                    const val = c * 0.42 + nMin * 0.58;
+                    const sharpened = (val - 0.24) / 0.54;
+                    shrunk[row + x] = sharpened < 0 ? 0 : (sharpened > 1 ? 1 : sharpened);
+                }
+            }
+            return shrunk;
+        }
+
         function computeSilhouetteSubjectMask(silent) {
             if (!state.sourceCanvas) return;
-            const segCanvas = buildTransformedSource(state.sourceCanvas, 140);
+            const segCanvas = buildTransformedSource(state.sourceCanvas, 160);
             const w = segCanvas.width;
             const h = segCanvas.height;
             const ctx = segCanvas.getContext('2d', { willReadFrequently: true });
@@ -2821,7 +2860,6 @@
                 coarseMask[i] = visitedBg[i] ? 0.0 : Math.min(1.0, Math.max(0.0, (fgScore[i] - 0.34) / 0.36));
             }
 
-            let srcM = coarseMask;
             let dstM = new Float32Array(total);
             const rad = 2;
             for (let y = 0; y < h; y++) {
@@ -2841,17 +2879,16 @@
                             const dr = data[n4] - cr, dg = data[n4 + 1] - cg, db = data[n4 + 2] - cb;
                             const wt = Math.exp(-(dr * dr + dg * dg + db * db) / 1568) * Math.exp(-(dx * dx + dy * dy) / 6.0);
                             wSum += wt;
-                            valSum += srcM[nIdx] * wt;
+                            valSum += coarseMask[nIdx] * wt;
                         }
                     }
-                    const v = ((wSum > 0 ? valSum / wSum : srcM[cIdx]) - 0.18) / 0.64;
+                    const v = ((wSum > 0 ? valSum / wSum : coarseMask[cIdx]) - 0.18) / 0.64;
                     dstM[cIdx] = v < 0 ? 0 : (v > 1 ? 1 : v);
                 }
             }
 
-            // Tight edge-aware guided filter + inward erosion to prevent white background spill / halo around subject
-            dstM = applyGuidedMaskFilter(data, dstM, w, h, 2, 0.0008);
-            dstM = erodeMaskInward(dstM, w, h, 1);
+            dstM = applyGuidedMaskFilter(data, dstM, w, h, 3, 0.0012);
+            dstM = refineMaskAntiHalo(dstM, w, h);
 
             let cxSum = 0, cySum = 0, cW = 0;
             for (let y = 0; y < h; y++) {
@@ -2875,31 +2912,6 @@
             if (!silent) showToast(`🤖 ${state.subjectPop.detectedType} terdeteksi!`);
         }
 
-        // Fast O(N) Morphological Inward Shrink to strip 1-2px background bleed that causes white halos
-        function erodeMaskInward(mask, w, h, passes) {
-            let cur = mask;
-            for (let p = 0; p < passes; p++) {
-                const next = new Float32Array(w * h);
-                for (let y = 0; y < h; y++) {
-                    const row = y * w;
-                    const yUp = Math.max(0, y - 1) * w;
-                    const yDn = Math.min(h - 1, y + 1) * w;
-                    for (let x = 0; x < w; x++) {
-                        const xL = Math.max(0, x - 1);
-                        const xR = Math.min(w - 1, x + 1);
-                        const c = cur[row + x];
-                        const mMin = Math.min(c, cur[row + xL], cur[row + xR], cur[yUp + x], cur[yDn + x]);
-                        // Blend 70% inward min + 30% center for anti-aliased edge without white fringe
-                        const v = mMin * 0.72 + c * 0.28;
-                        next[row + x] = v < 0.08 ? 0 : (v > 0.94 ? 1 : ((v - 0.08) / 0.86));
-                    }
-                }
-                cur = next;
-            }
-            return cur;
-        }
-
-        // Fast O(N) Image-Guided Filter (snaps any mask cleanly onto real photo edges with zero white halos)
         function applyGuidedMaskFilter(imgData, rawMask, w, h, radius, eps) {
             const total = w * h;
             const I = new Float32Array(total);
@@ -3058,8 +3070,8 @@
                 }
 
                 if (fgCount > total * 0.015) {
-                    const refined = applyGuidedMaskFilter(srcData, rawMask, w, h, 2, 0.0006);
-                    const guided = erodeMaskInward(refined, w, h, 2);
+                    let guided = applyGuidedMaskFilter(srcData, rawMask, w, h, 3, 0.0012);
+                    guided = refineMaskAntiHalo(guided, w, h);
                     let cxSum = 0, cySum = 0, cW = 0;
                     for (let y = 0; y < h; y++) {
                         for (let x = 0; x < w; x++) {
@@ -3117,94 +3129,28 @@
 
             for (let y = yStart; y <= yEnd; y++) {
                 const dy = y - cy;
-                const dySq = dy * dy;
-                const rowOff = y * mw;
+                const row = y * mw;
                 for (let x = xStart; x <= xEnd; x++) {
                     const dx = x - cx;
-                    const dSq = dx * dx + dySq;
+                    const dSq = dx * dx + dy * dy;
                     if (dSq <= rSq) {
-                        const t = 1 - Math.sqrt(dSq) / rPx;
-                        const falloff = t * t * (3 - 2 * t) * 0.55;
-                        const idx = rowOff + x;
+                        const falloff = 1 - Math.sqrt(dSq) / rPx;
+                        const idx = row + x;
                         mask[idx] = isAdd
-                            ? Math.min(1.0, mask[idx] + falloff)
-                            : Math.max(0.0, mask[idx] - falloff);
+                            ? Math.min(1.0, mask[idx] + falloff * 0.55)
+                            : Math.max(0.0, mask[idx] - falloff * 0.55);
                     }
                 }
             }
         }
 
-        // Ultra-fast 60fps Brush Overlay & Stroke Renderer (Zero full-pipeline re-runs during brush drag!)
-        const brushBaseBuffer = document.createElement('canvas');
-        const brushBaseCtx = brushBaseBuffer.getContext('2d');
-        const brushOverlayCanvas = document.createElement('canvas');
-        const brushOverlayCtx = brushOverlayCanvas.getContext('2d');
-        let brushRenderRaf = false;
-
-        function captureBrushBaseSnapshot() {
-            if (!state.sourceCanvas) return;
-            const prevShowMask = state.subjectPop.showMaskOverlay;
-            state.subjectPop.showMaskOverlay = false;
-            const prevScrub = state.isScrubbing;
-            state.isScrubbing = true;
-            processFullPipeline(state.sourceCanvas, brushBaseBuffer, brushBaseCtx, 720);
-            state.isScrubbing = prevScrub;
-            state.subjectPop.showMaskOverlay = prevShowMask;
-        }
-
-        function drawFastBrushOverlay() {
-            const sp = state.subjectPop;
-            const mw = sp.maskW, mh = sp.maskH, mask = sp.subjectMask;
-            if (!mw || !mh || !mask) return;
-            const w = brushBaseBuffer.width || previewCanvas.width;
-            const h = brushBaseBuffer.height || previewCanvas.height;
-            if (!w || !h) return;
-
-            if (brushOverlayCanvas.width !== mw || brushOverlayCanvas.height !== mh) {
-                brushOverlayCanvas.width = mw;
-                brushOverlayCanvas.height = mh;
+        function paintSubjectMaskSegment(x0, y0, x1, y1, isAdd) {
+            const dist = Math.hypot(x1 - x0, y1 - y0);
+            const steps = Math.max(1, Math.min(16, Math.ceil(dist / 0.015)));
+            for (let s = 1; s <= steps; s++) {
+                const t = s / steps;
+                paintSubjectMaskAt(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, isAdd);
             }
-            const oImg = brushOverlayCtx.createImageData(mw, mh);
-            const oData = oImg.data;
-            for (let i = 0; i < mw * mh; i++) {
-                const m = mask[i];
-                const p = i * 4;
-                if (m > 0.05) {
-                    oData[p] = 14;
-                    oData[p + 1] = 165;
-                    oData[p + 2] = 233;
-                    oData[p + 3] = Math.round(m * 135);
-                } else {
-                    oData[p] = 244;
-                    oData[p + 1] = 63;
-                    oData[p + 2] = 94;
-                    oData[p + 3] = 52;
-                }
-            }
-            brushOverlayCtx.putImageData(oImg, 0, 0);
-
-            previewCanvas.width = w;
-            previewCanvas.height = h;
-            fitPreviewCanvasDimensions(w, h);
-            previewCtx.globalCompositeOperation = 'source-over';
-            previewCtx.globalAlpha = 1;
-            previewCtx.drawImage(brushBaseBuffer, 0, 0, w, h);
-            previewCtx.imageSmoothingEnabled = true;
-            previewCtx.drawImage(brushOverlayCanvas, 0, 0, w, h);
-
-            splitLine.classList.add('hidden');
-            badgeOriginal.classList.add('hidden');
-            badgeResult.classList.remove('hidden');
-            badgeResult.textContent = sp.brushMode === 'add' ? '🖌️ + SUBJEK' : '🧹 - LATAR';
-        }
-
-        function scheduleFastBrushPaintRender() {
-            if (brushRenderRaf) return;
-            brushRenderRaf = true;
-            requestAnimationFrame(() => {
-                brushRenderRaf = false;
-                drawFastBrushOverlay();
-            });
         }
 
         function updateAiSubjectStatusUI() {
@@ -3214,7 +3160,7 @@
         }
 
         // =========================================================================
-        // 7. PROCEDURAL SAMPLE PHOTOS (5 SCENES - ZERO TAINTED CANVAS)
+        // 7. PROCEDURAL SAMPLE PHOTOS
         // =========================================================================
         function generateSampleCanvas(type) {
             const c = document.createElement('canvas');
@@ -3332,7 +3278,7 @@
         }
 
         // =========================================================================
-        // 8. ULTRA-FAST PRECOMPUTED LUTS & COLOR MATH
+        // 8. LUTS & COLOR MATH
         // =========================================================================
         function clamp255(v) {
             return v < 0 ? 0 : (v > 255 ? 255 : v);
@@ -3522,7 +3468,7 @@
         }
 
         // =========================================================================
-        // 9. GEOMETRY TRANSFORM & FULL SINGLE-PASS RENDER PIPELINE
+        // 9. GEOMETRY TRANSFORM & FULL SINGLE-PASS RENDER PIPELINE (ZERO WHITE HALO)
         // =========================================================================
         function buildTransformedSource(sourceCanvas, maxDim) {
             const tr = state.transform;
@@ -3688,6 +3634,7 @@
             const sp = state.subjectPop;
             const spMix = sp.master / 100;
             const hasSubjectPop = spMix > 0.005 || sp.showMaskOverlay;
+            const spPreset = getActiveAhsPreset();
             const spShadowMode = sp.shadowMode || 'hard';
             const spBgMode = sp.bgMode || 'dark';
             const spCx = sp.centerX ?? 0.5;
@@ -3696,10 +3643,17 @@
             const fgLiftAmt = ((sp.fgBright - 40) / 60) * 0.16 * spMix;
             const fgCon = (spShadowMode === 'hard' ? 1.07 : (spShadowMode === 'soft' ? 1.01 : 1.04));
             const fgWarm = (sp.warmFg || 0) * 0.18 * spMix;
+            const fgTempShift = (spPreset.fgTemp || 0) * 0.68 * spMix;
+            const fgTintShift = (spPreset.fgTint || 0) * 0.55 * spMix;
+            const fgSatMul = Math.max(0, 1 + ((spPreset.fgSat || 6) / 100) * spMix);
 
             const bgEvTarget = spBgMode === 'dark' ? 1.75 : (spBgMode === 'dim' ? 1.10 : 0.35);
             const bgEvMul = Math.pow(2, -bgEvTarget * spMix);
-            const bgTwilightMix = ((sp.twilight || 0) / 100) * (spBgMode === 'auto' ? 0.12 : (spBgMode === 'dim' ? 0.38 : 0.62)) * spMix;
+            const bgTempShift = (spPreset.bgTemp || 0) * 0.72 * spMix;
+            const bgTintShift = (spPreset.bgTint || 0) * 0.58 * spMix;
+            const bgSatMul = Math.max(0, 1 + ((spPreset.bgSat || 0) / 100) * spMix);
+            const bgTwilightMix = ((sp.twilight || 0) / 100) * (spBgMode === 'auto' ? 0.25 : (spBgMode === 'dim' ? 0.52 : 0.75)) * spMix;
+            const isSpMono = !!spPreset.mono;
 
             const invW = 1 / w;
             const invH = 1 / h;
@@ -3709,14 +3663,15 @@
                 let g = data[i + 1];
                 let b = data[i + 2];
 
-                // AHS Pro Light (Guided-Mask Studio Flash + Monotonic Background EV)
+                // AHS Pro Light (Zero-White-Halo Edge-Clamped Studio Lighting)
                 if (hasSubjectPop) {
                     const pxIdx = i >> 2;
                     const nx = (pxIdx % w) * invW;
                     const ny = ((pxIdx / w) | 0) * invH;
-                    const rawMaskVal = sampleSubjectMaskBilinear(nx, ny);
-                    // Power curve on transition edge suppresses bright background spill (eliminates white halo!)
-                    const fgMask = rawMaskVal <= 0.04 ? 0 : (rawMaskVal >= 0.96 ? 1 : (rawMaskVal * rawMaskVal * (3 - 2 * rawMaskVal)));
+                    const rawFgMask = sampleSubjectMaskBilinear(nx, ny);
+                    // Tight S-curve on interpolated mask eliminates semi-transparent gray/white fringe
+                    const clampedMask = rawFgMask <= 0.14 ? 0 : (rawFgMask >= 0.86 ? 1 : (rawFgMask - 0.14) / 0.72);
+                    const fgMask = clampedMask * clampedMask * (3 - 2 * clampedMask);
                     const bgMask = 1 - fgMask;
 
                     if (spMix > 0.005) {
@@ -3726,26 +3681,29 @@
 
                         let fr = r, fg = g, fb = b;
                         if (fgMask > 0.01) {
-                            // Strictly protect bright highlights (sky/white edges) & core-only shadow lift so no white fringe ever forms
-                            const coreWeight = fgMask * fgMask;
+                            // Core-interior guard (fgMask^2) prevents brightening edge boundary pixels
+                            const interiorWeight = fgMask * fgMask;
                             const midProtect = Math.pow(Math.max(0, 1 - lumPre), 1.65);
-                            const fillGain = 1 + fgLiftAmt * midProtect * (0.65 + 0.35 * radialFlash) * coreWeight;
-                            const softLift = (spShadowMode === 'soft' ? 6 : (spShadowMode === 'hard' ? 1.5 : 3.5)) * midProtect * spMix * coreWeight;
+                            const fillGain = 1 + fgLiftAmt * midProtect * interiorWeight * (0.7 + 0.3 * radialFlash);
+                            const softLift = (spShadowMode === 'soft' ? 8 : (spShadowMode === 'hard' ? 2 : 5)) * midProtect * interiorWeight * spMix;
 
-                            fr = fr * fillGain + softLift + fgWarm * 0.75 * midProtect;
-                            fg = fg * fillGain + softLift + fgWarm * 0.38 * midProtect;
-                            fb = fb * fillGain + softLift - fgWarm * 0.2 * midProtect;
+                            fr = fr * fillGain + softLift + fgWarm * 0.8 * midProtect * interiorWeight;
+                            fg = fg * fillGain + softLift + fgWarm * 0.4 * midProtect * interiorWeight;
+                            fb = fb * fillGain + softLift - fgWarm * 0.2 * midProtect * interiorWeight;
 
                             const cMix = 1 + (fgCon - 1) * spMix;
                             fr = (fr - 128) * cMix + 128;
                             fg = (fg - 128) * cMix + 128;
                             fb = (fb - 128) * cMix + 128;
 
+                            fr += fgTempShift + fgTintShift * 0.25;
+                            fg -= fgTintShift * 0.55;
+                            fb -= fgTempShift - fgTintShift * 0.25;
+
                             const fGray = 0.299 * fr + 0.587 * fg + 0.114 * fb;
-                            const fSat = 1 + 0.06 * spMix;
-                            fr = fGray + (fr - fGray) * fSat;
-                            fg = fGray + (fg - fGray) * fSat;
-                            fb = fGray + (fb - fGray) * fSat;
+                            fr = fGray + (fr - fGray) * fgSatMul;
+                            fg = fGray + (fg - fGray) * fgSatMul;
+                            fb = fGray + (fb - fGray) * fgSatMul;
                         }
 
                         let br = r, bg = g, bb = b;
@@ -3756,29 +3714,31 @@
                             bg *= totalMul;
                             bb *= totalMul;
 
+                            br += bgTempShift * totalMul + bgTintShift * 0.25 * totalMul;
+                            bg -= bgTintShift * 0.55 * totalMul;
+                            bb -= bgTempShift * totalMul - bgTintShift * 0.25 * totalMul;
+
                             const bGray = 0.299 * br + 0.587 * bg + 0.114 * bb;
-                            const bSat = 1 + 0.12 * spMix;
-                            br = bGray + (br - bGray) * bSat;
-                            bg = bGray + (bg - bGray) * bSat;
-                            bb = bGray + (bb - bGray) * bSat;
+                            br = bGray + (br - bGray) * bgSatMul;
+                            bg = bGray + (bg - bGray) * bgSatMul;
+                            bb = bGray + (bb - bGray) * bgSatMul;
 
                             if (bgTwilightMix > 0.01) {
-                                br *= (1 - bgTwilightMix * 0.14);
-                                bg *= (1 - bgTwilightMix * 0.03);
-                                bb *= (1 + bgTwilightMix * 0.16);
+                                br *= (1 - bgTwilightMix * 0.18);
+                                bg *= (1 - bgTwilightMix * 0.04);
+                                bb *= (1 + bgTwilightMix * 0.22);
                             }
                         }
 
                         r = fr * fgMask + br * bgMask;
                         g = fg * fgMask + bg * bgMask;
                         b = fb * fgMask + bb * bgMask;
-                    }
 
-                    if (sp.showMaskOverlay) {
-                        if (fgMask > 0.5) {
-                            r = r * 0.65 + 7; g = g * 0.65 + 73.5; b = b * 0.65 + 89.25;
-                        } else {
-                            r = r * 0.65 + 77; g = g * 0.65 + 14; b = b * 0.65 + 28;
+                        if (isSpMono) {
+                            const monoL = 0.299 * r + 0.587 * g + 0.114 * b;
+                            r += (monoL - r) * spMix;
+                            g += (monoL - g) * spMix;
+                            b += (monoL - b) * spMix;
                         }
                     }
                 }
@@ -3904,7 +3864,7 @@
                 g = gray + (g - gray) * satMul;
                 b = gray + (b - gray) * satMul;
 
-                // Fast O(1) Precomputed 8-Channel Selective HSL Mixer
+                // 8-Channel Selective HSL Mixer
                 if (hslLuts) {
                     const cr = clamp255(r), cg = clamp255(g), cb = clamp255(b);
                     let [hDeg, sVal, lVal] = rgbToHsl(cr, cg, cb);
@@ -3946,7 +3906,7 @@
                 data[i + 2] = clamp255(b);
             }
 
-            // Sharpen (skipped during fast scrubbing for 60fps smoothness)
+            // Sharpen
             const sharpAmt = (adj.sharpen + (filter.customAdj ? (filter.customAdj.sharpen || 0) * fMix : 0)) / 100;
             if (sharpAmt > 0.01 && !state.isScrubbing) {
                 const copy = new Uint8ClampedArray(data);
@@ -4123,8 +4083,64 @@
         }
 
         // =========================================================================
-        // 10. ADAPTIVE PROXY SCRUBBING + RAF RENDER SCHEDULER
+        // 10. FAST 60FPS BRUSH OVERLAY & RAF PREVIEW RENDERER
         // =========================================================================
+        const brushBaseBuffer = document.createElement('canvas');
+        const brushBaseCtx = brushBaseBuffer.getContext('2d');
+        const brushMaskOverlayCanvas = document.createElement('canvas');
+        const brushMaskOverlayCtx = brushMaskOverlayCanvas.getContext('2d');
+        let brushOverlayImgData = null;
+
+        function captureBrushBaseSnapshot() {
+            const w = previewCanvas.width;
+            const h = previewCanvas.height;
+            if (!w || !h) return;
+            brushBaseBuffer.width = w;
+            brushBaseBuffer.height = h;
+            brushBaseCtx.clearRect(0, 0, w, h);
+            brushBaseCtx.drawImage(previewCanvas, 0, 0);
+        }
+
+        function drawFastBrushOverlay() {
+            const sp = state.subjectPop;
+            const mw = sp.maskW, mh = sp.maskH, mask = sp.subjectMask;
+            if (!mw || !mh || !mask || !brushBaseBuffer.width) return;
+
+            if (brushMaskOverlayCanvas.width !== mw || brushMaskOverlayCanvas.height !== mh || !brushOverlayImgData) {
+                brushMaskOverlayCanvas.width = mw;
+                brushMaskOverlayCanvas.height = mh;
+                brushOverlayImgData = brushMaskOverlayCtx.createImageData(mw, mh);
+            }
+
+            const out = brushOverlayImgData.data;
+            const total = mw * mh;
+            for (let i = 0; i < total; i++) {
+                const m = mask[i];
+                const idx = i * 4;
+                if (m > 0.5) {
+                    out[idx] = 14; out[idx + 1] = 165; out[idx + 2] = 233; out[idx + 3] = 105;
+                } else {
+                    out[idx] = 244; out[idx + 1] = 63; out[idx + 2] = 94; out[idx + 3] = 75;
+                }
+            }
+            brushMaskOverlayCtx.putImageData(brushOverlayImgData, 0, 0);
+
+            previewCtx.globalCompositeOperation = 'source-over';
+            previewCtx.globalAlpha = 1;
+            previewCtx.drawImage(brushBaseBuffer, 0, 0);
+            previewCtx.drawImage(brushMaskOverlayCanvas, 0, 0, previewCanvas.width, previewCanvas.height);
+        }
+
+        let brushOverlayRaf = false;
+        function scheduleFastBrushOverlay() {
+            if (brushOverlayRaf) return;
+            brushOverlayRaf = true;
+            requestAnimationFrame(() => {
+                brushOverlayRaf = false;
+                drawFastBrushOverlay();
+            });
+        }
+
         let rafPending = false;
         function schedulePreviewRender() {
             if (rafPending) return;
@@ -4142,12 +4158,12 @@
 
             if (isLandscape) {
                 const bgRect = canvasStageBg.getBoundingClientRect();
-                maxW = Math.max(220, (bgRect.width || (window.innerWidth - 434)) - 8);
+                maxW = Math.max(220, (bgRect.width || (window.innerWidth - 440)) - 8);
                 maxH = Math.max(220, (bgRect.height || (window.innerHeight - 135)) - 8);
             } else {
                 const rootW = appRoot.clientWidth || Math.min(window.innerWidth, 580);
                 maxW = Math.max(200, rootW - 22);
-                const vhRatio = state.previewCompact ? 0.26 : 0.42;
+                const vhRatio = state.previewCompact ? 0.25 : 0.41;
                 maxH = Math.max(145, Math.round(window.innerHeight * vhRatio));
             }
 
@@ -4240,6 +4256,11 @@
 
             compositePreviewOnly();
             updateStatusBadges();
+            if (typeof isFullscreenOpen === 'function' && isFullscreenOpen()) renderFullscreenPreview();
+            if (!state.isScrubbing && !isRestoringHistory) {
+                scheduleProjectAutoSave();
+                scheduleHistoryCommit();
+            }
         }
 
         function updateSplitLinePosition() {
@@ -4293,7 +4314,205 @@
         });
 
         // =========================================================================
-        // 11. TONE CURVE & 3-WAY COLOR GRADING WHEELS
+        // 11. UNDO / REDO HISTORY STACK ENGINE (MAX 40 STEPS + KEYBOARD SHORTCUTS)
+        // =========================================================================
+        const MAX_HISTORY_STEPS = 40;
+        const historyStack = [];
+        let historyIndex = -1;
+        let lastHistorySig = '';
+        let isRestoringHistory = false;
+        let historyCommitTimer = null;
+        let isPaintingBrush = false;
+
+        function captureHistorySnapshot() {
+            const sp = state.subjectPop;
+            const snap = {
+                selectedFilterId: state.selectedFilterId,
+                filterOpacity: state.filterOpacity,
+                colorMatch: {
+                    active: state.colorMatch.active,
+                    strength: state.colorMatch.strength,
+                    refName: state.colorMatch.refName,
+                    profile: state.colorMatch.profile
+                },
+                adjust: Object.assign({}, state.adjust),
+                curves: JSON.parse(JSON.stringify(state.curves)),
+                hsl: JSON.parse(JSON.stringify(state.hsl)),
+                grading: JSON.parse(JSON.stringify(state.grading)),
+                subjectPop: {
+                    categoryId: sp.categoryId,
+                    presetId: sp.presetId,
+                    shadowMode: sp.shadowMode,
+                    bgMode: sp.bgMode,
+                    master: sp.master,
+                    fgBright: sp.fgBright,
+                    bgDark: sp.bgDark,
+                    dehaze: sp.dehaze,
+                    twilight: sp.twilight,
+                    warmFg: sp.warmFg,
+                    maskW: sp.maskW,
+                    maskH: sp.maskH,
+                    subjectMask: sp.subjectMask ? new Float32Array(sp.subjectMask) : null,
+                    detectedType: sp.detectedType
+                },
+                selectedFlashId: state.selectedFlashId,
+                flashIntensity: state.flashIntensity,
+                flashPosition: state.flashPosition,
+                dateStamp: state.dateStamp,
+                transform: Object.assign({}, state.transform),
+                frame: Object.assign({}, state.frame),
+                watermark: Object.assign({}, state.watermark)
+            };
+            let maskCheck = 0;
+            if (snap.subjectPop.subjectMask) {
+                const m = snap.subjectPop.subjectMask;
+                for (let k = 0; k < m.length; k += 16) maskCheck += m[k];
+            }
+            const sig = JSON.stringify({
+                f: snap.selectedFilterId, o: snap.filterOpacity, cm: snap.colorMatch.active ? snap.colorMatch.strength : 0,
+                a: snap.adjust, c: snap.curves, h: snap.hsl, g: snap.grading,
+                sp: [snap.subjectPop.categoryId, snap.subjectPop.presetId, snap.subjectPop.shadowMode, snap.subjectPop.bgMode, snap.subjectPop.master, maskCheck.toFixed(2)],
+                fl: [snap.selectedFlashId, snap.flashIntensity, snap.flashPosition, snap.dateStamp],
+                tr: snap.transform, fr: snap.frame, wm: snap.watermark
+            });
+            return { snap, sig };
+        }
+
+        function updateUndoRedoButtons() {
+            const btnUndo = $('btnUndo');
+            const btnRedo = $('btnRedo');
+            if (btnUndo) btnUndo.disabled = historyIndex <= 0;
+            if (btnRedo) btnRedo.disabled = historyIndex >= historyStack.length - 1;
+        }
+
+        function pushHistoryNow() {
+            if (isRestoringHistory || state.isScrubbing || isPaintingBrush) return;
+            const { snap, sig } = captureHistorySnapshot();
+            if (sig === lastHistorySig) return;
+            if (historyIndex < historyStack.length - 1) {
+                historyStack.splice(historyIndex + 1);
+            }
+            historyStack.push(snap);
+            if (historyStack.length > MAX_HISTORY_STEPS) {
+                historyStack.shift();
+            } else {
+                historyIndex++;
+            }
+            lastHistorySig = sig;
+            updateUndoRedoButtons();
+        }
+
+        function scheduleHistoryCommit() {
+            if (isRestoringHistory) return;
+            clearTimeout(historyCommitTimer);
+            historyCommitTimer = setTimeout(pushHistoryNow, 260);
+        }
+
+        function restoreHistorySnapshot(snap) {
+            if (!snap) return;
+            isRestoringHistory = true;
+            clearTimeout(historyCommitTimer);
+
+            state.selectedFilterId = snap.selectedFilterId;
+            state.filterOpacity = snap.filterOpacity;
+            $('sliderFilterOpacity').value = state.filterOpacity;
+            $('filterOpacityLabel').textContent = `${state.filterOpacity}%`;
+
+            state.colorMatch.active = snap.colorMatch.active;
+            state.colorMatch.strength = snap.colorMatch.strength;
+            state.colorMatch.refName = snap.colorMatch.refName;
+            state.colorMatch.profile = snap.colorMatch.profile;
+            $('sliderColorMatchStrength').value = state.colorMatch.strength;
+            $('colorMatchStrengthLabel').textContent = `${state.colorMatch.strength}%`;
+
+            state.adjust = Object.assign(createDefaultAdjust(), snap.adjust);
+            state.curves = JSON.parse(JSON.stringify(snap.curves));
+            state.hsl = JSON.parse(JSON.stringify(snap.hsl));
+            state.grading = JSON.parse(JSON.stringify(snap.grading));
+
+            const spIn = snap.subjectPop;
+            state.subjectPop.categoryId = spIn.categoryId;
+            state.subjectPop.presetId = spIn.presetId;
+            state.subjectPop.shadowMode = spIn.shadowMode;
+            state.subjectPop.bgMode = spIn.bgMode;
+            state.subjectPop.master = spIn.master;
+            state.subjectPop.fgBright = spIn.fgBright;
+            state.subjectPop.bgDark = spIn.bgDark;
+            state.subjectPop.dehaze = spIn.dehaze;
+            state.subjectPop.twilight = spIn.twilight;
+            state.subjectPop.warmFg = spIn.warmFg;
+            state.subjectPop.detectedType = spIn.detectedType;
+            if (spIn.subjectMask && spIn.maskW && spIn.maskH) {
+                state.subjectPop.maskW = spIn.maskW;
+                state.subjectPop.maskH = spIn.maskH;
+                state.subjectPop.subjectMask = new Float32Array(spIn.subjectMask);
+            }
+
+            state.selectedFlashId = snap.selectedFlashId;
+            state.flashIntensity = snap.flashIntensity;
+            state.flashPosition = snap.flashPosition;
+            state.dateStamp = snap.dateStamp;
+            $('sliderFlashIntensity').value = state.flashIntensity;
+            $('flashIntensityLabel').textContent = `${state.flashIntensity}%`;
+
+            state.transform = Object.assign({}, snap.transform);
+            $('sliderFineAngle').value = state.transform.fineAngle;
+            $('fineAngleVal').textContent = `${state.transform.fineAngle}°`;
+
+            state.frame = Object.assign({}, snap.frame);
+            $('sliderFrameThickness').value = state.frame.thickness;
+            $('frameThicknessVal').textContent = `${state.frame.thickness}%`;
+            $('inputPolaroidCaption').value = state.frame.caption;
+            $('polaroidCaptionBox').classList.toggle('hidden', state.frame.style !== 'polaroid');
+
+            state.watermark = Object.assign({}, snap.watermark);
+            $('inputWatermarkText').value = state.watermark.text;
+            $('sliderWmSize').value = state.watermark.size;
+            $('wmSizeVal').textContent = `${state.watermark.size}%`;
+            $('sliderWmOpacity').value = state.watermark.opacity;
+            $('wmOpacityVal').textContent = `${state.watermark.opacity}%`;
+
+            renderFilterGrid();
+            renderSubjectPopPresets();
+            syncSubjectPopSlidersUI();
+            renderHslControls();
+            renderFlashGrid();
+            renderAdjustSliders();
+            renderCurveEditor();
+            redrawWheelShadows();
+            redrawWheelMidtones();
+            redrawWheelHighlights();
+
+            const { sig } = captureHistorySnapshot();
+            lastHistorySig = sig;
+            renderPreview();
+            if (state.subjectPop.brushMode !== 'none') {
+                captureBrushBaseSnapshot();
+                drawFastBrushOverlay();
+            }
+            updateUndoRedoButtons();
+            isRestoringHistory = false;
+        }
+
+        function performUndo() {
+            if (historyIndex <= 0) return;
+            historyIndex--;
+            restoreHistorySnapshot(historyStack[historyIndex]);
+            showToast(`↩️ Undo (${historyIndex}/${historyStack.length - 1})`);
+        }
+
+        function performRedo() {
+            if (historyIndex >= historyStack.length - 1) return;
+            historyIndex++;
+            restoreHistorySnapshot(historyStack[historyIndex]);
+            showToast(`↪️ Redo (${historyIndex}/${historyStack.length - 1})`);
+        }
+
+        $('btnUndo').addEventListener('click', performUndo);
+        $('btnRedo').addEventListener('click', performRedo);
+
+        // =========================================================================
+        // 12. TONE CURVE & 3-WAY COLOR GRADING WHEELS
         // =========================================================================
         const curveCanvas = $('curveCanvas');
         const curveCtx = curveCanvas.getContext('2d');
@@ -4455,7 +4674,7 @@
         const redrawWheelHighlights = setupColorWheel('wheelHighlights', 'highlights', 'lblWheelHighlights', 'lumHighlights');
 
         // =========================================================================
-        // 12. UI RENDERERS
+        // 13. UI RENDERERS
         // =========================================================================
         function turnFilterOff() {
             state.colorMatch.active = false;
@@ -4525,7 +4744,7 @@
                 } else {
                     const hintBox = document.createElement('div');
                     hintBox.className = 'col-span-3 p-3 rounded-2xl bg-[#13161f] border border-dashed border-white/15 text-center';
-                    hintBox.innerHTML = '<p class="text-xs font-bold text-gray-300 mb-0.5">Belum ada Preset Saya</p><p class="text-[11px] text-gray-400">Ketuk <span class="text-emerald-300 font-bold">+ Impor</span> untuk membuka File Manager dan pilih banyak file .XMP / .CUBE / .LRTEMPLATE / .JSON sekaligus.</p>';
+                    hintBox.innerHTML = '<p class="text-xs font-bold text-gray-300 mb-0.5">Belum ada Preset Saya</p><p class="text-[11px] text-gray-400">Ketuk <span class="text-emerald-300 font-bold">+ Impor</span> untuk membuka File Manager dan pilih file .XMP / .CUBE / .LRTEMPLATE / .JSON.</p>';
                     grid.appendChild(hintBox);
                 }
             }
@@ -4816,7 +5035,7 @@
         }
 
         // =========================================================================
-        // 13. AUTO ENHANCE & PRESET IMPORTERS
+        // 14. AUTO ENHANCE & PRESET IMPORTERS
         // =========================================================================
         function runAutoEnhance() {
             if (!state.sourceCanvas) return;
@@ -4975,7 +5194,7 @@
         }
 
         // =========================================================================
-        // 14. RESPONSIVE LAYOUT & EVENT WIRING
+        // 15. RESPONSIVE LAYOUT & EVENT WIRING
         // =========================================================================
         function applyResponsiveLayout() {
             let useLandscape = false;
@@ -5001,7 +5220,7 @@
             applyResponsiveLayout();
         });
 
-        // Main photo upload (Full-HD JPG/PNG/WebP + True Full-HD Camera RAW files)
+        // Main photo upload
         const mainPhotoInput = $('mainPhotoInput');
         mainPhotoInput.addEventListener('change', async (e) => {
             const file = e.target.files && e.target.files[0];
@@ -5015,6 +5234,7 @@
                 state.rawExt = res.rawExt;
                 computeSilhouetteSubjectMask(true);
                 renderPreview();
+                pushHistoryNow();
                 showToast(
                     res.isRaw
                         ? `📷 RAW HD (${res.rawExt}) ${res.canvas.width}×${res.canvas.height} dimuat!`
@@ -5041,7 +5261,7 @@
             });
         });
 
-        // Independent Split Toggle
+        // Split Toggle
         $('btnToggleSplit').addEventListener('click', (e) => {
             state.splitEnabled = !state.splitEnabled;
             if (state.splitEnabled && (state.splitRatio <= 0.04 || state.splitRatio >= 0.96)) state.splitRatio = 0.50;
@@ -5060,14 +5280,13 @@
             renderPreview();
             showToast('🔄 Render ulang selesai');
         }
-        $('btnForceRerender').addEventListener('click', triggerForceRerender);
-        $('btnTipRerender').addEventListener('click', triggerForceRerender);
+        const btnTipRerenderEl = $('btnTipRerender');
+        if (btnTipRerenderEl) btnTipRerenderEl.addEventListener('click', triggerForceRerender);
 
-        // Viewport Pointer (Touch-Up Brush or Split Drag)
-        let isPaintingBrush = false;
+        // Viewport Pointer (60fps Brush or Split Drag)
+        const brushRing = $('brushRing');
         let cachedBrushRect = null;
         let lastBrushPt = null;
-        const brushRing = $('brushRing');
 
         function updateSplitFromClientX(clientX) {
             const rect = previewCanvas.getBoundingClientRect();
@@ -5077,36 +5296,25 @@
         }
 
         function handleBrushStroke(e, isStart) {
-            const rect = (!isStart && cachedBrushRect) ? cachedBrushRect : previewCanvas.getBoundingClientRect();
-            if (!rect.width || !rect.height) return;
-            if (isStart) cachedBrushRect = rect;
-
+            if (!cachedBrushRect || isStart) {
+                cachedBrushRect = previewCanvas.getBoundingClientRect();
+            }
+            const rect = cachedBrushRect;
+            if (!rect || !rect.width || !rect.height) return;
             const nx = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
             const ny = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
-            const ringPx = Math.max(14, Math.round((state.subjectPop.brushRadius / 100) * Math.min(rect.width, rect.height) * 0.56));
-            brushRing.style.width = `${ringPx}px`;
-            brushRing.style.height = `${ringPx}px`;
             brushRing.style.left = `${e.clientX}px`;
             brushRing.style.top = `${e.clientY}px`;
             brushRing.classList.remove('hidden');
 
             const isAdd = state.subjectPop.brushMode === 'add';
-            if (!isStart && lastBrushPt) {
-                const dist = Math.hypot(nx - lastBrushPt.x, ny - lastBrushPt.y);
-                const steps = Math.min(12, Math.max(1, Math.ceil(dist / 0.015)));
-                for (let s = 1; s <= steps; s++) {
-                    const t = s / steps;
-                    paintSubjectMaskAt(
-                        lastBrushPt.x + (nx - lastBrushPt.x) * t,
-                        lastBrushPt.y + (ny - lastBrushPt.y) * t,
-                        isAdd
-                    );
-                }
-            } else {
+            if (isStart || !lastBrushPt) {
                 paintSubjectMaskAt(nx, ny, isAdd);
+            } else {
+                paintSubjectMaskSegment(lastBrushPt.nx, lastBrushPt.ny, nx, ny, isAdd);
             }
-            lastBrushPt = { x: nx, y: ny };
-            scheduleFastBrushPaintRender();
+            lastBrushPt = { nx, ny };
+            scheduleFastBrushOverlay();
         }
 
         canvasViewport.addEventListener('pointerdown', (e) => {
@@ -5124,7 +5332,10 @@
             updateSplitFromClientX(e.clientX);
         });
         canvasViewport.addEventListener('pointermove', (e) => {
-            if (isPaintingBrush && state.subjectPop.brushMode !== 'none') { handleBrushStroke(e, false); return; }
+            if (isPaintingBrush && state.subjectPop.brushMode !== 'none') {
+                handleBrushStroke(e, false);
+                return;
+            }
             if (state.isDraggingSplit) updateSplitFromClientX(e.clientX);
         });
         ['pointerup', 'pointercancel'].forEach(ev => {
@@ -5136,9 +5347,11 @@
                 lastBrushPt = null;
                 brushRing.classList.add('hidden');
                 if (wasPainting && state.subjectPop.brushMode !== 'none') {
-                    // Refresh base snapshot with updated mask while keeping interactive mask view
+                    // Render updated lighting result & refresh base snapshot for next brush stroke
+                    renderPreview();
                     captureBrushBaseSnapshot();
                     drawFastBrushOverlay();
+                    pushHistoryNow();
                 }
             });
         });
@@ -5146,7 +5359,7 @@
         $('btnTogglePreviewSize').addEventListener('click', (e) => {
             e.stopPropagation();
             state.previewCompact = !state.previewCompact;
-            e.target.textContent = state.previewCompact ? 'Perbesar Preview' : 'Perkecil Preview';
+            e.target.textContent = state.previewCompact ? 'Perbesar' : 'Perkecil';
             if (previewCanvas.width && previewCanvas.height) fitPreviewCanvasDimensions(previewCanvas.width, previewCanvas.height);
         });
 
@@ -5156,7 +5369,7 @@
         btnHoldCompare.addEventListener('pointerdown', startHold);
         ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => btnHoldCompare.addEventListener(ev, endHold));
 
-        // 7-Tab Switcher
+        // 7-Tab Switcher (Bottom Dock)
         const PANELS = {
             filter: 'panelFilter',
             subjectpop: 'panelSubjectPop',
@@ -5174,8 +5387,8 @@
                 document.querySelectorAll('.main-tab-btn').forEach(b => {
                     const isSp = b.dataset.tab === 'subjectpop';
                     b.className = b === btn
-                        ? 'main-tab-btn shrink-0 py-2 px-3 rounded-xl bg-sky-500 text-white text-xs font-extrabold'
-                        : `main-tab-btn shrink-0 py-2 px-3 rounded-xl bg-[#1c2130] ${isSp ? 'text-amber-300 font-extrabold' : 'text-gray-200 font-bold'} hover:text-white text-xs`;
+                        ? 'main-tab-btn shrink-0 bg-sky-500 text-white text-xs font-extrabold shadow-md'
+                        : `main-tab-btn shrink-0 bg-[#1c2130] ${isSp ? 'text-amber-300 font-extrabold' : 'text-gray-200 font-bold'} hover:text-white text-xs`;
                 });
                 Object.keys(PANELS).forEach(k => {
                     const el = $(PANELS[k]);
@@ -5187,7 +5400,7 @@
             });
         });
 
-        // Subject Pop Controls
+        // Subject Pop Controls (60fps Brush Mode)
         function setSubjectBrushMode(mode) {
             state.subjectPop.brushMode = mode;
             $('btnBrushAddFg').className = mode === 'add'
@@ -5197,11 +5410,10 @@
                 ? 'py-1.5 px-1.5 rounded-lg bg-rose-500 text-white text-[10px] font-mono font-extrabold'
                 : 'py-1.5 px-1.5 rounded-lg bg-[#1c2130] hover:bg-[#262d42] border border-white/10 text-[10px] font-mono font-bold text-gray-200';
             $('brushControlBar').classList.toggle('hidden', mode === 'none');
+            renderPreview();
             if (mode !== 'none') {
                 captureBrushBaseSnapshot();
                 drawFastBrushOverlay();
-            } else {
-                renderPreview();
             }
         }
 
@@ -5270,6 +5482,136 @@
             renderPreview();
         });
 
+        async function runAutoAiProLight() {
+            if (!state.sourceCanvas) return;
+            const btn = $('btnAutoAhsProLight');
+            const overlay = $('ahsRenderOverlay');
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = '⏳ Analisis AI...';
+            }
+            if (overlay) overlay.classList.remove('hidden');
+
+            try {
+                const neuralOk = await runNeuralSubjectSegmentation(true);
+                if (!neuralOk && !state.subjectPop.subjectMask) {
+                    computeSilhouetteSubjectMask(true);
+                }
+
+                // Analyze subject vs background luminance & color warmth
+                const sampleC = buildTransformedSource(state.sourceCanvas, 160);
+                const sw = sampleC.width;
+                const sh = sampleC.height;
+                const sData = sampleC.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, sw, sh).data;
+
+                let fgLumSum = 0, fgWarmSum = 0, fgWeight = 0;
+                let bgLumSum = 0, bgBlueSum = 0, bgWeight = 0;
+                const invW = 1 / sw;
+                const invH = 1 / sh;
+
+                for (let y = 0; y < sh; y++) {
+                    const ny = y * invH;
+                    for (let x = 0; x < sw; x++) {
+                        const nx = x * invW;
+                        const idx = (y * sw + x) * 4;
+                        const r = sData[idx], g = sData[idx + 1], b = sData[idx + 2];
+                        const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+                        const m = sampleSubjectMaskBilinear(nx, ny);
+                        if (m > 0.5) {
+                            fgLumSum += lum * m;
+                            fgWarmSum += (r - b) * m;
+                            fgWeight += m;
+                        } else {
+                            const bgW = 1 - m;
+                            bgLumSum += lum * bgW;
+                            bgBlueSum += (b - r) * bgW;
+                            bgWeight += bgW;
+                        }
+                    }
+                }
+
+                const avgFgLum = fgWeight > 1 ? fgLumSum / fgWeight : 0.45;
+                const avgBgLum = bgWeight > 1 ? bgLumSum / bgWeight : 0.50;
+                const avgFgWarm = fgWeight > 1 ? fgWarmSum / fgWeight : 0;
+                const avgBgBlue = bgWeight > 1 ? bgBlueSum / bgWeight : 0;
+                const isBacklit = (avgBgLum - avgFgLum) > 0.14;
+                const isNightScene = avgBgLum < 0.28;
+                const isBrightDay = avgBgLum > 0.62 && avgFgLum > 0.48;
+
+                let chosenCat = 'clean_glow';
+                let chosenPreset = 'ahspro_signature';
+                let chosenShadow = 'auto';
+                let chosenBg = 'dim';
+                let chosenMaster = 86;
+
+                if (isNightScene) {
+                    if (avgBgBlue > 12) {
+                        chosenCat = 'neon_malam';
+                        chosenPreset = 'midnight_blue_hour';
+                    } else {
+                        chosenCat = 'outdoor_ccd';
+                        chosenPreset = 'night_street_flash';
+                    }
+                    chosenShadow = 'hard';
+                    chosenBg = 'dark';
+                    chosenMaster = 90;
+                } else if (isBacklit) {
+                    if (avgFgWarm > 14) {
+                        chosenCat = 'sunset';
+                        chosenPreset = 'twilight_dusk_flash';
+                    } else {
+                        chosenCat = 'clean_glow';
+                        chosenPreset = 'ahspro_signature';
+                    }
+                    chosenShadow = 'auto';
+                    chosenBg = 'dim';
+                    chosenMaster = 88;
+                } else if (isBrightDay) {
+                    chosenCat = 'outdoor_ccd';
+                    chosenPreset = 'outdoor_daylight';
+                    chosenShadow = 'soft';
+                    chosenBg = 'auto';
+                    chosenMaster = 80;
+                } else if (avgFgLum < 0.38) {
+                    chosenCat = 'flash';
+                    chosenPreset = 'soft_fill_flash';
+                    chosenShadow = 'soft';
+                    chosenBg = 'dim';
+                    chosenMaster = 85;
+                } else {
+                    chosenCat = 'clean_glow';
+                    chosenPreset = 'porcelain_glow';
+                    chosenShadow = 'soft';
+                    chosenBg = 'dim';
+                    chosenMaster = 82;
+                }
+
+                const sp = state.subjectPop;
+                sp.categoryId = chosenCat;
+                sp.presetId = chosenPreset;
+                sp.shadowMode = chosenShadow;
+                sp.bgMode = chosenBg;
+                computeEffectiveAhsParams();
+                sp.master = chosenMaster;
+
+                syncSubjectPopSlidersUI();
+                renderSubjectPopPresets();
+                renderPreview();
+                pushHistoryNow();
+
+                const activePr = getActiveAhsPreset();
+                showToast(`✨ Auto AI Light: ${activePr.name} (${chosenMaster}%)`);
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = '✨ Auto AI Light';
+                }
+                if (overlay) overlay.classList.add('hidden');
+            }
+        }
+
+        $('btnAutoAhsProLight').addEventListener('click', runAutoAiProLight);
+
         $('sliderSpMaster').addEventListener('input', (e) => {
             state.subjectPop.master = parseInt(e.target.value, 10);
             if (state.subjectPop.master > 0 && !state.subjectPop.subjectMask) {
@@ -5336,7 +5678,7 @@
             handleImportFiles(selectedFiles);
         });
 
-        // AI Referensi (Supports JPG/PNG + RAW Reference Photos)
+        // AI Referensi
         const refPhotoInput = $('refPhotoInput');
         refPhotoInput.addEventListener('change', async (e) => {
             const file = e.target.files && e.target.files[0];
@@ -5539,7 +5881,7 @@
         $('sliderWmOpacity').addEventListener('input', (e) => { state.watermark.opacity = parseInt(e.target.value, 10); $('wmOpacityVal').textContent = `${state.watermark.opacity}%`; if (state.watermark.text.trim()) schedulePreviewRender(); });
 
         // =========================================================================
-        // 15. MODALS: PRESET SAVE/EXPORT, 3-TIER BULLETPROOF EXPORT PRO & BATCH EDIT
+        // 16. MODALS: PRESET SAVE/EXPORT, 3-TIER EXPORT PRO, PROJECT & BATCH EDIT
         // =========================================================================
         const presetModal = $('presetModal');
         $('btnOpenPresetModal').addEventListener('click', () => { $('inputNewPresetName').value = ''; presetModal.classList.remove('hidden'); });
@@ -5621,7 +5963,7 @@
             showToast('📦 File .JSON AHStudio diunduh');
         });
 
-        // 3-Tier Bulletproof Export Pro Modal (Android WebView & Mobile Browser Safe)
+        // Export Modal
         const exportModal = $('exportModal');
         let lastExportBlobUrl = null;
 
@@ -5701,9 +6043,6 @@
             updateExportEstimate();
         });
 
-        // =========================================================================
-        // CAPACITOR NATIVE BRIDGE (INTERNAL STORAGE DOWNLOAD / DOCUMENTS + SHARE)
-        // =========================================================================
         function getCapacitorPlugins() {
             const cap = window.Capacitor || null;
             const isNative = !!(cap && typeof cap.isNativePlatform === 'function' && cap.isNativePlatform());
@@ -5718,11 +6057,8 @@
 
         async function saveBase64ToAndroidStorage(base64Data, filename, isTextUtf8) {
             const { isNative, Filesystem } = getCapacitorPlugins();
-            if (!isNative || !Filesystem) {
-                return { ok: false, reason: 'not_native' };
-            }
+            if (!isNative || !Filesystem) return { ok: false, reason: 'not_native' };
 
-            // Priority 1: Direct write to Internal Storage/Download/<filename>
             try {
                 const writeOpts = {
                     path: 'Download/' + filename,
@@ -5738,7 +6074,6 @@
                     uri: res && res.uri ? res.uri : ''
                 };
             } catch (errExt) {
-                // Priority 2: Scoped-storage safe Documents/AHStudio/<filename> (Android 11-15+)
                 try {
                     const docOpts = {
                         path: 'AHStudio/' + filename,
@@ -5761,8 +6096,6 @@
 
         async function shareImageViaNativeOrWeb(base64Data, filename, blob, mimeType) {
             const { isNative, Filesystem, Share } = getCapacitorPlugins();
-
-            // Native Capacitor Share (writes to CACHE so FileProvider URI is always shareable to Gallery/Files)
             if (isNative && Filesystem && Share) {
                 try {
                     const cacheRes = await Filesystem.writeFile({
@@ -5782,7 +6115,6 @@
                 }
             }
 
-            // Web Share API fallback
             try {
                 const fileObj = state.lastExportFile || (blob ? new File([blob], filename, { type: mimeType || 'image/jpeg' }) : null);
                 if (fileObj && navigator.canShare && navigator.canShare({ files: [fileObj] })) {
@@ -5798,7 +6130,6 @@
             return false;
         }
 
-        // Synchronous Full-HD Render & Native Android + Web Multi-Tier Save
         $('btnConfirmDownload').addEventListener('click', async () => {
             if (!state.sourceCanvas) return;
             state.isScrubbing = false;
@@ -5823,11 +6154,8 @@
                 }
                 lastExportBlobUrl = URL.createObjectURL(blob);
 
-                try {
-                    state.lastExportFile = new File([blob], filename, { type: fmt });
-                } catch (e) {
-                    state.lastExportFile = null;
-                }
+                try { state.lastExportFile = new File([blob], filename, { type: fmt }); }
+                catch (e) { state.lastExportFile = null; }
                 state.lastExportMeta = { base64Data, filename, blob, fmt, dataUrl };
 
                 const sizeKb = Math.max(1, Math.round(blob.size / 1024));
@@ -5841,7 +6169,6 @@
 
                 $('exportReadyCard').classList.remove('hidden');
 
-                // Attempt Native Capacitor Direct Save to Internal Storage/Download first
                 const nativeRes = await saveBase64ToAndroidStorage(base64Data, filename, false);
                 const pathBanner = $('exportNativePathBanner');
                 if (nativeRes.ok) {
@@ -5850,7 +6177,6 @@
                     showToast(`✅ Tersimpan di ${nativeRes.displayPath}`);
                 } else {
                     pathBanner.classList.add('hidden');
-                    // Browser DOM download fallback
                     triggerDomDownload(dataUrl.length < 2400000 ? dataUrl : lastExportBlobUrl, filename);
                     showToast(`✅ Foto HD (${outCanvas.width}×${outCanvas.height}) siap disimpan!`);
                 }
@@ -5859,12 +6185,8 @@
             }
         });
 
-        // Direct Save to Download / Documents Folder Button
         $('btnSaveDirectFolder').addEventListener('click', async () => {
-            if (!state.lastExportMeta) {
-                $('btnConfirmDownload').click();
-                return;
-            }
+            if (!state.lastExportMeta) { $('btnConfirmDownload').click(); return; }
             const { base64Data, filename, dataUrl } = state.lastExportMeta;
             const nativeRes = await saveBase64ToAndroidStorage(base64Data, filename, false);
             if (nativeRes.ok) {
@@ -5877,12 +6199,8 @@
             }
         });
 
-        // Native Android Share / Save to Gallery Button
         $('btnShareToGallery').addEventListener('click', async () => {
-            if (!state.lastExportMeta) {
-                $('btnConfirmDownload').click();
-                return;
-            }
+            if (!state.lastExportMeta) { $('btnConfirmDownload').click(); return; }
             const { base64Data, filename, blob, fmt } = state.lastExportMeta;
             const shared = await shareImageViaNativeOrWeb(base64Data, filename, blob, fmt);
             if (shared) {
@@ -5896,9 +6214,7 @@
             }
         });
 
-        // =========================================================================
-        // PROJECT SAVE, LOAD & AUTO-RESTORE ENGINE (.ahproj + IndexedDB)
-        // =========================================================================
+        // Project Save & Load (IndexedDB + .ahproj)
         const IDB_NAME = 'AHStudioProjectDB';
         const IDB_STORE = 'autosave';
 
@@ -5924,9 +6240,7 @@
                     tx.oncomplete = () => resolve(true);
                     tx.onerror = () => reject(tx.error);
                 });
-            } catch (e) {
-                return false;
-            }
+            } catch (e) { return false; }
         }
 
         async function idbGetProject(key) {
@@ -5938,15 +6252,12 @@
                     req.onsuccess = () => resolve(req.result || null);
                     req.onerror = () => reject(req.error);
                 });
-            } catch (e) {
-                return null;
-            }
+            } catch (e) { return null; }
         }
 
         function serializeFullProject(includeSourceImage) {
             let sourceDataUrl = null;
             if (includeSourceImage && state.sourceCanvas) {
-                // Preserve up to 2048px JPEG 0.94 so project reload stays crisp and fast
                 const maxP = 2048;
                 const sw = state.sourceCanvas.width;
                 const sh = state.sourceCanvas.height;
@@ -6121,15 +6432,6 @@
             }, 900);
         }
 
-        // Hook auto-save into preview renders
-        const _origRenderPreview = renderPreview;
-        renderPreview = function () {
-            _origRenderPreview();
-            if (typeof isFullscreenOpen === 'function' && isFullscreenOpen()) renderFullscreenPreview();
-            if (!state.isScrubbing) scheduleProjectAutoSave();
-        };
-
-        // Project Modal UI Wiring
         const projectModal = $('projectModal');
         $('btnOpenProjectModal').addEventListener('click', async () => {
             projectModal.classList.remove('hidden');
@@ -6158,13 +6460,11 @@
 
         $('btnRestoreAutoSave').addEventListener('click', async () => {
             const latest = await idbGetProject('latest_session');
-            if (!latest) {
-                showToast('⚠️ Belum ada sesi proyek yang tersimpan');
-                return;
-            }
+            if (!latest) { showToast('⚠️ Belum ada sesi proyek yang tersimpan'); return; }
             showToast('⏳ Memulihkan proyek & foto...');
             const ok = await applyDeserializedProject(latest);
             if (ok) {
+                pushHistoryNow();
                 projectModal.classList.add('hidden');
                 showToast('✅ Proyek editan terakhir berhasil dipulihkan!');
             } else {
@@ -6201,6 +6501,7 @@
                 const parsed = JSON.parse(text);
                 const ok = await applyDeserializedProject(parsed);
                 if (ok) {
+                    pushHistoryNow();
                     projectModal.classList.add('hidden');
                     showToast(`📂 Proyek "${file.name}" berhasil dimuat!`);
                 } else {
@@ -6287,14 +6588,14 @@
             $('toastMsg').textContent = text;
             box.classList.remove('opacity-0'); box.classList.add('opacity-100');
             clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => { box.classList.remove('opacity-100'); box.classList.add('opacity-0'); }, 2600);
+            toastTimer = setTimeout(() => { box.classList.remove('opacity-100'); box.classList.add('opacity-0'); }, 2400);
         }
 
         window.addEventListener('resize', () => { applyResponsiveLayout(); if (state.splitEnabled) updateSplitLinePosition(); });
         window.addEventListener('orientationchange', () => setTimeout(applyResponsiveLayout, 80));
 
         // =========================================================================
-        // 15B. FULL SCREEN PREVIEW & MOUSE DRAG-TO-SCROLL FOR TABS (SAMSUNG DEX)
+        // 17. FULL SCREEN PREVIEW & KEYBOARD SHORTCUTS
         // =========================================================================
         const fullscreenModal = $('fullscreenModal');
         const fsStageBg = $('fsStageBg');
@@ -6542,9 +6843,24 @@
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && isFullscreenOpen()) { closeFullscreenPreview(); return; }
+            const tag = (document.activeElement && document.activeElement.tagName || '').toLowerCase();
+            if (tag === 'input' && document.activeElement.type === 'text') return;
+            if (tag === 'textarea') return;
+
+            if ((e.ctrlKey || e.metaKey) && !e.altKey) {
+                if (e.key === 'z' || e.key === 'Z') {
+                    e.preventDefault();
+                    if (e.shiftKey) performRedo();
+                    else performUndo();
+                    return;
+                }
+                if (e.key === 'y' || e.key === 'Y') {
+                    e.preventDefault();
+                    performRedo();
+                    return;
+                }
+            }
             if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey && !e.altKey) {
-                const tag = (document.activeElement && document.activeElement.tagName || '').toLowerCase();
-                if (tag === 'input' || tag === 'textarea') return;
                 if (isFullscreenOpen()) closeFullscreenPreview();
                 else openFullscreenPreview();
             }
@@ -6597,7 +6913,7 @@
         document.querySelectorAll('.overflow-x-auto').forEach(enableMouseHorizontalDragScroll);
 
         // =========================================================================
-        // 16. BOOTSTRAP APPLICATION (WITH THEME + AUTO-SESSION RESTORE)
+        // 18. BOOTSTRAP APPLICATION
         // =========================================================================
         function applyThemeMode(mode) {
             const valid = (mode === 'light' || mode === 'amoled' || mode === 'dark') ? mode : 'dark';
@@ -6631,12 +6947,15 @@
         renderAdjustSliders();
         renderCurveEditor();
         renderPreview();
+        pushHistoryNow();
 
-        // Automatically restore last editing session if user closed the app mid-edit
         idbGetProject('latest_session').then((savedProj) => {
             if (savedProj && savedProj.format === 'AHSTUDIO_PROJECT_V1' && savedProj.sourceDataUrl) {
                 applyDeserializedProject(savedProj).then((ok) => {
-                    if (ok) showToast('🔄 Melanjutkan proyek editan terakhir');
+                    if (ok) {
+                        pushHistoryNow();
+                        showToast('🔄 Melanjutkan proyek editan terakhir');
+                    }
                 });
             }
         }).catch(() => {});
