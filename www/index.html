@@ -54,7 +54,7 @@
             user-select: none;
         }
 
-        /* FLOATING iOS-STYLE GLASS PILL DOCK (LIKE REFERENCE PHOTO) */
+        /* FLOATING iOS-STYLE GLASS PILL DOCK & HEADER PILL */
         #floatingBottomDock {
             position: fixed;
             left: 50%;
@@ -121,19 +121,54 @@
             border-color: rgba(255, 255, 255, 0.65);
             color: #ffffff;
         }
-        body.theme-light .glass-header-orb {
-            background: rgba(255, 255, 255, 0.84) !important;
-            border-color: rgba(15, 23, 42, 0.15) !important;
-            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
-            color: #0f172a !important;
+        .glass-header-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 4px 6px;
+            border-radius: 9999px;
+            background: rgba(24, 28, 40, 0.78);
+            backdrop-filter: blur(22px) saturate(180%);
+            -webkit-backdrop-filter: blur(22px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.25);
         }
-        body.theme-light .glass-header-orb.dock-active {
-            background: #0284c7 !important;
-            color: #ffffff !important;
+        .glass-header-pill-btn {
+            padding: 5px 11px;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.15s ease;
         }
-        body.theme-amoled .glass-header-orb {
-            background: rgba(10, 12, 18, 0.86) !important;
-            border-color: rgba(255, 255, 255, 0.24) !important;
+        .glass-header-pill-btn:active {
+            transform: scale(0.94);
+        }
+        .glass-zoom-orb {
+            width: 36px;
+            height: 36px;
+            border-radius: 9999px;
+            background: rgba(24, 28, 40, 0.74);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.26);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 19px;
+            font-weight: 700;
+            line-height: 1;
+            transition: transform 0.14s ease, background-color 0.14s ease;
+        }
+        .glass-zoom-orb:active {
+            transform: scale(0.9);
+            background: rgba(56, 189, 248, 0.88);
         }
         .glass-dock-pill {
             pointer-events: auto;
@@ -172,15 +207,26 @@
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
         }
 
-        /* LIGHT THEME GLASS DOCK */
+        /* LIGHT THEME GLASS DOCK & HEADER */
         body.theme-light .glass-dock-orb,
-        body.theme-light .glass-dock-pill {
-            background: rgba(255, 255, 255, 0.82) !important;
+        body.theme-light .glass-dock-pill,
+        body.theme-light .glass-header-pill {
+            background: rgba(255, 255, 255, 0.84) !important;
             border-color: rgba(15, 23, 42, 0.14) !important;
-            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
             color: #0f172a !important;
         }
         body.theme-light .glass-dock-orb.orb-active {
+            background: #0284c7 !important;
+            color: #ffffff !important;
+        }
+        body.theme-light .glass-header-orb {
+            background: rgba(255, 255, 255, 0.84) !important;
+            border-color: rgba(15, 23, 42, 0.15) !important;
+            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+            color: #0f172a !important;
+        }
+        body.theme-light .glass-header-orb.dock-active {
             background: #0284c7 !important;
             color: #ffffff !important;
         }
@@ -192,9 +238,11 @@
             color: #0284c7 !important;
         }
 
-        /* AMOLED THEME GLASS DOCK */
+        /* AMOLED THEME GLASS DOCK & HEADER */
         body.theme-amoled .glass-dock-orb,
-        body.theme-amoled .glass-dock-pill {
+        body.theme-amoled .glass-dock-pill,
+        body.theme-amoled .glass-header-pill,
+        body.theme-amoled .glass-header-orb {
             background: rgba(10, 12, 18, 0.86) !important;
             border-color: rgba(255, 255, 255, 0.22) !important;
         }
@@ -335,7 +383,8 @@
             background: #202534;
             border-radius: 999px;
             outline: none;
-            margin: 0;
+            margin: 6px 0;
+            touch-action: pan-y;
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
@@ -419,8 +468,9 @@
         #rightControls {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 12px;
             min-width: 0;
+            padding-top: 4px;
         }
 
         /* LANDSCAPE / TABLET / DESKTOP 2-COLUMN STUDIO */
@@ -472,8 +522,8 @@
             height: 100dvh;
             overflow-y: auto;
             overscroll-behavior: contain;
-            padding: 10px 12px 104px 12px;
-            gap: 8px;
+            padding: 12px 14px 108px 14px;
+            gap: 12px;
             background-color: #090a0d;
         }
         body.mode-landscape #floatingBottomDock {
@@ -520,20 +570,22 @@
                         </svg>
                     </button>
                 </div>
-                <div class="flex items-center gap-1.5">
-                    <button id="btnOpenProjectModal" type="button" title="Simpan / Muat Proyek Editan" class="px-2.5 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/40 text-amber-300 text-[10px] font-mono font-bold">
-                        📂 <span data-i18n="hdrProject">PROYEK</span>
-                    </button>
-                    <button id="btnToggleSplit" type="button" class="px-2.5 py-1.5 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/40 text-sky-300 text-[10px] font-mono font-bold">
-                        SPLIT: ON
-                    </button>
-                    <button id="btnStageBatch" type="button" title="Batch Edit Banyak Foto" class="px-2.5 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-400/40 text-indigo-300 text-[10px] font-mono font-extrabold flex items-center gap-1">
-                        <span>📚 <span data-i18n="hdrBatch">BATCH</span></span>
-                    </button>
+                <div class="flex items-center justify-center">
+                    <div class="glass-header-pill">
+                        <button id="btnOpenProjectModal" type="button" title="Simpan / Muat Proyek Editan" class="glass-header-pill-btn bg-amber-500/15 hover:bg-amber-500/25 text-amber-300">
+                            📂 <span data-i18n="hdrProject">PROYEK</span>
+                        </button>
+                        <button id="btnToggleSplit" type="button" class="glass-header-pill-btn bg-sky-500/20 hover:bg-sky-500/30 text-sky-300">
+                            SPLIT: ON
+                        </button>
+                        <button id="btnStageBatch" type="button" title="Batch Edit Banyak Foto" class="glass-header-pill-btn bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300">
+                            📚 <span data-i18n="hdrBatch">BATCH</span>
+                        </button>
+                    </div>
                 </div>
             </header>
 
-            <!-- MULTI-PHOTO FILMSTRIP (SWITCH & EDIT UPLOADED PHOTOS ONE BY ONE) -->
+            <!-- MULTI-PHOTO FILMSTRIP -->
             <div id="multiPhotoStrip" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0 py-0.5">
                 <span class="text-[10px] font-mono font-bold text-gray-400 shrink-0" data-i18n="stripPhoto">FOTO:</span>
                 <label for="mainPhotoInput" role="button" tabindex="0" class="cursor-pointer shrink-0 px-2.5 py-1 rounded-lg bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-[11px] font-extrabold select-none">
@@ -542,7 +594,7 @@
                 <div id="photoQueueList" class="flex items-center gap-1.5"></div>
             </div>
 
-            <!-- STICKY PREVIEW STAGE + CLEAN TOP ACTION BAR WITH UNDO & REDO -->
+            <!-- STICKY PREVIEW STAGE + ACTION BAR -->
             <section id="stickyStage">
                 <div id="canvasStageBg">
                     <div id="canvasViewport">
@@ -572,11 +624,17 @@
                             </div>
                         </div>
 
+                        <!-- Vertical Liquid Glass Zoom Orbs (+ / -) -->
+                        <div class="absolute right-2.5 top-1/2 -translate-y-1/2 z-10 flex flex-col items-center gap-2">
+                            <button id="btnPreviewZoomIn" type="button" title="Perbesar Zoom" aria-label="Zoom In" class="glass-zoom-orb">+</button>
+                            <button id="btnPreviewZoomOut" type="button" title="Perkecil Zoom" aria-label="Zoom Out" class="glass-zoom-orb">&minus;</button>
+                        </div>
+
                         <!-- Brush Cursor Indicator -->
                         <div id="brushRing" class="hidden fixed w-10 h-10 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-amber-400 bg-amber-400/15 pointer-events-none z-50"></div>
 
                         <!-- Bottom-Left Status Pill -->
-                        <div class="absolute bottom-2 left-2 max-w-[54%] px-2 py-0.5 rounded-md bg-black/80 border border-white/10 text-[10px] font-mono truncate pointer-events-none">
+                        <div class="absolute bottom-2 left-2 max-w-[46%] px-2 py-0.5 rounded-md bg-black/80 border border-white/10 text-[10px] font-mono truncate pointer-events-none">
                             <span id="statusFilterName" class="text-sky-400 font-bold">🚫 Tanpa Filter</span>
                             <span class="text-gray-400"> &bull; </span>
                             <span id="statusFlashName" class="text-gray-200">⚡ Off</span>
@@ -601,7 +659,7 @@
                     </div>
                 </div>
 
-                <!-- TOP ACTION BAR (SINGLE UPLOAD BUTTON + HOLD + UNDO + REDO) -->
+                <!-- TOP ACTION BAR (UPLOAD + HOLD + UNDO + REDO) -->
                 <div class="flex items-center gap-1.5 shrink-0">
                     <label for="mainPhotoInput" role="button" tabindex="0" class="cursor-pointer flex-1 py-2 px-3 rounded-xl bg-[#151821] hover:bg-[#1e222e] border border-white/10 text-[11px] font-extrabold text-gray-100 flex items-center justify-center gap-1.5 select-none">
                         <svg class="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
@@ -629,8 +687,8 @@
         <div id="rightControls">
 
             <!-- TAB 1: FILTERS -->
-            <main id="panelFilter" class="flex flex-col gap-2">
-                <div class="px-3 py-2.5 rounded-2xl bg-[#13161f] border border-white/10 flex flex-col gap-2">
+            <main id="panelFilter" class="flex flex-col gap-3">
+                <div class="px-3.5 py-3 rounded-2xl bg-[#13161f] border border-white/10 flex flex-col gap-2.5">
                     <div class="flex items-center justify-between gap-1.5">
                         <div class="flex items-center gap-1.5 min-w-0">
                             <span class="w-2 h-2 rounded-full bg-sky-400 shrink-0"></span>
@@ -685,9 +743,9 @@
                 <div id="filterGrid" class="grid grid-cols-3 gap-2"></div>
             </main>
 
-            <!-- TAB 2: AHS PRO LIGHT (STUDIO LIGHTING & FLASH) -->
-            <section id="panelSubjectPop" class="hidden flex-col gap-2">
-                <div class="px-3 py-2.5 rounded-2xl bg-[#13161f] border border-sky-400/25 flex flex-col gap-3">
+            <!-- TAB 2: AHS PRO LIGHT -->
+            <section id="panelSubjectPop" class="hidden flex-col gap-3">
+                <div class="px-3.5 py-3 rounded-2xl bg-[#13161f] border border-sky-400/25 flex flex-col gap-3.5">
                     <div class="flex items-center justify-between gap-1.5">
                         <div class="min-w-0">
                             <h2 class="text-xs font-extrabold text-sky-300 truncate">💡 AHS Pro Light &amp; Studio Flash</h2>
@@ -703,7 +761,6 @@
                         </div>
                     </div>
 
-                    <!-- 01 / KATEGORI PENCAHAYAAN -->
                     <div class="flex flex-col gap-1.5">
                         <div class="flex items-center justify-between gap-2">
                             <span class="text-[10px] font-mono font-extrabold text-gray-400 tracking-wider uppercase">01 / KATEGORI PENCAHAYAAN</span>
@@ -712,7 +769,6 @@
                         <div id="ahsCategoryGrid" class="grid grid-cols-4 gap-1.5"></div>
                     </div>
 
-                    <!-- 02 / PILIH PRESET -->
                     <div class="flex flex-col gap-1.5">
                         <div class="flex items-center justify-between gap-2">
                             <span class="text-[10px] font-mono font-extrabold text-gray-400 tracking-wider uppercase">02 / PILIH PRESET</span>
@@ -721,24 +777,20 @@
                         <div id="subjectPopPresetsGrid" class="flex flex-col gap-1.5"></div>
                     </div>
 
-                    <!-- 03 / BAYANGAN FLASH -->
                     <div class="flex flex-col gap-1.5">
                         <span class="text-[10px] font-mono font-extrabold text-gray-400 tracking-wider uppercase">03 / BAYANGAN FLASH</span>
                         <div id="ahsShadowGrid" class="grid grid-cols-3 gap-1.5"></div>
                     </div>
 
-                    <!-- 04 / LATAR BELAKANG -->
                     <div class="flex flex-col gap-1.5">
                         <span class="text-[10px] font-mono font-extrabold text-gray-400 tracking-wider uppercase">04 / LATAR BELAKANG</span>
                         <div id="ahsBgGrid" class="grid grid-cols-3 gap-1.5"></div>
                     </div>
 
-                    <!-- APPLY BUTTON -->
                     <button id="btnApplyAhsProLight" type="button" class="w-full py-2.5 px-3 rounded-xl bg-sky-500 hover:bg-sky-400 active:scale-[0.99] transition text-white text-xs font-extrabold shadow-lg shadow-sky-500/20">
                         Terapkan - CCD Digicam 2005
                     </button>
 
-                    <!-- KEPEKATAN EFEK -->
                     <div class="p-2.5 rounded-xl bg-[#0c0e14] border border-white/10 flex flex-col gap-2">
                         <div class="flex items-center justify-between gap-2">
                             <div class="flex items-center gap-1.5">
@@ -761,7 +813,6 @@
                         </div>
                     </div>
 
-                    <!-- COMPACT AI SILUET & KUAS MASKER -->
                     <div class="p-2.5 rounded-xl bg-[#0c0e14] border border-emerald-400/25 flex flex-col gap-2">
                         <div class="flex items-center justify-between gap-1.5">
                             <div class="flex items-center gap-1.5 min-w-0">
@@ -799,8 +850,8 @@
             </section>
 
             <!-- TAB 3: AI REFERENSI / COLOR MATCH -->
-            <section id="panelMatch" class="hidden flex-col gap-2">
-                <div class="p-3 rounded-2xl bg-[#13161f] border border-white/10 flex flex-col gap-2.5">
+            <section id="panelMatch" class="hidden flex-col gap-3">
+                <div class="p-3.5 rounded-2xl bg-[#13161f] border border-white/10 flex flex-col gap-3">
                     <div>
                         <h2 class="text-xs font-extrabold text-white">🎭 Referensi Filter (AI Color Match)</h2>
                         <p class="text-[11px] text-gray-400 mt-0.5 leading-snug">
@@ -846,8 +897,8 @@
             </section>
 
             <!-- TAB 4: ADJUST PRO -->
-            <section id="panelAdjust" class="hidden flex-col gap-2">
-                <div class="px-3 py-2.5 rounded-2xl bg-[#131926] border border-sky-400/25 flex items-center justify-between gap-2">
+            <section id="panelAdjust" class="hidden flex-col gap-3">
+                <div class="px-3.5 py-3 rounded-2xl bg-[#131926] border border-sky-400/25 flex items-center justify-between gap-2">
                     <div class="min-w-0">
                         <div class="text-xs font-extrabold text-white">✨ Auto Tone &amp; Color</div>
                         <p class="text-[10px] text-gray-400 truncate">Seimbangkan cahaya, backlight &amp; warna</p>
@@ -869,12 +920,12 @@
                     <button type="button" data-adjcat="detail" class="adjcat-btn py-1.5 rounded-xl bg-[#13161f] text-gray-300 border border-white/10 text-[11px] font-bold">🔍 Detail</button>
                 </div>
 
-                <div id="adjustSlidersList" class="flex flex-col gap-2"></div>
+                <div id="adjustSlidersList" class="flex flex-col gap-3"></div>
             </section>
 
             <!-- TAB 5: TONE CURVE & HSL -->
-            <section id="panelCurveHsl" class="hidden flex-col gap-2">
-                <div class="p-3 rounded-2xl bg-[#13161f] border border-white/10 flex flex-col gap-2">
+            <section id="panelCurveHsl" class="hidden flex-col gap-3">
+                <div class="p-3.5 rounded-2xl bg-[#13161f] border border-white/10 flex flex-col gap-2.5">
                     <div class="flex items-center justify-between">
                         <div>
                             <span class="text-xs font-extrabold text-white">📈 Tone Curve (Kurva RGB/R/G/B)</span>
@@ -905,7 +956,7 @@
                     </div>
                 </div>
 
-                <div class="p-3 rounded-2xl bg-[#13161f] border border-white/10 flex flex-col gap-2.5">
+                <div class="p-3.5 rounded-2xl bg-[#13161f] border border-white/10 flex flex-col gap-3">
                     <div class="flex items-center justify-between">
                         <div>
                             <span class="text-xs font-extrabold text-white">🌈 HSL Color Mixer (Selektif)</span>
@@ -923,23 +974,23 @@
                         <button id="btnResetHslChannel" type="button" class="text-[10px] font-bold text-gray-400 hover:text-white">Reset Warna Ini</button>
                     </div>
 
-                    <div class="flex flex-col gap-2">
+                    <div class="flex flex-col gap-3">
                         <div>
-                            <div class="flex justify-between text-xs mb-1">
+                            <div class="flex justify-between text-xs mb-1.5">
                                 <span class="font-bold text-gray-200">Hue (Pergeseran Rona)</span>
                                 <span id="hslHueVal" class="font-mono font-extrabold text-sky-400">0</span>
                             </div>
                             <input id="sliderHslHue" type="range" min="-100" max="100" value="0">
                         </div>
                         <div>
-                            <div class="flex justify-between text-xs mb-1">
+                            <div class="flex justify-between text-xs mb-1.5">
                                 <span class="font-bold text-gray-200">Saturation (Kepekatan)</span>
                                 <span id="hslSatVal" class="font-mono font-extrabold text-sky-400">0</span>
                             </div>
                             <input id="sliderHslSat" type="range" min="-100" max="100" value="0">
                         </div>
                         <div>
-                            <div class="flex justify-between text-xs mb-1">
+                            <div class="flex justify-between text-xs mb-1.5">
                                 <span class="font-bold text-gray-200">Luminance (Kecerahan)</span>
                                 <span id="hslLumVal" class="font-mono font-extrabold text-sky-400">0</span>
                             </div>
@@ -950,45 +1001,78 @@
             </section>
 
             <!-- TAB 6: 3-WAY COLOR GRADING & 20 FLASH -->
-            <section id="panelGradingFlash" class="hidden flex-col gap-2">
-                <div class="p-3 rounded-2xl bg-[#13161f] border border-white/10 flex flex-col gap-2.5">
-                    <div class="flex items-center justify-between">
+            <section id="panelGradingFlash" class="hidden flex-col gap-3">
+                <div class="p-3.5 rounded-2xl bg-[#13161f] border border-white/10 flex flex-col gap-3.5">
+                    <div class="flex items-center justify-between gap-2">
                         <div>
                             <h2 class="text-xs font-extrabold text-white">🎨 3-Way Color Grading</h2>
                             <p class="text-[10px] text-gray-400">Geser titik di roda warna untuk mewarnai tiap zona</p>
                         </div>
-                        <button id="btnResetGrading" type="button" class="px-2 py-1 rounded-lg bg-[#1d212e] hover:bg-[#282e40] border border-white/10 text-[10px] font-bold text-gray-300">
-                            ↺ Reset Grading
+                        <button id="btnResetGrading" type="button" class="shrink-0 px-2.5 py-1 rounded-lg bg-[#1d212e] hover:bg-[#282e40] border border-white/10 text-[10px] font-bold text-gray-300">
+                            ↺ Reset Semua
                         </button>
                     </div>
 
-                    <div class="grid grid-cols-3 gap-2">
-                        <div class="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-[#0c0e14] border border-white/10">
-                            <span class="text-[10px] font-extrabold text-sky-300 uppercase tracking-wider">Shadows</span>
-                            <canvas id="wheelShadows" width="110" height="110" class="w-24 h-24 rounded-full cursor-crosshair touch-none"></canvas>
-                            <span id="lblWheelShadows" class="text-[9px] font-mono text-gray-400">0° &bull; 0%</span>
-                            <input id="lumShadows" type="range" min="-50" max="50" value="0">
+                    <div class="flex flex-col gap-3">
+                        <div class="flex items-center gap-3.5 p-3 rounded-2xl bg-[#0c0e14] border border-white/10">
+                            <canvas id="wheelShadows" width="160" height="160" class="w-32 h-32 shrink-0 rounded-full cursor-crosshair touch-none"></canvas>
+                            <div class="flex-1 min-w-0 flex flex-col gap-2">
+                                <div class="flex items-center justify-between gap-1">
+                                    <span class="text-xs font-extrabold text-sky-300 uppercase tracking-wider">Shadows</span>
+                                    <div class="flex items-center gap-1.5">
+                                        <span id="lblWheelShadows" class="text-[11px] font-mono font-bold text-gray-300">0° &bull; 0%</span>
+                                        <button id="btnResetWheelShadows" type="button" title="Reset Shadows" class="w-6 h-6 rounded-lg bg-[#1d212e] hover:bg-[#2a3042] border border-white/10 text-[11px] font-bold text-gray-300 flex items-center justify-center">↺</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] text-gray-400 mb-1">Luminance (Gelap/Terang)</span>
+                                    <input id="lumShadows" type="range" min="-50" max="50" value="0">
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-[#0c0e14] border border-white/10">
-                            <span class="text-[10px] font-extrabold text-amber-300 uppercase tracking-wider">Midtones</span>
-                            <canvas id="wheelMidtones" width="110" height="110" class="w-24 h-24 rounded-full cursor-crosshair touch-none"></canvas>
-                            <span id="lblWheelMidtones" class="text-[9px] font-mono text-gray-400">0° &bull; 0%</span>
-                            <input id="lumMidtones" type="range" min="-50" max="50" value="0">
+                        <div class="flex items-center gap-3.5 p-3 rounded-2xl bg-[#0c0e14] border border-white/10">
+                            <canvas id="wheelMidtones" width="160" height="160" class="w-32 h-32 shrink-0 rounded-full cursor-crosshair touch-none"></canvas>
+                            <div class="flex-1 min-w-0 flex flex-col gap-2">
+                                <div class="flex items-center justify-between gap-1">
+                                    <span class="text-xs font-extrabold text-amber-300 uppercase tracking-wider">Midtones</span>
+                                    <div class="flex items-center gap-1.5">
+                                        <span id="lblWheelMidtones" class="text-[11px] font-mono font-bold text-gray-300">0° &bull; 0%</span>
+                                        <button id="btnResetWheelMidtones" type="button" title="Reset Midtones" class="w-6 h-6 rounded-lg bg-[#1d212e] hover:bg-[#2a3042] border border-white/10 text-[11px] font-bold text-gray-300 flex items-center justify-center">↺</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] text-gray-400 mb-1">Luminance (Gelap/Terang)</span>
+                                    <input id="lumMidtones" type="range" min="-50" max="50" value="0">
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-[#0c0e14] border border-white/10">
-                            <span class="text-[10px] font-extrabold text-rose-300 uppercase tracking-wider">Highlights</span>
-                            <canvas id="wheelHighlights" width="110" height="110" class="w-24 h-24 rounded-full cursor-crosshair touch-none"></canvas>
-                            <span id="lblWheelHighlights" class="text-[9px] font-mono text-gray-400">0° &bull; 0%</span>
-                            <input id="lumHighlights" type="range" min="-50" max="50" value="0">
+                        <div class="flex items-center gap-3.5 p-3 rounded-2xl bg-[#0c0e14] border border-white/10">
+                            <canvas id="wheelHighlights" width="160" height="160" class="w-32 h-32 shrink-0 rounded-full cursor-crosshair touch-none"></canvas>
+                            <div class="flex-1 min-w-0 flex flex-col gap-2">
+                                <div class="flex items-center justify-between gap-1">
+                                    <span class="text-xs font-extrabold text-rose-300 uppercase tracking-wider">Highlights</span>
+                                    <div class="flex items-center gap-1.5">
+                                        <span id="lblWheelHighlights" class="text-[11px] font-mono font-bold text-gray-300">0° &bull; 0%</span>
+                                        <button id="btnResetWheelHighlights" type="button" title="Reset Highlights" class="w-6 h-6 rounded-lg bg-[#1d212e] hover:bg-[#2a3042] border border-white/10 text-[11px] font-bold text-gray-300 flex items-center justify-center">↺</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] text-gray-400 mb-1">Luminance (Gelap/Terang)</span>
+                                    <input id="lumHighlights" type="range" min="-50" max="50" value="0">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div>
-                        <div class="flex justify-between text-xs mb-1">
+                    <div class="pt-1">
+                        <div class="flex items-center justify-between text-xs mb-1">
                             <span class="font-bold text-gray-200">Balance (Shadow / Highlight)</span>
-                            <span id="gradingBalanceVal" class="font-mono font-extrabold text-sky-400">0</span>
+                            <div class="flex items-center gap-2">
+                                <span id="gradingBalanceVal" class="font-mono font-extrabold text-sky-400">0</span>
+                                <button id="btnResetGradingBalance" type="button" title="Reset Balance" class="w-6 h-6 rounded-lg bg-[#1d212e] hover:bg-[#2a3042] border border-white/10 text-[11px] font-bold text-gray-300 flex items-center justify-center">↺</button>
+                            </div>
                         </div>
                         <input id="sliderGradingBalance" type="range" min="-100" max="100" value="0">
                     </div>
@@ -1033,9 +1117,9 @@
                 <div id="flashGrid" class="grid grid-cols-2 gap-2"></div>
             </section>
 
-            <!-- TAB 7: CROP, ROTATE, FRAME (LEICA / ZEISS) & WATERMARK -->
-            <section id="panelCropFrame" class="hidden flex-col gap-2">
-                <div class="p-3 rounded-2xl bg-[#13161f] border border-white/10 flex flex-col gap-2.5">
+            <!-- TAB 7: CROP, ROTATE, FRAME (LEICA / ZEISS / POLAROID) & WATERMARK -->
+            <section id="panelCropFrame" class="hidden flex-col gap-3">
+                <div class="p-3.5 rounded-2xl bg-[#13161f] border border-white/10 flex flex-col gap-3">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-extrabold text-white">✂️ Crop &amp; Rotasi</span>
                         <button id="btnResetTransform" type="button" class="px-2 py-0.5 rounded-lg bg-[#1d212e] hover:bg-[#282e40] border border-white/10 text-[10px] font-bold text-gray-300">
@@ -1071,7 +1155,7 @@
                 </div>
 
                 <!-- BINGKAI FOTO & LEICA / ZEISS CAMERA WATERMARK FRAMES -->
-                <div class="p-3 rounded-2xl bg-[#13161f] border border-white/10 flex flex-col gap-2.5">
+                <div class="p-3.5 rounded-2xl bg-[#13161f] border border-white/10 flex flex-col gap-3">
                     <span class="text-xs font-extrabold text-white">🖼️ Bingkai Foto &amp; Watermark Kamera</span>
 
                     <div class="grid grid-cols-3 gap-1.5">
@@ -1094,18 +1178,28 @@
                         <input id="sliderFrameThickness" type="range" min="2" max="18" value="6">
                     </div>
 
-                    <div id="polaroidCaptionBox" class="hidden flex flex-col gap-2">
+                    <div id="polaroidCaptionBox" class="hidden flex flex-col gap-2.5">
                         <input id="inputPolaroidCaption" type="text" placeholder="Tulis catatan / model kamera (misal: LEICA M11)..." value="Memories • AHStudio '26" class="w-full px-3 py-1.5 rounded-xl bg-[#0c0e14] border border-white/10 focus:border-sky-400 text-xs text-white outline-none">
                         <div class="grid grid-cols-3 gap-1">
-                            <button type="button" data-capfont="serif" class="capfont-btn py-1 rounded-lg bg-sky-500 text-white text-[10px] font-extrabold">Editorial Serif</button>
-                            <button type="button" data-capfont="script" class="capfont-btn py-1 rounded-lg bg-[#1b1f2b] text-gray-300 text-[10px] font-bold italic">Handwriting</button>
-                            <button type="button" data-capfont="sans" class="capfont-btn py-1 rounded-lg bg-[#1b1f2b] text-gray-300 text-[10px] font-bold">Clean Sans</button>
+                            <button type="button" data-capfont="serif" class="capfont-btn py-1.5 rounded-lg bg-sky-500 text-white text-[10px] font-extrabold">Editorial Serif</button>
+                            <button type="button" data-capfont="script" class="capfont-btn py-1.5 rounded-lg bg-[#1b1f2b] text-gray-300 text-[10px] font-bold italic">Handwriting</button>
+                            <button type="button" data-capfont="sans" class="capfont-btn py-1.5 rounded-lg bg-[#1b1f2b] text-gray-300 text-[10px] font-bold">Clean Sans</button>
+                            <button type="button" data-capfont="mono" class="capfont-btn py-1.5 rounded-lg bg-[#1b1f2b] text-gray-300 text-[10px] font-mono font-bold">Mono Digicam</button>
+                            <button type="button" data-capfont="condensed" class="capfont-btn py-1.5 rounded-lg bg-[#1b1f2b] text-gray-300 text-[10px] font-extrabold tracking-wider">CAMERA BOLD</button>
+                            <button type="button" data-capfont="classic" class="capfont-btn py-1.5 rounded-lg bg-[#1b1f2b] text-gray-300 text-[10px] font-bold">Classic Wide</button>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="font-bold text-gray-200">Ukuran Teks Polaroid</span>
+                                <span id="polaroidCapSizeVal" class="font-mono font-extrabold text-sky-400">100%</span>
+                            </div>
+                            <input id="sliderPolaroidCapSize" type="range" min="50" max="200" value="100">
                         </div>
                     </div>
                 </div>
 
                 <!-- WATERMARK & TEKS KUSTOM (6 FONT + COLOR PICKER) -->
-                <div class="p-3 rounded-2xl bg-[#13161f] border border-white/10 flex flex-col gap-2.5">
+                <div class="p-3.5 rounded-2xl bg-[#13161f] border border-white/10 flex flex-col gap-3">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-extrabold text-white">✍️ Watermark &amp; Teks Kustom</span>
                         <button id="btnClearWatermark" type="button" class="text-[10px] font-bold text-gray-400 hover:text-white">Hapus Teks</button>
@@ -1180,14 +1274,13 @@
             </section>
 
             <!-- TAB 8: SETELAN (SETTINGS: TEMA, ORIENTASI, BAHASA, TENTANG) -->
-            <section id="panelSettings" class="hidden flex-col gap-2.5">
-                <div class="p-3 rounded-2xl bg-[#13161f] border border-white/10 flex flex-col gap-3">
+            <section id="panelSettings" class="hidden flex-col gap-3">
+                <div class="p-3.5 rounded-2xl bg-[#13161f] border border-white/10 flex flex-col gap-3">
                     <div>
                         <h2 class="text-xs font-extrabold text-white" data-i18n="setTitle">⚙️ Setelan Aplikasi</h2>
                         <p class="text-[10px] text-gray-400 mt-0.5" data-i18n="setSub">Atur tampilan, orientasi layar, bahasa, dan informasi aplikasi</p>
                     </div>
 
-                    <!-- TEMA TAMPILAN -->
                     <div class="p-2.5 rounded-xl bg-[#0c0e14] border border-white/10 flex flex-col gap-1.5">
                         <span class="text-[11px] font-extrabold text-gray-200" data-i18n="setThemeLabel">🎨 Tema Tampilan</span>
                         <div class="grid grid-cols-3 gap-1.5">
@@ -1197,7 +1290,6 @@
                         </div>
                     </div>
 
-                    <!-- ORIENTASI LAYAR -->
                     <div class="p-2.5 rounded-xl bg-[#0c0e14] border border-white/10 flex flex-col gap-1.5">
                         <span class="text-[11px] font-extrabold text-gray-200" data-i18n="setOrientLabel">📱 Orientasi &amp; Tata Letak Layar</span>
                         <div class="grid grid-cols-3 gap-1.5">
@@ -1207,7 +1299,6 @@
                         </div>
                     </div>
 
-                    <!-- BAHASA (INDONESIA / ENGLISH) -->
                     <div class="p-2.5 rounded-xl bg-[#0c0e14] border border-white/10 flex flex-col gap-1.5">
                         <span class="text-[11px] font-extrabold text-gray-200" data-i18n="setLangLabel">🌐 Bahasa / Language</span>
                         <div class="grid grid-cols-2 gap-1.5">
@@ -1216,7 +1307,6 @@
                         </div>
                     </div>
 
-                    <!-- TENTANG APLIKASI -->
                     <div class="p-3 rounded-xl bg-[#0c0e14] border border-sky-400/25 flex flex-col gap-2">
                         <div class="flex items-center gap-2.5">
                             <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center font-extrabold text-sm text-white shrink-0">
@@ -1247,9 +1337,8 @@
         </div>
     </div>
 
-    <!-- FLOATING iOS-STYLE GLASS PILL DOCK (LEFT SAVE ORB WITH LABEL + WIDE CENTER PILL) -->
+    <!-- FLOATING iOS-STYLE GLASS PILL DOCK -->
     <nav id="floatingBottomDock" aria-label="Dock Menu Utama">
-        <!-- Left Glass Pill Orb: Save / Export HD Photo -->
         <button id="btnOpenExportModal" type="button" title="Simpan & Ekspor Foto HD" class="glass-dock-orb orb-active">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -1257,7 +1346,6 @@
             <span class="text-[9px] font-extrabold leading-tight text-center tracking-tight" data-i18n="dockSave">Simpan Foto</span>
         </button>
 
-        <!-- Wide Center Glass Pill Capsule: Scrollable Tabs with Icon + Label -->
         <div id="dockPillScroll" class="glass-dock-pill no-scrollbar">
             <button type="button" data-tab="filter" class="main-tab-btn dock-pill-item dock-active">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -1502,7 +1590,7 @@
                     👁️ TAHAN
                 </button>
                 <div class="flex items-center bg-[#151821] border border-white/15 rounded-lg overflow-hidden">
-                    <button id="btnFsZoomOut" type="button" title="Perkecil Zoom" class="px-2 py-1 hover:bg-[#1e222e] text-xs font-mono font-bold text-gray-200">−</button>
+                    <button id="btnFsZoomOut" type="button" title="Perkecil Zoom" class="px-2 py-1 hover:bg-[#1e222e] text-xs font-mono font-bold text-gray-200">&minus;</button>
                     <button id="btnFsZoomReset" type="button" title="Reset Zoom (Fit)" class="px-2 py-1 hover:bg-[#1e222e] text-[11px] font-mono font-bold text-sky-300 border-x border-white/10">Fit</button>
                     <button id="btnFsZoomIn" type="button" title="Perbesar Zoom" class="px-2 py-1 hover:bg-[#1e222e] text-xs font-mono font-bold text-gray-200">+</button>
                 </div>
@@ -2394,7 +2482,7 @@
             mkFilter('zeiss_biogon_blue', 'ZEISS Biogon Cobalt', 'leica_zeiss', '#1e3a8a', '#93c5fd', { exp: 2, con: 18, sat: 8, temp: -12, shB: 24, shG: 8, skyTeal: 28 }),
             mkFilter('zeiss_otus_portrait', 'ZEISS Otus Portrait', 'leica_zeiss', '#0369a1', '#fce7f3', { exp: 6, con: 12, sat: -2, temp: -2, shB: 10, hiR: 8, skinLift: 28 }),
 
-            // 1. FNATIX & CLEAN TONE (12)
+            // 1. AHS PRO & CLEAN TONE (12)
             mkFilter('fnatix_light', 'AHS Pro LIGHT', 'fnatix', '#6b8ba4', '#f3e5dc', { exp: 7, con: 8, sat: -5, temp: -4, shB: 15, shG: 7, hiR: 7, hiG: 4, skinLift: 26, skyTeal: 24 }),
             mkFilter('fnatix_pier', 'AHS Pro Pier Sunset', 'fnatix', '#3d5a6c', '#e8b48a', { exp: 4, con: 14, sat: 4, temp: 6, shB: 18, shG: 8, hiR: 12, hiG: 6, skinLift: 28, skyTeal: 26 }),
             mkFilter('porcelain_skin', 'Porcelain Skin Lift', 'fnatix', '#f5dcd6', '#d8e2eb', { exp: 10, con: 4, sat: -10, temp: -3, tint: 4, fade: 8, skinLift: 32 }),
@@ -2697,6 +2785,9 @@
             themeMode: 'dark',
             lang: 'id',
             previewCompact: false,
+            previewZoom: 1,
+            previewPanX: 0,
+            previewPanY: 0,
             splitEnabled: true,
             splitRatio: 0.50,
             isDraggingSplit: false,
@@ -2745,7 +2836,7 @@
             dateStamp: 'off',
 
             transform: { ratio: 'orig', rot90: 0, fineAngle: 0, flipH: false, flipV: false },
-            frame: { style: 'none', thickness: 6, caption: "Memories • AHStudio '26", captionFont: 'serif' },
+            frame: { style: 'none', thickness: 6, caption: "Memories • AHStudio '26", captionFont: 'serif', captionSize: 100 },
             watermark: { text: '', font: 'sans', color: '#ffffff', pos: 'bc', size: 100, opacity: 85 },
             exportOpts: { format: 'image/jpeg', scale: 1, quality: 95 },
             lastExportFile: null,
@@ -3231,7 +3322,7 @@
         }
 
         // =========================================================================
-        // 7. PROCEDURAL SAMPLE PHOTOS
+        // 7. PROCEDURAL INITIAL SAMPLE PHOTO
         // =========================================================================
         function generateSampleCanvas(type) {
             const c = document.createElement('canvas');
@@ -3239,81 +3330,44 @@
             c.width = w; c.height = h;
             const ctx = c.getContext('2d');
 
-            if (type === 'dermaga') {
-                const sky = ctx.createLinearGradient(0, 0, 0, h * 0.56);
-                sky.addColorStop(0, '#a6bcc9'); sky.addColorStop(0.55, '#ccd8df'); sky.addColorStop(1, '#e7e2da');
-                ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h * 0.56);
-                ctx.fillStyle = '#9aa8b2';
-                for (let bx = 0; bx < w; bx += 34) {
-                    const bh = 24 + ((bx * 37) % 56);
-                    ctx.fillRect(bx, h * 0.56 - bh, 28, bh);
-                }
-                const sea = ctx.createLinearGradient(0, h * 0.56, 0, h);
-                sea.addColorStop(0, '#8ba2b0'); sea.addColorStop(1, '#687f8e');
-                ctx.fillStyle = sea; ctx.fillRect(0, h * 0.56, w, h * 0.44);
-                const railGrad = ctx.createLinearGradient(0, h * 0.68, 0, h * 0.72);
-                railGrad.addColorStop(0, '#b0bcc4'); railGrad.addColorStop(1, '#64748b');
-                ctx.fillStyle = railGrad;
-                ctx.fillRect(0, h * 0.68, w, 24); ctx.fillRect(0, h * 0.83, w, 14);
-                for (let x = 85; x < w; x += 245) ctx.fillRect(x, h * 0.68, 20, h * 0.32);
-
-                ctx.fillStyle = '#262326';
-                ctx.beginPath(); ctx.arc(w * 0.51, h * 0.25, 42, 0, Math.PI * 2); ctx.fill();
-                ctx.beginPath(); ctx.ellipse(w * 0.50, h * 0.41, 92, 118, 0, 0, Math.PI * 2); ctx.fill();
-
-                const skinGrad = ctx.createLinearGradient(w * 0.44, h * 0.34, w * 0.56, h * 0.52);
-                skinGrad.addColorStop(0, '#d5b9b0'); skinGrad.addColorStop(1, '#e3cbc3');
-                ctx.fillStyle = skinGrad;
-                ctx.beginPath(); ctx.ellipse(w * 0.50, h * 0.40, 60, 74, 0, 0, Math.PI * 2); ctx.fill();
-                ctx.fillRect(w * 0.468, h * 0.46, 50, 76);
-
-                ctx.fillStyle = '#d7bcb3';
-                ctx.beginPath();
-                ctx.roundRect(w * 0.31, h * 0.56, 44, h * 0.36, 20);
-                ctx.roundRect(w * 0.63, h * 0.56, 44, h * 0.36, 20);
-                ctx.fill();
-
-                ctx.fillStyle = '#262120';
-                ctx.beginPath();
-                ctx.moveTo(w * 0.37, h * 0.54); ctx.lineTo(w * 0.63, h * 0.54);
-                ctx.lineTo(w * 0.68, h); ctx.lineTo(w * 0.32, h);
-                ctx.closePath(); ctx.fill();
-            } else if (type === 'japan') {
-                const wall = ctx.createLinearGradient(0, 0, w, h);
-                wall.addColorStop(0, '#dfd9cb'); wall.addColorStop(1, '#b8b09e');
-                ctx.fillStyle = wall; ctx.fillRect(0, 0, w, h);
-                ctx.fillStyle = '#18323e'; ctx.fillRect(w * 0.54, h * 0.14, w * 0.35, h * 0.28);
-                ctx.fillStyle = '#3e849e'; ctx.fillRect(w * 0.56, h * 0.16, w * 0.15, h * 0.24);
-                ctx.fillRect(w * 0.73, h * 0.16, w * 0.14, h * 0.24);
-                ctx.fillStyle = '#c2410c'; ctx.fillRect(w * 0.41, h * 0.46, 20, h * 0.54);
-                ctx.beginPath(); ctx.arc(w * 0.42, h * 0.46, 98, 0, Math.PI * 2); ctx.fill();
-                ctx.beginPath(); ctx.arc(w * 0.42, h * 0.46, 80, 0, Math.PI * 2);
-                ctx.fillStyle = '#dbeafe'; ctx.fill();
-            } else if (type === 'portrait') {
-                const bg = ctx.createLinearGradient(0, 0, w, h);
-                bg.addColorStop(0, '#dce3df'); bg.addColorStop(1, '#78857d');
-                ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
-                ctx.fillStyle = '#181a20'; ctx.beginPath(); ctx.ellipse(w * 0.53, h * 0.43, 108, 134, 0, 0, Math.PI * 2); ctx.fill();
-                ctx.fillStyle = '#ecc8bc'; ctx.beginPath(); ctx.ellipse(w * 0.53, h * 0.45, 68, 84, 0, 0, Math.PI * 2); ctx.fill();
-                ctx.fillRect(w * 0.49, h * 0.51, 90, 84);
-                ctx.fillStyle = '#16181d'; ctx.beginPath(); ctx.roundRect(w * 0.33, h * 0.58, w * 0.40, h * 0.24, 34); ctx.fill();
-                ctx.fillStyle = '#547796'; ctx.fillRect(w * 0.36, h * 0.82, w * 0.34, h * 0.18);
-            } else if (type === 'day') {
-                const sky = ctx.createLinearGradient(0, 0, 0, h * 0.62);
-                sky.addColorStop(0, '#1d4ed8'); sky.addColorStop(1, '#dbeafe');
-                ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h * 0.62);
-                const meadow = ctx.createLinearGradient(0, h * 0.60, 0, h);
-                meadow.addColorStop(0, '#65a30d'); meadow.addColorStop(1, '#1a2e05');
-                ctx.fillStyle = meadow; ctx.fillRect(0, h * 0.60, w, h * 0.40);
-            } else {
-                const nightBg = ctx.createLinearGradient(0, 0, 0, h);
-                nightBg.addColorStop(0, '#070b14'); nightBg.addColorStop(1, '#131d33');
-                ctx.fillStyle = nightBg; ctx.fillRect(0, 0, w, h);
-                ctx.fillStyle = '#0f172a'; ctx.fillRect(w * 0.08, h * 0.22, w * 0.24, h * 0.65);
-                ctx.fillRect(w * 0.68, h * 0.18, w * 0.25, h * 0.70);
-                ctx.fillStyle = '#38bdf8'; ctx.fillRect(w * 0.14, h * 0.30, 18, 185);
-                ctx.fillStyle = '#fb7185'; ctx.fillRect(w * 0.74, h * 0.26, 18, 210);
+            const sky = ctx.createLinearGradient(0, 0, 0, h * 0.56);
+            sky.addColorStop(0, '#a6bcc9'); sky.addColorStop(0.55, '#ccd8df'); sky.addColorStop(1, '#e7e2da');
+            ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h * 0.56);
+            ctx.fillStyle = '#9aa8b2';
+            for (let bx = 0; bx < w; bx += 34) {
+                const bh = 24 + ((bx * 37) % 56);
+                ctx.fillRect(bx, h * 0.56 - bh, 28, bh);
             }
+            const sea = ctx.createLinearGradient(0, h * 0.56, 0, h);
+            sea.addColorStop(0, '#8ba2b0'); sea.addColorStop(1, '#687f8e');
+            ctx.fillStyle = sea; ctx.fillRect(0, h * 0.56, w, h * 0.44);
+            const railGrad = ctx.createLinearGradient(0, h * 0.68, 0, h * 0.72);
+            railGrad.addColorStop(0, '#b0bcc4'); railGrad.addColorStop(1, '#64748b');
+            ctx.fillStyle = railGrad;
+            ctx.fillRect(0, h * 0.68, w, 24); ctx.fillRect(0, h * 0.83, w, 14);
+            for (let x = 85; x < w; x += 245) ctx.fillRect(x, h * 0.68, 20, h * 0.32);
+
+            ctx.fillStyle = '#262326';
+            ctx.beginPath(); ctx.arc(w * 0.51, h * 0.25, 42, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(w * 0.50, h * 0.41, 92, 118, 0, 0, Math.PI * 2); ctx.fill();
+
+            const skinGrad = ctx.createLinearGradient(w * 0.44, h * 0.34, w * 0.56, h * 0.52);
+            skinGrad.addColorStop(0, '#d5b9b0'); skinGrad.addColorStop(1, '#e3cbc3');
+            ctx.fillStyle = skinGrad;
+            ctx.beginPath(); ctx.ellipse(w * 0.50, h * 0.40, 60, 74, 0, 0, Math.PI * 2); ctx.fill();
+            ctx.fillRect(w * 0.468, h * 0.46, 50, 76);
+
+            ctx.fillStyle = '#d7bcb3';
+            ctx.beginPath();
+            ctx.roundRect(w * 0.31, h * 0.56, 44, h * 0.36, 20);
+            ctx.roundRect(w * 0.63, h * 0.56, 44, h * 0.36, 20);
+            ctx.fill();
+
+            ctx.fillStyle = '#262120';
+            ctx.beginPath();
+            ctx.moveTo(w * 0.37, h * 0.54); ctx.lineTo(w * 0.63, h * 0.54);
+            ctx.lineTo(w * 0.68, h); ctx.lineTo(w * 0.32, h);
+            ctx.closePath(); ctx.fill();
             return c;
         }
 
@@ -3608,7 +3662,6 @@
             const filter = state.selectedFilterId === 'none'
                 ? NONE_FILTER
                 : (getAllFilters().find(f => f.id === state.selectedFilterId) || NONE_FILTER);
-            // True linear opacity mix (1% = 0.01 exact pixel cross-fade with original, 100% = full filter)
             const fMix = filter.id === 'none' ? 0 : Math.max(0, Math.min(1, state.filterOpacity / 100));
             const adj = state.adjust;
 
@@ -3810,7 +3863,7 @@
                     b = (b - 128) * (1 + dehazeAmt * 0.25) + 128 - dh * (1 - lumPre);
                 }
 
-                // Contrast (only applied when totalCon is non-zero to prevent rounding jump at 1%)
+                // Contrast
                 if (Math.abs(conClamped) > 0.05) {
                     r = conFactor * (r - 128) + 128;
                     g = conFactor * (g - 128) + 128;
@@ -4216,11 +4269,15 @@
 
                 if (fStyle === 'polaroid' && state.frame.caption.trim()) {
                     targetCtx.fillStyle = '#1e293b';
-                    const capPx = Math.max(13, Math.round(pad * 0.65));
+                    const capScale = (state.frame.captionSize || 100) / 100;
+                    const capPx = Math.max(12, Math.round(pad * 0.65 * capScale));
                     const capFontMap = {
                         serif: `italic 600 ${capPx}px Georgia, "Times New Roman", serif`,
-                        script: `italic 600 ${Math.round(capPx * 1.18)}px "Brush Script MT", "Segoe Script", Georgia, cursive`,
-                        sans: `700 ${Math.round(capPx * 0.92)}px Inter, system-ui, sans-serif`
+                        script: `italic 600 ${Math.round(capPx * 1.18)}px "Brush Script MT", "Segoe Script", "Apple Chancery", Georgia, cursive`,
+                        sans: `700 ${Math.round(capPx * 0.92)}px Inter, system-ui, sans-serif`,
+                        mono: `700 ${Math.round(capPx * 0.88)}px ui-monospace, SFMono-Regular, Menlo, monospace`,
+                        condensed: `800 ${Math.round(capPx * 0.98)}px "Arial Narrow", Impact, Inter, sans-serif`,
+                        classic: `600 ${Math.round(capPx * 0.90)}px "Trebuchet MS", Optima, Inter, sans-serif`
                     };
                     targetCtx.font = capFontMap[state.frame.captionFont] || capFontMap.serif;
                     targetCtx.textAlign = 'center';
@@ -4369,12 +4426,12 @@
 
             state.transform = Object.assign({ ratio: 'orig', rot90: 0, fineAngle: 0, flipH: false, flipV: false }, snap.transform);
             $('sliderFineAngle').value = state.transform.fineAngle;
-            $('fineAngleVal').textContent = `${state.transform.fineAngle}°`;
-
-            state.frame = Object.assign({ style: 'none', thickness: 6, caption: "Memories • AHStudio '26", captionFont: 'serif' }, snap.frame);
+            state.frame = Object.assign({ style: 'none', thickness: 6, caption: "Memories • AHStudio '26", captionFont: 'serif', captionSize: 100 }, snap.frame);
             $('sliderFrameThickness').value = state.frame.thickness;
             $('frameThicknessVal').textContent = `${state.frame.thickness}%`;
             $('inputPolaroidCaption').value = state.frame.caption;
+            if ($('sliderPolaroidCapSize')) $('sliderPolaroidCapSize').value = state.frame.captionSize || 100;
+            if ($('polaroidCapSizeVal')) $('polaroidCapSizeVal').textContent = `${state.frame.captionSize || 100}%`;
             const showCapBox = state.frame.style === 'polaroid' || state.frame.style === 'leica' || state.frame.style === 'zeiss' || state.frame.style === 'leica_dark';
             $('polaroidCaptionBox').classList.toggle('hidden', !showCapBox);
 
@@ -4423,7 +4480,7 @@
         }
 
         // =========================================================================
-        // 11. ADAPTIVE PROXY SCRUBBING + 60FPS BRUSH OVERLAY + RAF RENDER SCHEDULER
+        // 11. ADAPTIVE PROXY SCRUBBING + 60FPS BRUSH OVERLAY + ZOOM PREVIEW
         // =========================================================================
         let rafPending = false;
         function schedulePreviewRender() {
@@ -4435,6 +4492,17 @@
             });
         }
 
+        function updatePreviewZoomTransform() {
+            const z = state.previewZoom || 1;
+            if (z <= 1) {
+                state.previewZoom = 1;
+                state.previewPanX = 0;
+                state.previewPanY = 0;
+            }
+            previewCanvas.style.transform = `translate(${state.previewPanX}px, ${state.previewPanY}px) scale(${state.previewZoom})`;
+            previewCanvas.style.transformOrigin = 'center center';
+        }
+
         function fitPreviewCanvasDimensions(imgW, imgH) {
             if (!imgW || !imgH) return;
             const isLandscape = document.body.classList.contains('mode-landscape');
@@ -4442,21 +4510,22 @@
 
             if (isLandscape) {
                 const bgRect = canvasStageBg.getBoundingClientRect();
-                maxW = Math.max(220, (bgRect.width || (window.innerWidth - 434)) - 8);
-                maxH = Math.max(220, (bgRect.height || (window.innerHeight - 135)) - 8);
+                maxW = Math.max(240, (bgRect.width || (window.innerWidth - 434)) - 6);
+                maxH = Math.max(240, (bgRect.height || (window.innerHeight - 125)) - 6);
             } else {
                 const rootW = appRoot.clientWidth || Math.min(window.innerWidth, 580);
-                maxW = Math.max(200, rootW - 22);
-                const vhRatio = state.previewCompact ? 0.25 : 0.40;
-                maxH = Math.max(145, Math.round(window.innerHeight * vhRatio));
+                maxW = Math.max(220, rootW - 16);
+                const vhRatio = state.previewCompact ? 0.30 : 0.52;
+                maxH = Math.max(180, Math.round(window.innerHeight * vhRatio));
             }
 
             const scale = Math.min(maxW / imgW, maxH / imgH);
-            const dispW = Math.max(80, Math.round(imgW * scale));
-            const dispH = Math.max(80, Math.round(imgH * scale));
+            const dispW = Math.max(90, Math.round(imgW * scale));
+            const dispH = Math.max(90, Math.round(imgH * scale));
 
             previewCanvas.style.width = `${dispW}px`;
             previewCanvas.style.height = `${dispH}px`;
+            updatePreviewZoomTransform();
             updateSplitLinePosition();
         }
 
@@ -5119,10 +5188,10 @@
             defs.forEach(def => {
                 const val = state.adjust[def.key] || 0;
                 const row = document.createElement('div');
-                row.className = 'px-3 py-2 rounded-2xl bg-[#13161f] border border-white/10';
+                row.className = 'px-3.5 py-3 rounded-2xl bg-[#13161f] border border-white/10';
                 const valStr = val > 0 ? `+${val}` : `${val}`;
                 row.innerHTML = `
-                    <div class="flex items-center justify-between mb-1.5">
+                    <div class="flex items-center justify-between mb-2">
                         <span class="adj-label text-xs font-bold text-gray-200 cursor-pointer select-none">${def.label}</span>
                         <div class="flex items-center gap-2">
                             <span id="val_${def.key}" class="text-xs font-mono font-extrabold ${val !== 0 ? 'text-sky-400' : 'text-gray-400'}">${valStr}</span>
@@ -5420,7 +5489,7 @@
         }
 
         // =========================================================================
-        // 15. RESPONSIVE LAYOUT, FLOATING GLASS DOCK & EVENT WIRING
+        // 15. RESPONSIVE LAYOUT, MULTI-PHOTO FILMSTRIP, ZOOM & EVENT WIRING
         // =========================================================================
         function applyResponsiveLayout() {
             let useLandscape = false;
@@ -5539,6 +5608,9 @@
             state.sourceCanvas = target.canvas;
             state.isRawSource = target.isRaw;
             state.rawExt = target.rawExt;
+            state.previewZoom = 1;
+            state.previewPanX = 0;
+            state.previewPanY = 0;
 
             undoStack.length = 0;
             redoStack.length = 0;
@@ -5583,10 +5655,13 @@
 
             if (loadedCount > 0) {
                 await selectPhotoFromQueue(firstNewIndex, true);
+                const activeItem = state.photoQueue[firstNewIndex];
                 showToast(
                     loadedCount > 1
-                        ? `📷 ${loadedCount} foto ditambahkan! Pilih foto di strip atas untuk edit satu per satu.`
-                        : `📷 Foto "${state.photoQueue[firstNewIndex].name}" dimuat!`
+                        ? `📷 ${loadedCount} foto ditambahkan ke daftar edit!`
+                        : (activeItem.isRaw
+                            ? `📷 RAW HD (${activeItem.rawExt}) ${activeItem.canvas.width}×${activeItem.canvas.height} dimuat!`
+                            : `📷 Foto (${activeItem.canvas.width}×${activeItem.canvas.height}) dimuat!`)
                 );
             } else {
                 showToast('❌ Gagal membaca file gambar / RAW');
@@ -5605,8 +5680,8 @@
             if (state.splitEnabled && (state.splitRatio <= 0.04 || state.splitRatio >= 0.96)) state.splitRatio = 0.50;
             e.target.textContent = state.splitEnabled ? 'SPLIT: ON' : 'SPLIT: OFF';
             e.target.className = state.splitEnabled
-                ? 'px-2.5 py-1.5 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/40 text-sky-300 text-[10px] font-mono font-bold'
-                : 'px-2.5 py-1.5 rounded-xl bg-[#151821] hover:bg-[#1e222e] border border-white/15 text-gray-300 text-[10px] font-mono font-bold';
+                ? 'glass-header-pill-btn bg-sky-500/20 hover:bg-sky-500/30 text-sky-300'
+                : 'glass-header-pill-btn bg-white/5 hover:bg-white/10 text-gray-300';
             renderPreview();
         });
 
@@ -5619,8 +5694,11 @@
         }
         $('btnTipRerender').addEventListener('click', triggerForceRerender);
 
-        // Viewport Pointer (Ultra-Light 60fps Touch-Up Brush or Split Drag)
+        // Viewport Pointer (60fps Brush, Zoom Pan, or Split Drag)
         let isPaintingBrush = false;
+        let isPanningPreview = false;
+        let panPrevStartX = 0;
+        let panPrevStartY = 0;
         let lastBrushNx = null;
         let lastBrushNy = null;
         const brushRing = $('brushRing');
@@ -5653,13 +5731,26 @@
         }
 
         canvasViewport.addEventListener('pointerdown', (e) => {
-            if (e.target.closest && (e.target.closest('#btnTogglePreviewSize') || e.target.closest('#btnFullscreenPreview'))) return;
+            if (e.target.closest && (
+                e.target.closest('#btnTogglePreviewSize') ||
+                e.target.closest('#btnFullscreenPreview') ||
+                e.target.closest('#btnPreviewZoomIn') ||
+                e.target.closest('#btnPreviewZoomOut')
+            )) return;
             if (state.subjectPop.brushMode !== 'none') {
                 isPaintingBrush = true;
                 lastBrushNx = null;
                 lastBrushNy = null;
                 try { canvasViewport.setPointerCapture(e.pointerId); } catch (err) {}
                 handleBrushStroke(e, true);
+                return;
+            }
+            const onSplitHandle = e.target.closest && e.target.closest('#splitLine');
+            if (state.previewZoom > 1 && !onSplitHandle) {
+                isPanningPreview = true;
+                panPrevStartX = e.clientX - state.previewPanX;
+                panPrevStartY = e.clientY - state.previewPanY;
+                try { canvasViewport.setPointerCapture(e.pointerId); } catch (err) {}
                 return;
             }
             if (!state.splitEnabled) return;
@@ -5669,11 +5760,18 @@
         });
         canvasViewport.addEventListener('pointermove', (e) => {
             if (isPaintingBrush && state.subjectPop.brushMode !== 'none') { handleBrushStroke(e, false); return; }
+            if (isPanningPreview) {
+                state.previewPanX = e.clientX - panPrevStartX;
+                state.previewPanY = e.clientY - panPrevStartY;
+                updatePreviewZoomTransform();
+                return;
+            }
             if (state.isDraggingSplit) updateSplitFromClientX(e.clientX);
         });
         ['pointerup', 'pointercancel'].forEach(ev => {
             canvasViewport.addEventListener(ev, () => {
                 state.isDraggingSplit = false;
+                isPanningPreview = false;
                 if (isPaintingBrush) {
                     isPaintingBrush = false;
                     lastBrushNx = null;
@@ -5684,6 +5782,24 @@
                     brushRing.classList.add('hidden');
                 }
             });
+        });
+
+        canvasViewport.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = e.deltaY < 0 ? 0.25 : -0.25;
+            state.previewZoom = Math.max(1, Math.min(4, +(state.previewZoom + delta).toFixed(2)));
+            updatePreviewZoomTransform();
+        }, { passive: false });
+
+        $('btnPreviewZoomIn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            state.previewZoom = Math.min(4, +(state.previewZoom + 0.35).toFixed(2));
+            updatePreviewZoomTransform();
+        });
+        $('btnPreviewZoomOut').addEventListener('click', (e) => {
+            e.stopPropagation();
+            state.previewZoom = Math.max(1, +(state.previewZoom - 0.35).toFixed(2));
+            updatePreviewZoomTransform();
         });
 
         $('btnTogglePreviewSize').addEventListener('click', (e) => {
@@ -5698,7 +5814,8 @@
         function endHold() { if (!state.isHoldingOriginal) return; state.isHoldingOriginal = false; btnHoldCompare.classList.remove('hold-active'); renderPreview(); }
         btnHoldCompare.addEventListener('pointerdown', startHold);
         ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => btnHoldCompare.addEventListener(ev, endHold));
-        // 8-Tab Switcher + Floating Glass Orbs
+
+        // 8-Tab Switcher
         const PANELS = {
             filter: 'panelFilter',
             subjectpop: 'panelSubjectPop',
@@ -5988,13 +6105,41 @@
         $('btnResetHslChannel').addEventListener('click', () => { state.hsl[state.activeHslChannel] = { h: 0, s: 0, l: 0 }; renderHslControls(); renderPreview(); });
         $('btnResetHsl').addEventListener('click', () => { state.hsl = createDefaultHsl(); renderHslControls(); renderPreview(); showToast('↺ Semua warna HSL direset'); });
 
-        // Grading & Flash
+        // Grading & Flash (Individual Zone Resets + Global Reset)
+        $('btnResetWheelShadows').addEventListener('click', () => {
+            state.grading.shadows = { hue: 0, sat: 0, lum: 0 };
+            $('lumShadows').value = 0;
+            redrawWheelShadows();
+            renderPreview();
+            showToast('↺ Shadows direset');
+        });
+        $('btnResetWheelMidtones').addEventListener('click', () => {
+            state.grading.midtones = { hue: 0, sat: 0, lum: 0 };
+            $('lumMidtones').value = 0;
+            redrawWheelMidtones();
+            renderPreview();
+            showToast('↺ Midtones direset');
+        });
+        $('btnResetWheelHighlights').addEventListener('click', () => {
+            state.grading.highlights = { hue: 0, sat: 0, lum: 0 };
+            $('lumHighlights').value = 0;
+            redrawWheelHighlights();
+            renderPreview();
+            showToast('↺ Highlights direset');
+        });
+        $('btnResetGradingBalance').addEventListener('click', () => {
+            state.grading.balance = 0;
+            $('sliderGradingBalance').value = 0;
+            $('gradingBalanceVal').textContent = '0';
+            renderPreview();
+            showToast('↺ Balance direset');
+        });
         $('sliderGradingBalance').addEventListener('input', (e) => { const v = parseInt(e.target.value, 10); state.grading.balance = v; $('gradingBalanceVal').textContent = v > 0 ? `+${v}` : `${v}`; schedulePreviewRender(); });
         $('btnResetGrading').addEventListener('click', () => {
             state.grading = createDefaultGrading(); $('lumShadows').value = 0; $('lumMidtones').value = 0; $('lumHighlights').value = 0;
             $('sliderGradingBalance').value = 0; $('gradingBalanceVal').textContent = '0';
             redrawWheelShadows(); redrawWheelMidtones(); redrawWheelHighlights(); renderPreview();
-            showToast('↺ Color Grading direset');
+            showToast('↺ Semua Color Grading direset');
         });
 
         const sliderFlashIntensity = $('sliderFlashIntensity');
@@ -6068,11 +6213,16 @@
                 state.frame.captionFont = btn.dataset.capfont;
                 document.querySelectorAll('.capfont-btn').forEach(b => {
                     b.className = b === btn
-                        ? 'capfont-btn py-1 rounded-lg bg-sky-500 text-white text-[10px] font-extrabold'
-                        : 'capfont-btn py-1 rounded-lg bg-[#1b1f2b] text-gray-300 text-[10px] font-bold';
+                        ? 'capfont-btn py-1.5 rounded-lg bg-sky-500 text-white text-[10px] font-extrabold'
+                        : 'capfont-btn py-1.5 rounded-lg bg-[#1b1f2b] text-gray-300 text-[10px] font-bold';
                 });
                 renderPreview();
             });
+        });
+        $('sliderPolaroidCapSize').addEventListener('input', (e) => {
+            state.frame.captionSize = parseInt(e.target.value, 10);
+            $('polaroidCapSizeVal').textContent = `${state.frame.captionSize}%`;
+            if (state.frame.style !== 'none') schedulePreviewRender();
         });
         $('sliderFrameThickness').addEventListener('input', (e) => { state.frame.thickness = parseInt(e.target.value, 10); $('frameThicknessVal').textContent = `${state.frame.thickness}%`; if (state.frame.style !== 'none') schedulePreviewRender(); });
         $('inputPolaroidCaption').addEventListener('input', (e) => { state.frame.caption = e.target.value; if (state.frame.style !== 'none') schedulePreviewRender(); });
@@ -6118,6 +6268,1006 @@
         });
         $('sliderWmSize').addEventListener('input', (e) => { state.watermark.size = parseInt(e.target.value, 10); $('wmSizeVal').textContent = `${state.watermark.size}%`; if (state.watermark.text.trim()) schedulePreviewRender(); });
         $('sliderWmOpacity').addEventListener('input', (e) => { state.watermark.opacity = parseInt(e.target.value, 10); $('wmOpacityVal').textContent = `${state.watermark.opacity}%`; if (state.watermark.text.trim()) schedulePreviewRender(); });
+
+        // =========================================================================
+        // 16. MODALS: PRESET SAVE/EXPORT, 3-TIER BULLETPROOF EXPORT PRO & BATCH EDIT
+        // =========================================================================
+        const presetModal = $('presetModal');
+        $('btnOpenPresetModal').addEventListener('click', () => { $('inputNewPresetName').value = ''; presetModal.classList.remove('hidden'); });
+        $('btnClosePresetModal').addEventListener('click', () => presetModal.classList.add('hidden'));
+
+        function triggerDomDownload(href, filename) {
+            try {
+                const a = document.createElement('a');
+                a.href = href;
+                a.download = filename;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+                setTimeout(() => {
+                    if (a.parentNode) document.body.removeChild(a);
+                }, 400);
+            } catch (e) {}
+        }
+
+        function downloadTextFile(filename, content, mime) {
+            const blob = new Blob([content], { type: mime });
+            const url = URL.createObjectURL(blob);
+            triggerDomDownload(url, filename);
+            setTimeout(() => URL.revokeObjectURL(url), 1500);
+        }
+
+        $('btnSaveToMyPresets').addEventListener('click', () => {
+            const presetName = $('inputNewPresetName').value.trim() || `AHStudio Tone #${customPresets.length + 1}`;
+            const baseFilter = state.selectedFilterId === 'none' ? NONE_FILTER : (getAllFilters().find(f => f.id === state.selectedFilterId) || NONE_FILTER);
+            const newPreset = mkFilter(`custom_saved_${Date.now()}`, presetName, 'custom', baseFilter.colors[0], baseFilter.colors[1], {
+                exp: baseFilter.exp, con: baseFilter.con, sat: baseFilter.sat, temp: baseFilter.temp, tint: baseFilter.tint, fade: baseFilter.fade,
+                shR: baseFilter.shR, shG: baseFilter.shG, shB: baseFilter.shB, hiR: baseFilter.hiR, hiG: baseFilter.hiG, hiB: baseFilter.hiB,
+                skinLift: baseFilter.skinLift, skyTeal: baseFilter.skyTeal, greenMoss: baseFilter.greenMoss,
+                customAdj: Object.assign({}, state.adjust),
+                matchProfile: state.colorMatch.active ? state.colorMatch.profile : baseFilter.matchProfile
+            });
+            customPresets.unshift(newPreset); saveCustomPresetsToStorage();
+            state.colorMatch.active = false; state.selectedCategory = 'custom'; state.selectedFilterId = newPreset.id;
+            state.filterOpacity = 100; $('sliderFilterOpacity').value = 100; $('filterOpacityLabel').textContent = '100%';
+            presetModal.classList.add('hidden');
+            renderCategories(); renderFilterGrid(); updateStatusBadges();
+            showToast(`💾 "${presetName}" tersimpan`);
+        });
+
+        $('btnExportXmp').addEventListener('click', () => {
+            const name = $('inputNewPresetName').value.trim() || 'AHStudio_Preset';
+            const a = state.adjust;
+            const xmp = `<x:xmpmeta xmlns:x="adobe:ns:meta/"><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description rdf:about="" xmlns:crs="http://ns.adobe.com/camera-raw-settings/1.0/" crs:PresetType="Normal" crs:Exposure2012="${(a.exposure / 22).toFixed(2)}" crs:Contrast2012="${a.contrast}" crs:Highlights2012="${a.highlights}" crs:Shadows2012="${a.shadows}" crs:Whites2012="${a.whites}" crs:Blacks2012="${a.blacks}" crs:Vibrance="${a.vibrance}" crs:Saturation="${a.saturation}" crs:Clarity2012="${a.clarity}" crs:Dehaze="${a.dehaze}" crs:Temperature="${Math.round(5500 + a.temp * 45)}" crs:Tint="${a.tint}"><crs:Name><rdf:Alt><rdf:li xml:lang="x-default">${name} (AHStudio)</rdf:li></rdf:Alt></crs:Name></rdf:Description></rdf:RDF></x:xmpmeta>`;
+            downloadTextFile(`${name.replace(/\s+/g, '_')}.xmp`, xmp, 'application/xml');
+            presetModal.classList.add('hidden');
+            showToast('📄 File .XMP Lightroom diunduh');
+        });
+
+        $('btnExportCube').addEventListener('click', () => {
+            const name = $('inputNewPresetName').value.trim() || 'AHStudio_LUT';
+            const size = 17;
+            const lines = [`TITLE "${name} - AHStudio"`, `LUT_3D_SIZE ${size}`];
+            const expM = Math.pow(2, state.adjust.exposure / 65);
+            for (let b = 0; b < size; b++) {
+                for (let g = 0; g < size; g++) {
+                    for (let r = 0; r < size; r++) {
+                        const rn = Math.min(1, Math.max(0, (r / (size - 1)) * expM + state.adjust.temp * 0.002));
+                        const gn = Math.min(1, Math.max(0, (g / (size - 1)) * expM - state.adjust.tint * 0.002));
+                        const bn = Math.min(1, Math.max(0, (b / (size - 1)) * expM - state.adjust.temp * 0.002));
+                        lines.push(`${rn.toFixed(6)} ${gn.toFixed(6)} ${bn.toFixed(6)}`);
+                    }
+                }
+            }
+            downloadTextFile(`${name.replace(/\s+/g, '_')}.cube`, lines.join('\n'), 'text/plain');
+            presetModal.classList.add('hidden');
+            showToast('🎞️ File 3D LUT .CUBE diunduh');
+        });
+
+        $('btnExportJson').addEventListener('click', () => {
+            const name = $('inputNewPresetName').value.trim() || 'AHStudio_Preset';
+            const baseFilter = state.selectedFilterId === 'none' ? NONE_FILTER : (getAllFilters().find(f => f.id === state.selectedFilterId) || NONE_FILTER);
+            downloadTextFile(`${name.replace(/\s+/g, '_')}.json`, JSON.stringify(Object.assign({}, baseFilter, { name, customAdj: state.adjust }), null, 2), 'application/json');
+            presetModal.classList.add('hidden');
+            showToast('📦 File .JSON AHStudio diunduh');
+        });
+
+        // 3-Tier Bulletproof Export Pro Modal
+        const exportModal = $('exportModal');
+        let lastExportBlobUrl = null;
+
+        function getFormattedTimestampName(ext) {
+            const d = new Date();
+            const pad2 = (n) => String(n).padStart(2, '0');
+            const stamp = `${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}_${pad2(d.getHours())}${pad2(d.getMinutes())}${pad2(d.getSeconds())}`;
+            return `AHStudio_${stamp}.${ext}`;
+        }
+
+        function getScaledExportMaxDim() {
+            if (!state.sourceCanvas) return null;
+            const tr = state.transform;
+            const isSwapped = Math.abs(tr.rot90 % 180) === 90;
+            const baseW = isSwapped ? state.sourceCanvas.height : state.sourceCanvas.width;
+            const baseH = isSwapped ? state.sourceCanvas.width : state.sourceCanvas.height;
+            const longEdge = Math.max(baseW, baseH);
+            const scale = state.exportOpts.scale || 1;
+            return scale >= 1 ? null : Math.max(320, Math.round(longEdge * scale));
+        }
+
+        function updateExportEstimate() {
+            if (!state.sourceCanvas) return;
+            const maxDim = getScaledExportMaxDim();
+            const geom = buildTransformedSource(state.sourceCanvas, maxDim);
+            const approxBytes = geom.width * geom.height * (state.exportOpts.format === 'image/png' ? 1.8 : (0.18 * (state.exportOpts.quality / 100)));
+            const kb = Math.max(25, Math.round(approxBytes / 1024));
+            const sizeStr = kb >= 1024 ? `${(kb / 1024).toFixed(1)} MB` : `${kb} KB`;
+            $('exportEstimateText').textContent = `${geom.width}×${geom.height} (~${sizeStr})`;
+        }
+
+        function dataUrlToBlob(dataUrl) {
+            const parts = dataUrl.split(',');
+            const mimeMatch = parts[0].match(/:(.*?);/);
+            const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+            const bstr = atob(parts[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) u8arr[n] = bstr.charCodeAt(n);
+            return new Blob([u8arr], { type: mime });
+        }
+
+        $('btnOpenExportModal').addEventListener('click', () => {
+            exportModal.classList.remove('hidden');
+            updateExportEstimate();
+        });
+        $('btnCloseExportModal').addEventListener('click', () => exportModal.classList.add('hidden'));
+
+        document.querySelectorAll('.expfmt-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                state.exportOpts.format = btn.dataset.expfmt;
+                document.querySelectorAll('.expfmt-btn').forEach(b => {
+                    b.className = b === btn
+                        ? 'expfmt-btn py-2 rounded-xl bg-sky-500 text-white text-xs font-extrabold'
+                        : 'expfmt-btn py-2 rounded-xl bg-[#1c202e] text-gray-300 border border-white/10 text-xs font-bold';
+                });
+                $('exportQualityGroup').classList.toggle('hidden', state.exportOpts.format === 'image/png');
+                updateExportEstimate();
+            });
+        });
+
+        document.querySelectorAll('.expscale-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                state.exportOpts.scale = parseFloat(btn.dataset.expscale);
+                document.querySelectorAll('.expscale-btn').forEach(b => {
+                    b.className = b === btn
+                        ? 'expscale-btn py-1.5 rounded-xl bg-sky-500 text-white text-[11px] font-extrabold'
+                        : 'expscale-btn py-1.5 rounded-xl bg-[#1c202e] text-gray-300 border border-white/10 text-[11px] font-bold';
+                });
+                updateExportEstimate();
+            });
+        });
+
+        $('sliderExportQuality').addEventListener('input', (e) => {
+            state.exportOpts.quality = parseInt(e.target.value, 10);
+            $('exportQualityVal').textContent = `${state.exportOpts.quality}%`;
+            updateExportEstimate();
+        });
+
+        function getCapacitorPlugins() {
+            const cap = window.Capacitor || null;
+            const isNative = !!(cap && typeof cap.isNativePlatform === 'function' && cap.isNativePlatform());
+            const plugins = (cap && cap.Plugins) ? cap.Plugins : {};
+            return { cap, isNative, Filesystem: plugins.Filesystem || null, Share: plugins.Share || null };
+        }
+
+        async function saveBase64ToAndroidStorage(base64Data, filename, isTextUtf8) {
+            const { isNative, Filesystem } = getCapacitorPlugins();
+            if (!isNative || !Filesystem) return { ok: false, reason: 'not_native' };
+
+            try {
+                const writeOpts = { path: 'Download/' + filename, data: base64Data, directory: 'EXTERNAL_STORAGE', recursive: true };
+                if (isTextUtf8) writeOpts.encoding = 'utf8';
+                const res = await Filesystem.writeFile(writeOpts);
+                return { ok: true, displayPath: 'Internal Storage/Download/' + filename, uri: res && res.uri ? res.uri : '' };
+            } catch (errExt) {
+                try {
+                    const docOpts = { path: 'AHStudio/' + filename, data: base64Data, directory: 'DOCUMENTS', recursive: true };
+                    if (isTextUtf8) docOpts.encoding = 'utf8';
+                    const docRes = await Filesystem.writeFile(docOpts);
+                    return { ok: true, displayPath: 'Internal Storage/Documents/AHStudio/' + filename, uri: docRes && docRes.uri ? docRes.uri : '' };
+                } catch (errDoc) {
+                    return { ok: false, reason: (errDoc && errDoc.message) || 'write_failed' };
+                }
+            }
+        }
+
+        async function shareImageViaNativeOrWeb(base64Data, filename, blob, mimeType) {
+            const { isNative, Filesystem, Share } = getCapacitorPlugins();
+            if (isNative && Filesystem && Share) {
+                try {
+                    const cacheRes = await Filesystem.writeFile({ path: filename, data: base64Data, directory: 'CACHE' });
+                    await Share.share({
+                        title: 'Simpan Foto AHStudio',
+                        text: 'Foto HD dari AHStudio',
+                        url: cacheRes.uri,
+                        dialogTitle: 'Simpan ke Galeri atau File Manager'
+                    });
+                    return true;
+                } catch (e) {
+                    if (e && String(e.message || e).toLowerCase().includes('cancel')) return true;
+                }
+            }
+
+            try {
+                const fileObj = state.lastExportFile || (blob ? new File([blob], filename, { type: mimeType || 'image/jpeg' }) : null);
+                if (fileObj && navigator.canShare && navigator.canShare({ files: [fileObj] })) {
+                    await navigator.share({ files: [fileObj], title: 'AHStudio HD Photo' });
+                    return true;
+                }
+            } catch (err) {
+                if (err && err.name === 'AbortError') return true;
+            }
+            return false;
+        }
+
+        $('btnConfirmDownload').addEventListener('click', async () => {
+            if (!state.sourceCanvas) return;
+            state.isScrubbing = false;
+
+            try {
+                const outCanvas = document.createElement('canvas');
+                const outCtx = outCanvas.getContext('2d');
+                const maxDim = getScaledExportMaxDim();
+                processFullPipeline(state.sourceCanvas, outCanvas, outCtx, maxDim);
+
+                const fmt = state.exportOpts.format;
+                const ext = fmt === 'image/png' ? 'png' : (fmt === 'image/webp' ? 'webp' : 'jpg');
+                const quality = state.exportOpts.quality / 100;
+                const filename = getFormattedTimestampName(ext);
+
+                const dataUrl = outCanvas.toDataURL(fmt, quality);
+                const base64Data = dataUrl.split(',')[1];
+                const blob = dataUrlToBlob(dataUrl);
+
+                if (lastExportBlobUrl) {
+                    try { URL.revokeObjectURL(lastExportBlobUrl); } catch (e) {}
+                }
+                lastExportBlobUrl = URL.createObjectURL(blob);
+
+                try {
+                    state.lastExportFile = new File([blob], filename, { type: fmt });
+                } catch (e) {
+                    state.lastExportFile = null;
+                }
+                state.lastExportMeta = { base64Data, filename, blob, fmt, dataUrl };
+
+                const sizeKb = Math.max(1, Math.round(blob.size / 1024));
+                const sizeText = sizeKb >= 1024 ? `${(sizeKb / 1024).toFixed(2)} MB` : `${sizeKb} KB`;
+                $('exportActualStats').textContent = `${outCanvas.width}×${outCanvas.height} • ${sizeText}`;
+                $('exportReadyImg').src = dataUrl;
+
+                const manualLink = $('btnManualDownloadLink');
+                manualLink.href = dataUrl.length < 2400000 ? dataUrl : lastExportBlobUrl;
+                manualLink.setAttribute('download', filename);
+
+                $('exportReadyCard').classList.remove('hidden');
+
+                const nativeRes = await saveBase64ToAndroidStorage(base64Data, filename, false);
+                const pathBanner = $('exportNativePathBanner');
+                if (nativeRes.ok) {
+                    $('exportNativePathText').textContent = nativeRes.displayPath;
+                    pathBanner.classList.remove('hidden');
+                    showToast(`✅ Tersimpan di ${nativeRes.displayPath}`);
+                } else {
+                    pathBanner.classList.add('hidden');
+                    triggerDomDownload(dataUrl.length < 2400000 ? dataUrl : lastExportBlobUrl, filename);
+                    showToast(`✅ Foto HD (${outCanvas.width}×${outCanvas.height}) siap disimpan!`);
+                }
+            } catch (err) {
+                showToast('❌ Gagal memproses foto untuk disimpan');
+            }
+        });
+
+        $('btnSaveDirectFolder').addEventListener('click', async () => {
+            if (!state.lastExportMeta) { $('btnConfirmDownload').click(); return; }
+            const { base64Data, filename, dataUrl } = state.lastExportMeta;
+            const nativeRes = await saveBase64ToAndroidStorage(base64Data, filename, false);
+            if (nativeRes.ok) {
+                $('exportNativePathText').textContent = nativeRes.displayPath;
+                $('exportNativePathBanner').classList.remove('hidden');
+                showToast(`📁 Berhasil disimpan ke ${nativeRes.displayPath}`);
+            } else {
+                triggerDomDownload(dataUrl.length < 2400000 ? dataUrl : lastExportBlobUrl, filename);
+                showToast(`📥 Mengunduh ke folder Download: ${filename}`);
+            }
+        });
+
+        $('btnShareToGallery').addEventListener('click', async () => {
+            if (!state.lastExportMeta) { $('btnConfirmDownload').click(); return; }
+            const { base64Data, filename, blob, fmt } = state.lastExportMeta;
+            const shared = await shareImageViaNativeOrWeb(base64Data, filename, blob, fmt);
+            if (shared) { showToast('✅ Menu Galeri / File Manager dibuka!'); return; }
+            const manualLink = $('btnManualDownloadLink');
+            if (manualLink && manualLink.href) {
+                manualLink.click();
+                showToast('📥 Mengunduh file foto...');
+            }
+        });
+
+        // =========================================================================
+        // 17. PROJECT SAVE, LOAD & AUTO-RESTORE ENGINE (.ahproj + IndexedDB)
+        // =========================================================================
+        const IDB_NAME = 'AHStudioProjectDB';
+        const IDB_STORE = 'autosave';
+
+        function openProjectDb() {
+            return new Promise((resolve, reject) => {
+                if (!window.indexedDB) { reject(new Error('No IDB')); return; }
+                const req = window.indexedDB.open(IDB_NAME, 1);
+                req.onupgradeneeded = () => {
+                    const db = req.result;
+                    if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
+                };
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        async function idbPutProject(key, value) {
+            try {
+                const db = await openProjectDb();
+                return await new Promise((resolve, reject) => {
+                    const tx = db.transaction(IDB_STORE, 'readwrite');
+                    tx.objectStore(IDB_STORE).put(value, key);
+                    tx.oncomplete = () => resolve(true);
+                    tx.onerror = () => reject(tx.error);
+                });
+            } catch (e) { return false; }
+        }
+
+        async function idbGetProject(key) {
+            try {
+                const db = await openProjectDb();
+                return await new Promise((resolve, reject) => {
+                    const tx = db.transaction(IDB_STORE, 'readonly');
+                    const req = tx.objectStore(IDB_STORE).get(key);
+                    req.onsuccess = () => resolve(req.result || null);
+                    req.onerror = () => reject(req.error);
+                });
+            } catch (e) { return null; }
+        }
+
+        function serializeFullProject(includeSourceImage) {
+            let sourceDataUrl = null;
+            if (includeSourceImage && state.sourceCanvas) {
+                const maxP = 2048;
+                const sw = state.sourceCanvas.width, sh = state.sourceCanvas.height;
+                if (sw <= maxP && sh <= maxP) {
+                    sourceDataUrl = state.sourceCanvas.toDataURL('image/jpeg', 0.94);
+                } else {
+                    const r = Math.min(maxP / sw, maxP / sh);
+                    const tmp = document.createElement('canvas');
+                    tmp.width = Math.round(sw * r);
+                    tmp.height = Math.round(sh * r);
+                    tmp.getContext('2d').drawImage(state.sourceCanvas, 0, 0, tmp.width, tmp.height);
+                    sourceDataUrl = tmp.toDataURL('image/jpeg', 0.94);
+                }
+            }
+
+            const sp = state.subjectPop;
+            return {
+                format: 'AHSTUDIO_PROJECT_V1',
+                savedAt: new Date().toISOString(),
+                isRawSource: state.isRawSource,
+                rawExt: state.rawExt,
+                sourceDataUrl,
+                selectedFilterId: state.selectedFilterId,
+                filterOpacity: state.filterOpacity,
+                selectedCategory: state.selectedCategory,
+                adjust: Object.assign({}, state.adjust),
+                curves: JSON.parse(JSON.stringify(state.curves)),
+                hsl: JSON.parse(JSON.stringify(state.hsl)),
+                grading: JSON.parse(JSON.stringify(state.grading)),
+                subjectPop: {
+                    categoryId: sp.categoryId,
+                    presetId: sp.presetId,
+                    shadowMode: sp.shadowMode,
+                    bgMode: sp.bgMode,
+                    master: sp.master,
+                    fgBright: sp.fgBright,
+                    bgDark: sp.bgDark,
+                    dehaze: sp.dehaze,
+                    twilight: sp.twilight,
+                    warmFg: sp.warmFg,
+                    maskW: sp.maskW,
+                    maskH: sp.maskH,
+                    subjectMask: sp.subjectMask ? Array.from(sp.subjectMask) : null,
+                    detectedType: sp.detectedType
+                },
+                selectedFlashId: state.selectedFlashId,
+                flashIntensity: state.flashIntensity,
+                flashPosition: state.flashPosition,
+                dateStamp: state.dateStamp,
+                transform: Object.assign({}, state.transform),
+                frame: Object.assign({}, state.frame),
+                watermark: Object.assign({}, state.watermark)
+            };
+        }
+
+        function applyDeserializedProject(proj) {
+            return new Promise((resolve) => {
+                if (!proj || proj.format !== 'AHSTUDIO_PROJECT_V1') { resolve(false); return; }
+
+                const finishRestore = () => {
+                    state.isRawSource = !!proj.isRawSource;
+                    state.rawExt = proj.rawExt || '';
+                    state.colorMatch.active = false;
+                    state.selectedFilterId = proj.selectedFilterId || 'none';
+                    state.filterOpacity = typeof proj.filterOpacity === 'number' ? proj.filterOpacity : 0;
+                    if (proj.selectedCategory) state.selectedCategory = proj.selectedCategory;
+
+                    $('sliderFilterOpacity').value = state.filterOpacity;
+                    $('filterOpacityLabel').textContent = `${state.filterOpacity}%`;
+
+                    state.adjust = Object.assign(createDefaultAdjust(), proj.adjust || {});
+                    if (proj.curves) state.curves = JSON.parse(JSON.stringify(proj.curves));
+                    if (proj.hsl) state.hsl = JSON.parse(JSON.stringify(proj.hsl));
+                    if (proj.grading) state.grading = JSON.parse(JSON.stringify(proj.grading));
+
+                    if (proj.subjectPop) {
+                        const spIn = proj.subjectPop;
+                        state.subjectPop.categoryId = spIn.categoryId || 'outdoor_ccd';
+                        state.subjectPop.presetId = spIn.presetId || 'ccd_digicam_2005';
+                        state.subjectPop.shadowMode = spIn.shadowMode || 'hard';
+                        state.subjectPop.bgMode = spIn.bgMode || 'dark';
+                        state.subjectPop.master = spIn.master || 0;
+                        state.subjectPop.fgBright = spIn.fgBright ?? 80;
+                        state.subjectPop.bgDark = spIn.bgDark ?? 84;
+                        state.subjectPop.dehaze = spIn.dehaze ?? 78;
+                        state.subjectPop.twilight = spIn.twilight ?? 54;
+                        state.subjectPop.warmFg = spIn.warmFg ?? -6;
+                        state.subjectPop.detectedType = spIn.detectedType || 'Siluet Subjek';
+                        if (Array.isArray(spIn.subjectMask) && spIn.maskW && spIn.maskH) {
+                            state.subjectPop.maskW = spIn.maskW;
+                            state.subjectPop.maskH = spIn.maskH;
+                            state.subjectPop.subjectMask = new Float32Array(spIn.subjectMask);
+                        } else {
+                            computeSilhouetteSubjectMask(true);
+                        }
+                    }
+
+                    state.selectedFlashId = proj.selectedFlashId || 'off';
+                    state.flashIntensity = proj.flashIntensity || 0;
+                    state.flashPosition = proj.flashPosition || 'auto';
+                    state.dateStamp = proj.dateStamp || 'off';
+                    $('sliderFlashIntensity').value = state.flashIntensity;
+                    $('flashIntensityLabel').textContent = `${state.flashIntensity}%`;
+
+                    if (proj.transform) {
+                        state.transform = Object.assign({ ratio: 'orig', rot90: 0, fineAngle: 0, flipH: false, flipV: false }, proj.transform);
+                        $('sliderFineAngle').value = state.transform.fineAngle;
+                        $('fineAngleVal').textContent = `${state.transform.fineAngle}°`;
+                    }
+                    if (proj.frame) {
+                        state.frame = Object.assign({ style: 'none', thickness: 6, caption: "Memories • AHStudio '26", captionFont: 'serif', captionSize: 100 }, proj.frame);
+                        $('sliderFrameThickness').value = state.frame.thickness;
+                        $('frameThicknessVal').textContent = `${state.frame.thickness}%`;
+                        $('inputPolaroidCaption').value = state.frame.caption;
+                        if ($('sliderPolaroidCapSize')) $('sliderPolaroidCapSize').value = state.frame.captionSize || 100;
+                        if ($('polaroidCapSizeVal')) $('polaroidCapSizeVal').textContent = `${state.frame.captionSize || 100}%`;
+                        const needsCap = state.frame.style === 'polaroid' || state.frame.style === 'leica' || state.frame.style === 'zeiss' || state.frame.style === 'leica_dark';
+                        $('polaroidCaptionBox').classList.toggle('hidden', !needsCap);
+                    }
+                    if (proj.watermark) {
+                        state.watermark = Object.assign({ text: '', font: 'sans', color: '#ffffff', pos: 'bc', size: 100, opacity: 85 }, proj.watermark);
+                        $('inputWatermarkText').value = state.watermark.text;
+                        $('sliderWmSize').value = state.watermark.size;
+                        $('wmSizeVal').textContent = `${state.watermark.size}%`;
+                        $('sliderWmOpacity').value = state.watermark.opacity;
+                        $('wmOpacityVal').textContent = `${state.watermark.opacity}%`;
+                        if ($('wmColorHexLabel')) $('wmColorHexLabel').textContent = (state.watermark.color || '#ffffff').toUpperCase();
+                        if ($('inputWmCustomColor')) $('inputWmCustomColor').value = state.watermark.color || '#ffffff';
+                    }
+
+                    renderCategories();
+                    renderFilterGrid();
+                    renderSubjectPopPresets();
+                    syncSubjectPopSlidersUI();
+                    renderHslControls();
+                    renderFlashGrid();
+                    renderAdjustSliders();
+                    renderCurveEditor();
+                    redrawWheelShadows();
+                    redrawWheelMidtones();
+                    redrawWheelHighlights();
+                    renderPreview();
+                    resolve(true);
+                };
+
+                if (proj.sourceDataUrl) {
+                    const img = new Image();
+                    img.onload = () => {
+                        const c = document.createElement('canvas');
+                        c.width = img.naturalWidth || img.width;
+                        c.height = img.naturalHeight || img.height;
+                        c.getContext('2d').drawImage(img, 0, 0);
+                        state.sourceCanvas = c;
+                        finishRestore();
+                    };
+                    img.onerror = () => finishRestore();
+                    img.src = proj.sourceDataUrl;
+                } else {
+                    finishRestore();
+                }
+            });
+        }
+
+        let autoSaveTimer = null;
+        function scheduleProjectAutoSave() {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(async () => {
+                try {
+                    const payload = serializeFullProject(true);
+                    await idbPutProject('latest_session', payload);
+                    const timeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    if ($('autoSaveTimeBadge')) $('autoSaveTimeBadge').textContent = `Tersimpan ${timeStr}`;
+                } catch (e) {}
+            }, 900);
+        }
+
+        const _origRenderPreview = renderPreview;
+        renderPreview = function () {
+            _origRenderPreview();
+            if (typeof isFullscreenOpen === 'function' && isFullscreenOpen()) renderFullscreenPreview();
+            if (!state.isScrubbing) scheduleProjectAutoSave();
+        };
+
+        const projectModal = $('projectModal');
+        $('btnOpenProjectModal').addEventListener('click', async () => {
+            projectModal.classList.remove('hidden');
+            const latest = await idbGetProject('latest_session');
+            if (latest && latest.savedAt) {
+                const dt = new Date(latest.savedAt).toLocaleString('id-ID');
+                $('autoSaveInfoText').textContent = `Ditemukan sesi tersimpan pada ${dt} (Filter: ${latest.selectedFilterId || 'Asli'}).`;
+            } else {
+                $('autoSaveInfoText').textContent = 'Belum ada sesi tersimpan sebelumnya. Geser pengaturan untuk menyimpan otomatis.';
+            }
+        });
+        $('btnCloseProjectModal').addEventListener('click', () => projectModal.classList.add('hidden'));
+
+        $('btnSaveAutoSaveNow').addEventListener('click', async () => {
+            const payload = serializeFullProject(true);
+            const ok = await idbPutProject('latest_session', payload);
+            if (ok) {
+                const dt = new Date().toLocaleString('id-ID');
+                $('autoSaveTimeBadge').textContent = 'Tersimpan';
+                $('autoSaveInfoText').textContent = `Sesi berhasil disimpan pada ${dt}.`;
+                showToast('💾 Sesi proyek tersimpan di aplikasi!');
+            } else {
+                showToast('⚠️ Gagal menyimpan ke memori internal');
+            }
+        });
+
+        $('btnRestoreAutoSave').addEventListener('click', async () => {
+            const latest = await idbGetProject('latest_session');
+            if (!latest) { showToast('⚠️ Belum ada sesi proyek yang tersimpan'); return; }
+            showToast('⏳ Memulihkan proyek & foto...');
+            const ok = await applyDeserializedProject(latest);
+            if (ok) {
+                projectModal.classList.add('hidden');
+                showToast('✅ Proyek editan terakhir berhasil dipulihkan!');
+            } else {
+                showToast('❌ Gagal memulihkan sesi proyek');
+            }
+        });
+
+        $('btnExportProjectFile').addEventListener('click', async () => {
+            showToast('⏳ Menyiapkan file proyek (.ahproj)...');
+            const rawName = ($('inputProjectName').value || '').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
+            const projFilename = (rawName || `AHStudio_Proyek_${Date.now()}`) + '.ahproj';
+            const jsonStr = JSON.stringify(serializeFullProject(true));
+
+            const nativeRes = await saveBase64ToAndroidStorage(jsonStr, projFilename, true);
+            const banner = $('projectSavedPathBanner');
+            if (nativeRes.ok) {
+                banner.textContent = `✅ File proyek tersimpan di: ${nativeRes.displayPath}`;
+                banner.classList.remove('hidden');
+                showToast(`💾 Proyek tersimpan: ${nativeRes.displayPath}`);
+            } else {
+                downloadTextFile(projFilename, jsonStr, 'application/json');
+                banner.textContent = `📥 File proyek diunduh: ${projFilename}`;
+                banner.classList.remove('hidden');
+                showToast(`💾 File proyek diunduh: ${projFilename}`);
+            }
+        });
+
+        $('projectFileInput').addEventListener('change', async (e) => {
+            const file = e.target.files && e.target.files[0];
+            e.target.value = '';
+            if (!file) return;
+            try {
+                const text = await file.text();
+                const parsed = JSON.parse(text);
+                const ok = await applyDeserializedProject(parsed);
+                if (ok) {
+                    projectModal.classList.add('hidden');
+                    showToast(`📂 Proyek "${file.name}" berhasil dimuat!`);
+                } else {
+                    showToast('❌ Format file proyek tidak valid');
+                }
+            } catch (err) {
+                showToast('❌ Gagal membaca file proyek');
+            }
+        });
+
+        // Batch Edit Modal
+        const batchModal = $('batchModal');
+        const batchPhotoInput = $('batchPhotoInput');
+        let batchItems = [];
+
+        $('btnStageBatch').addEventListener('click', () => batchModal.classList.remove('hidden'));
+        $('btnCloseBatchModal').addEventListener('click', () => batchModal.classList.add('hidden'));
+
+        batchPhotoInput.addEventListener('change', async (e) => {
+            const files = e.target.files ? Array.from(e.target.files) : [];
+            batchPhotoInput.value = '';
+            if (!files.length) return;
+            batchItems = [];
+            const grid = $('batchGrid');
+            grid.innerHTML = '<div class="col-span-2 text-center text-xs text-sky-300 py-6">⏳ Memproses foto / Full-HD RAW batch...</div>';
+            state.isScrubbing = false;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                try {
+                    const res = await loadAnyPhotoFile(file, 1920);
+                    const outC = document.createElement('canvas');
+                    const outCtx = outC.getContext('2d');
+                    processFullPipeline(res.canvas, outC, outCtx, 1920);
+                    batchItems.push({
+                        name: file.name.replace(/\.[^/.]+$/, ''),
+                        isRaw: res.isRaw,
+                        rawExt: res.rawExt,
+                        dataUrl: outC.toDataURL('image/jpeg', 0.94)
+                    });
+                } catch (err) {}
+            }
+
+            grid.innerHTML = '';
+            if (!batchItems.length) {
+                grid.innerHTML = '<div class="col-span-2 text-center text-xs text-rose-400 py-6">Gagal memproses file batch</div>';
+                return;
+            }
+
+            batchItems.forEach((item) => {
+                const card = document.createElement('div');
+                card.className = 'p-1.5 rounded-xl bg-[#0c0e14] border border-white/10 flex flex-col gap-1.5';
+                const rawPill = item.isRaw ? `<span class="px-1 rounded bg-amber-500 text-slate-950 font-mono font-bold text-[9px] shrink-0">${item.rawExt}</span>` : '';
+                card.innerHTML = `
+                    <img src="${item.dataUrl}" class="w-full h-28 object-cover rounded-lg">
+                    <div class="flex items-center justify-between gap-1">
+                        <div class="flex items-center gap-1 min-w-0">${rawPill}<span class="text-[10px] text-gray-300 truncate">${item.name}</span></div>
+                        <button type="button" class="px-2 py-0.5 rounded bg-sky-500 text-white text-[10px] font-bold shrink-0">Unduh</button>
+                    </div>
+                `;
+                card.querySelector('button').addEventListener('click', () => {
+                    triggerDomDownload(item.dataUrl, `AHStudio_Batch_${item.name}.jpg`);
+                });
+                grid.appendChild(card);
+            });
+
+            $('batchCountLabel').textContent = batchItems.length;
+            $('btnDownloadAllBatch').classList.toggle('hidden', batchItems.length === 0);
+        });
+
+        $('btnDownloadAllBatch').addEventListener('click', () => {
+            batchItems.forEach((item, idx) => {
+                setTimeout(() => {
+                    triggerDomDownload(item.dataUrl, `AHStudio_Batch_${idx + 1}_${item.name}.jpg`);
+                }, idx * 320);
+            });
+            showToast(`⬇️ Mengunduh ${batchItems.length} foto...`);
+        });
+
+        // Toast Helper
+        let toastTimer = null;
+        function showToast(text) {
+            const box = $('toastBox');
+            if (!box) return;
+            $('toastMsg').textContent = text;
+            box.classList.remove('opacity-0'); box.classList.add('opacity-100');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => { box.classList.remove('opacity-100'); box.classList.add('opacity-0'); }, 2600);
+        }
+
+        window.addEventListener('resize', () => { applyResponsiveLayout(); if (state.splitEnabled) updateSplitLinePosition(); });
+        window.addEventListener('orientationchange', () => setTimeout(applyResponsiveLayout, 80));
+
+        // =========================================================================
+        // 18. FULL SCREEN PREVIEW & KEYBOARD SHORTCUTS (CTRL+Z / CTRL+Y / F / ESC)
+        // =========================================================================
+        const fullscreenModal = $('fullscreenModal');
+        const fsStageBg = $('fsStageBg');
+        const fsViewport = $('fsViewport');
+        const fsCanvas = $('fsCanvas');
+        const fsCtx = fsCanvas.getContext('2d');
+        const fsSplitLine = $('fsSplitLine');
+        const fsBadgeOriginal = $('fsBadgeOriginal');
+        const fsBadgeResult = $('fsBadgeResult');
+        const fsStatusLabel = $('fsStatusLabel');
+
+        let fsZoom = 1, fsPanX = 0, fsPanY = 0;
+        let fsDraggingSplit = false, fsPanning = false, fsPanStartX = 0, fsPanStartY = 0, fsHoldOriginal = false;
+
+        const fsResultBuf = document.createElement('canvas');
+        const fsResultCtx = fsResultBuf.getContext('2d');
+        const fsOrigBuf = document.createElement('canvas');
+        const fsOrigCtx = fsOrigBuf.getContext('2d');
+
+        function isFullscreenOpen() {
+            return fullscreenModal && !fullscreenModal.classList.contains('hidden');
+        }
+
+        function updateFsTransform() {
+            fsViewport.style.transform = `translate(${fsPanX}px, ${fsPanY}px) scale(${fsZoom})`;
+            fsViewport.style.transformOrigin = 'center center';
+            $('btnFsZoomReset').textContent = fsZoom === 1 ? 'Fit' : `${Math.round(fsZoom * 100)}%`;
+            fsViewport.style.cursor = fsZoom > 1 ? (fsPanning ? 'grabbing' : 'grab') : 'default';
+        }
+
+        function fitFullscreenCanvasDimensions(imgW, imgH) {
+            if (!imgW || !imgH) return;
+            const rect = fsStageBg.getBoundingClientRect();
+            const maxW = Math.max(240, (rect.width || window.innerWidth) - 20);
+            const maxH = Math.max(240, (rect.height || window.innerHeight - 110) - 20);
+            const scale = Math.min(maxW / imgW, maxH / imgH);
+            fsCanvas.style.width = `${Math.max(100, Math.round(imgW * scale))}px`;
+            fsCanvas.style.height = `${Math.max(100, Math.round(imgH * scale))}px`;
+            fsSplitLine.style.left = `${(state.splitRatio * 100).toFixed(3)}%`;
+        }
+
+        function compositeFullscreenOnly() {
+            const w = fsResultBuf.width;
+            const h = fsResultBuf.height;
+            if (!w || !h || !isFullscreenOpen()) return;
+
+            fsCanvas.width = w;
+            fsCanvas.height = h;
+            fsCtx.globalCompositeOperation = 'source-over';
+            fsCtx.globalAlpha = 1;
+            fsCtx.clearRect(0, 0, w, h);
+
+            fitFullscreenCanvasDimensions(w, h);
+
+            if (fsHoldOriginal || state.isHoldingOriginal) {
+                fsCtx.drawImage(fsOrigBuf, 0, 0, w, h);
+                fsSplitLine.classList.add('hidden');
+                fsBadgeOriginal.classList.remove('hidden');
+                fsBadgeResult.classList.add('hidden');
+                return;
+            }
+
+            if (state.splitEnabled) {
+                const splitX = Math.round(w * state.splitRatio);
+                fsCtx.save();
+                fsCtx.beginPath();
+                fsCtx.rect(0, 0, splitX, h);
+                fsCtx.clip();
+                fsCtx.drawImage(fsOrigBuf, 0, 0);
+                fsCtx.restore();
+
+                fsCtx.save();
+                fsCtx.beginPath();
+                fsCtx.rect(splitX, 0, w - splitX, h);
+                fsCtx.clip();
+                fsCtx.drawImage(fsResultBuf, 0, 0);
+                fsCtx.restore();
+
+                fsSplitLine.classList.remove('hidden');
+                fsBadgeOriginal.classList.toggle('hidden', state.splitRatio <= 0.04);
+                fsBadgeResult.classList.toggle('hidden', state.splitRatio >= 0.96);
+                fsSplitLine.style.left = `${(state.splitRatio * 100).toFixed(3)}%`;
+            } else {
+                fsCtx.drawImage(fsResultBuf, 0, 0);
+                fsSplitLine.classList.add('hidden');
+                fsBadgeOriginal.classList.add('hidden');
+                fsBadgeResult.classList.remove('hidden');
+            }
+            fsBadgeResult.textContent = badgeResult.textContent || 'HASIL';
+        }
+
+        let fsSplitRafPending = false;
+        function scheduleFsSplitCompositeOnly() {
+            if (fsSplitRafPending) return;
+            fsSplitRafPending = true;
+            requestAnimationFrame(() => {
+                fsSplitRafPending = false;
+                compositeFullscreenOnly();
+            });
+        }
+
+        function renderFullscreenPreview() {
+            if (!isFullscreenOpen() || !state.sourceCanvas) return;
+            const fsDim = state.isScrubbing ? 720 : 1600;
+            processFullPipeline(state.sourceCanvas, fsResultBuf, fsResultCtx, fsDim);
+            const w = fsResultBuf.width;
+            const h = fsResultBuf.height;
+
+            const origGeom = buildTransformedSource(state.sourceCanvas, fsDim);
+            fsOrigBuf.width = w;
+            fsOrigBuf.height = h;
+            fsOrigCtx.fillStyle = '#050608';
+            fsOrigCtx.fillRect(0, 0, w, h);
+            fsOrigCtx.drawImage(origGeom, 0, 0, w, h);
+
+            const filter = state.selectedFilterId === 'none'
+                ? NONE_FILTER
+                : (getAllFilters().find(f => f.id === state.selectedFilterId) || NONE_FILTER);
+            const fName = state.colorMatch.active ? `Match: ${state.colorMatch.refName}` : filter.name;
+            fsStatusLabel.textContent = `${fName} • ${w}×${h}`;
+
+            $('fsSliderFilterOpacity').value = state.filterOpacity;
+            $('fsFilterOpacityLabel').textContent = `${state.filterOpacity}%`;
+            $('btnFsSplit').textContent = state.splitEnabled ? 'SPLIT: ON' : 'SPLIT: OFF';
+            $('btnFsSplit').className = state.splitEnabled
+                ? 'px-2.5 py-1 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/40 text-sky-300 text-[11px] font-mono font-bold'
+                : 'px-2.5 py-1 rounded-lg bg-[#151821] hover:bg-[#1e222e] border border-white/15 text-gray-300 text-[11px] font-mono font-bold';
+
+            compositeFullscreenOnly();
+        }
+
+        function openFullscreenPreview() {
+            if (!state.sourceCanvas) return;
+            fsZoom = 1; fsPanX = 0; fsPanY = 0;
+            fullscreenModal.classList.remove('hidden');
+            updateFsTransform();
+            requestAnimationFrame(renderFullscreenPreview);
+        }
+
+        function closeFullscreenPreview() {
+            fullscreenModal.classList.add('hidden');
+            fsHoldOriginal = false;
+            $('btnFsHoldCompare').classList.remove('hold-active');
+        }
+
+        $('btnFullscreenPreview').addEventListener('click', (e) => {
+            e.stopPropagation();
+            openFullscreenPreview();
+        });
+        $('btnCloseFullscreen').addEventListener('click', closeFullscreenPreview);
+
+        $('btnFsSplit').addEventListener('click', () => {
+            state.splitEnabled = !state.splitEnabled;
+            if (state.splitEnabled && (state.splitRatio <= 0.04 || state.splitRatio >= 0.96)) state.splitRatio = 0.50;
+            $('btnToggleSplit').textContent = state.splitEnabled ? 'SPLIT: ON' : 'SPLIT: OFF';
+            $('btnToggleSplit').className = state.splitEnabled
+                ? 'glass-header-pill-btn bg-sky-500/20 hover:bg-sky-500/30 text-sky-300'
+                : 'glass-header-pill-btn bg-white/5 hover:bg-white/10 text-gray-300';
+            compositePreviewOnly();
+            compositeFullscreenOnly();
+        });
+
+        const btnFsHoldCompare = $('btnFsHoldCompare');
+        function startFsHold(e) {
+            if (e && e.cancelable) e.preventDefault();
+            fsHoldOriginal = true;
+            btnFsHoldCompare.classList.add('hold-active');
+            compositeFullscreenOnly();
+        }
+        function endFsHold() {
+            if (!fsHoldOriginal) return;
+            fsHoldOriginal = false;
+            btnFsHoldCompare.classList.remove('hold-active');
+            compositeFullscreenOnly();
+        }
+        btnFsHoldCompare.addEventListener('pointerdown', startFsHold);
+        ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => btnFsHoldCompare.addEventListener(ev, endFsHold));
+
+        $('btnFsZoomIn').addEventListener('click', () => { fsZoom = Math.min(4, +(fsZoom + 0.5).toFixed(2)); updateFsTransform(); });
+        $('btnFsZoomOut').addEventListener('click', () => { fsZoom = Math.max(1, +(fsZoom - 0.5).toFixed(2)); if (fsZoom === 1) { fsPanX = 0; fsPanY = 0; } updateFsTransform(); });
+        $('btnFsZoomReset').addEventListener('click', () => { fsZoom = 1; fsPanX = 0; fsPanY = 0; updateFsTransform(); });
+
+        fsStageBg.addEventListener('wheel', (e) => {
+            if (!isFullscreenOpen()) return;
+            e.preventDefault();
+            const delta = e.deltaY < 0 ? 0.25 : -0.25;
+            fsZoom = Math.max(1, Math.min(4, +(fsZoom + delta).toFixed(2)));
+            if (fsZoom === 1) { fsPanX = 0; fsPanY = 0; }
+            updateFsTransform();
+        }, { passive: false });
+
+        fsViewport.addEventListener('pointerdown', (e) => {
+            const onHandle = e.target.closest && e.target.closest('#fsSplitLine');
+            if (state.splitEnabled && (onHandle || fsZoom === 1)) {
+                fsDraggingSplit = true;
+                try { fsViewport.setPointerCapture(e.pointerId); } catch (err) {}
+                const rect = fsCanvas.getBoundingClientRect();
+                if (rect.width) {
+                    state.splitRatio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                    scheduleFsSplitCompositeOnly();
+                    scheduleSplitCompositeOnly();
+                }
+                return;
+            }
+            if (fsZoom > 1) {
+                fsPanning = true;
+                fsPanStartX = e.clientX - fsPanX;
+                fsPanStartY = e.clientY - fsPanY;
+                try { fsViewport.setPointerCapture(e.pointerId); } catch (err) {}
+                updateFsTransform();
+            }
+        });
+        fsViewport.addEventListener('pointermove', (e) => {
+            if (fsDraggingSplit) {
+                const rect = fsCanvas.getBoundingClientRect();
+                if (rect.width) {
+                    state.splitRatio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                    scheduleFsSplitCompositeOnly();
+                    scheduleSplitCompositeOnly();
+                }
+            } else if (fsPanning) {
+                fsPanX = e.clientX - fsPanStartX;
+                fsPanY = e.clientY - fsPanStartY;
+                updateFsTransform();
+            }
+        });
+        ['pointerup', 'pointercancel'].forEach(ev => {
+            fsViewport.addEventListener(ev, () => {
+                fsDraggingSplit = false;
+                if (fsPanning) { fsPanning = false; updateFsTransform(); }
+            });
+        });
+
+        $('fsSliderFilterOpacity').addEventListener('input', (e) => {
+            state.filterOpacity = parseInt(e.target.value, 10);
+            if (state.filterOpacity > 0 && state.selectedFilterId === 'none') {
+                state.selectedFilterId = BUILTIN_FILTERS[0].id;
+                renderFilterGrid();
+            }
+            sliderFilterOpacity.value = state.filterOpacity;
+            $('filterOpacityLabel').textContent = `${state.filterOpacity}%`;
+            $('fsFilterOpacityLabel').textContent = `${state.filterOpacity}%`;
+            schedulePreviewRender();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            const tag = (document.activeElement && document.activeElement.tagName || '').toLowerCase();
+            const isTyping = tag === 'input' || tag === 'textarea';
+            if ((e.ctrlKey || e.metaKey) && !e.altKey && !isTyping) {
+                if (e.key.toLowerCase() === 'z' && !e.shiftKey) { e.preventDefault(); performUndo(); return; }
+                if (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey)) { e.preventDefault(); performRedo(); return; }
+            }
+            if (e.key === 'Escape' && isFullscreenOpen()) { closeFullscreenPreview(); return; }
+            if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey && !e.altKey && !isTyping) {
+                if (isFullscreenOpen()) closeFullscreenPreview();
+                else openFullscreenPreview();
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (isFullscreenOpen() && fsCanvas.width && fsCanvas.height) {
+                fitFullscreenCanvasDimensions(fsCanvas.width, fsCanvas.height);
+            }
+        });
+
+        function enableMouseHorizontalDragScroll(el) {
+            if (!el || el.dataset.mouseScrollBound === '1') return;
+            el.dataset.mouseScrollBound = '1';
+            el.classList.add('mouse-scroll-x');
+
+            let isDown = false, hasDragged = false, startX = 0, startScrollLeft = 0;
+
+            el.addEventListener('mousedown', (e) => {
+                if (e.button !== 0) return;
+                isDown = true; hasDragged = false; startX = e.pageX; startScrollLeft = el.scrollLeft;
+                el.classList.add('dragging-x');
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                const dx = e.pageX - startX;
+                if (Math.abs(dx) > 5) hasDragged = true;
+                if (hasDragged) { e.preventDefault(); el.scrollLeft = startScrollLeft - dx; }
+            });
+
+            window.addEventListener('mouseup', () => {
+                if (!isDown) return;
+                isDown = false;
+                el.classList.remove('dragging-x');
+                if (hasDragged) {
+                    const blockClick = (ev) => { ev.preventDefault(); ev.stopPropagation(); };
+                    el.addEventListener('click', blockClick, { capture: true, once: true });
+                    setTimeout(() => el.removeEventListener('click', blockClick, { capture: true }), 50);
+                }
+            });
+
+            el.addEventListener('wheel', (e) => {
+                if (el.scrollWidth <= el.clientWidth) return;
+                const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+                if (delta !== 0) { e.preventDefault(); el.scrollLeft += delta; }
+            }, { passive: false });
+        }
+
+        document.querySelectorAll('.overflow-x-auto').forEach(enableMouseHorizontalDragScroll);
 
         // =========================================================================
         // 19. BOOTSTRAP APPLICATION (WITH THEME, LANGUAGE & ORIENTATION SETTINGS)
